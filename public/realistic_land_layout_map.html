@@ -1,0 +1,281 @@
+<!DOCTYPE html>
+<html>
+<head>
+    
+    <meta http-equiv="content-type" content="text/html; charset=UTF-8" />
+    <script src="https://cdn.jsdelivr.net/npm/leaflet@1.9.3/dist/leaflet.js"></script>
+    <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.2/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Leaflet.awesome-markers/2.0.2/leaflet.awesome-markers.js"></script>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/leaflet@1.9.3/dist/leaflet.css"/>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.2/dist/css/bootstrap.min.css"/>
+    <link rel="stylesheet" href="https://netdna.bootstrapcdn.com/bootstrap/3.0.0/css/bootstrap-glyphicons.css"/>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.2.0/css/all.min.css"/>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/Leaflet.awesome-markers/2.0.2/leaflet.awesome-markers.css"/>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/python-visualization/folium/folium/templates/leaflet.awesome.rotate.min.css"/>
+    
+            <meta name="viewport" content="width=device-width,
+                initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+            <style>
+                #map_4f35efd86be26ccc74b2e4eb7d456be2 {
+                    position: relative;
+                    width: 100.0%;
+                    height: 100.0%;
+                    left: 0.0%;
+                    top: 0.0%;
+                }
+                .leaflet-container { font-size: 1rem; }
+            </style>
+
+            <style>html, body {
+                width: 100%;
+                height: 100%;
+                margin: 0;
+                padding: 0;
+            }
+            </style>
+
+            <style>#map {
+                position:absolute;
+                top:0;
+                bottom:0;
+                right:0;
+                left:0;
+                }
+            </style>
+
+            <script>
+                L_NO_TOUCH = false;
+                L_DISABLE_3D = false;
+            </script>
+
+        
+</head>
+<body>
+    
+    
+                     <h3 align="center" style="font-size:16px"><b>AI-Generated Land Use Layout</b></h3>
+                     
+    
+        <div style="position: fixed; 
+                    bottom: 50px; left: 50px; width: 150px; height: 90px; 
+                    background-color: white; border:2px solid grey; z-index:9999; 
+                    font-size:14px; padding: 10px">
+        &nbsp; Land Use Legend <br>
+        &nbsp; <i class="fa fa-square" style="color:green"></i> Main Crop (60%)<br>
+        &nbsp; <i class="fa fa-square" style="color:yellow"></i> Intercrop (25%)<br>
+        &nbsp; <i class="fa fa-square" style="color:darkgreen"></i> Trees (15%)
+        </div>
+        
+    
+            <div class="folium-map" id="map_4f35efd86be26ccc74b2e4eb7d456be2" ></div>
+        
+</body>
+<script>
+    
+    
+            var map_4f35efd86be26ccc74b2e4eb7d456be2 = L.map(
+                "map_4f35efd86be26ccc74b2e4eb7d456be2",
+                {
+                    center: [12.971, 77.592],
+                    crs: L.CRS.EPSG3857,
+                    ...{
+  "zoom": 16,
+  "zoomControl": true,
+  "preferCanvas": false,
+}
+
+                }
+            );
+
+            
+
+        
+    
+            var tile_layer_303f949b5dbb11f23e82ac65bb6cdf8e = L.tileLayer(
+                "https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}",
+                {
+  "minZoom": 0,
+  "maxZoom": 18,
+  "maxNativeZoom": 18,
+  "noWrap": false,
+  "attribution": "Tiles \u0026copy; Esri \u0026mdash; Source: Esri, i-cubed, USDA, USGS, AEX, GeoEye, Getmapping, Aerogrid, IGN, IGP, UPR-EGP, and the GIS User Community",
+  "subdomains": "abc",
+  "detectRetina": false,
+  "tms": false,
+  "opacity": 1,
+}
+
+            );
+        
+    
+            tile_layer_303f949b5dbb11f23e82ac65bb6cdf8e.addTo(map_4f35efd86be26ccc74b2e4eb7d456be2);
+        
+    
+            var tile_layer_4efd7e860cce8d02613c3a36d324851d = L.tileLayer(
+                "https://tile.openstreetmap.org/{z}/{x}/{y}.png",
+                {
+  "minZoom": 0,
+  "maxZoom": 19,
+  "maxNativeZoom": 19,
+  "noWrap": false,
+  "attribution": "\u0026copy; \u003ca href=\"https://www.openstreetmap.org/copyright\"\u003eOpenStreetMap\u003c/a\u003e contributors",
+  "subdomains": "abc",
+  "detectRetina": false,
+  "tms": false,
+  "opacity": 1,
+}
+
+            );
+        
+    
+            tile_layer_4efd7e860cce8d02613c3a36d324851d.addTo(map_4f35efd86be26ccc74b2e4eb7d456be2);
+        
+    
+        function geo_json_a2d18c32a61e765a8a9ea2e39a82f9e6_styler(feature) {
+            switch(feature.id) {
+                default:
+                    return {"color": "black", "fillColor": "green", "fillOpacity": 0.6, "weight": 2};
+            }
+        }
+
+        function geo_json_a2d18c32a61e765a8a9ea2e39a82f9e6_onEachFeature(feature, layer) {
+
+            layer.on({
+            });
+        };
+        var geo_json_a2d18c32a61e765a8a9ea2e39a82f9e6 = L.geoJson(null, {
+                onEachFeature: geo_json_a2d18c32a61e765a8a9ea2e39a82f9e6_onEachFeature,
+            
+                style: geo_json_a2d18c32a61e765a8a9ea2e39a82f9e6_styler,
+            ...{
+}
+        });
+
+        function geo_json_a2d18c32a61e765a8a9ea2e39a82f9e6_add (data) {
+            geo_json_a2d18c32a61e765a8a9ea2e39a82f9e6
+                .addData(data);
+        }
+            geo_json_a2d18c32a61e765a8a9ea2e39a82f9e6_add({"features": [{"geometry": {"coordinates": [[[77.59134435874003, 12.970361088214903], [77.59265564125997, 12.970361088214903], [77.59265564125997, 12.97112778235702], [77.59134435874003, 12.97112778235702], [77.59134435874003, 12.970361088214903]]], "type": "Polygon"}, "id": "0", "type": "Feature"}], "type": "FeatureCollection"});
+
+        
+    
+            geo_json_a2d18c32a61e765a8a9ea2e39a82f9e6.bindTooltip(
+                `<div>
+                     Main Crop: Maize
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            geo_json_a2d18c32a61e765a8a9ea2e39a82f9e6.addTo(map_4f35efd86be26ccc74b2e4eb7d456be2);
+        
+    
+        function geo_json_a69e695bb7d6e3105c056fa76d4a1dfd_styler(feature) {
+            switch(feature.id) {
+                default:
+                    return {"color": "black", "fillColor": "yellow", "fillOpacity": 0.6, "weight": 2};
+            }
+        }
+
+        function geo_json_a69e695bb7d6e3105c056fa76d4a1dfd_onEachFeature(feature, layer) {
+
+            layer.on({
+            });
+        };
+        var geo_json_a69e695bb7d6e3105c056fa76d4a1dfd = L.geoJson(null, {
+                onEachFeature: geo_json_a69e695bb7d6e3105c056fa76d4a1dfd_onEachFeature,
+            
+                style: geo_json_a69e695bb7d6e3105c056fa76d4a1dfd_styler,
+            ...{
+}
+        });
+
+        function geo_json_a69e695bb7d6e3105c056fa76d4a1dfd_add (data) {
+            geo_json_a69e695bb7d6e3105c056fa76d4a1dfd
+                .addData(data);
+        }
+            geo_json_a69e695bb7d6e3105c056fa76d4a1dfd_add({"features": [{"geometry": {"coordinates": [[[77.59134435874003, 12.97112778235702], [77.59265564125997, 12.97112778235702], [77.59265564125997, 12.971447238249567], [77.59134435874003, 12.971447238249567], [77.59134435874003, 12.97112778235702]]], "type": "Polygon"}, "id": "0", "type": "Feature"}], "type": "FeatureCollection"});
+
+        
+    
+            geo_json_a69e695bb7d6e3105c056fa76d4a1dfd.bindTooltip(
+                `<div>
+                     Intercrop: Cowpea
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            geo_json_a69e695bb7d6e3105c056fa76d4a1dfd.addTo(map_4f35efd86be26ccc74b2e4eb7d456be2);
+        
+    
+        function geo_json_1c6cc27e8210d2f6e865ed2d5d52415f_styler(feature) {
+            switch(feature.id) {
+                default:
+                    return {"color": "black", "fillColor": "darkgreen", "fillOpacity": 0.6, "weight": 2};
+            }
+        }
+
+        function geo_json_1c6cc27e8210d2f6e865ed2d5d52415f_onEachFeature(feature, layer) {
+
+            layer.on({
+            });
+        };
+        var geo_json_1c6cc27e8210d2f6e865ed2d5d52415f = L.geoJson(null, {
+                onEachFeature: geo_json_1c6cc27e8210d2f6e865ed2d5d52415f_onEachFeature,
+            
+                style: geo_json_1c6cc27e8210d2f6e865ed2d5d52415f_styler,
+            ...{
+}
+        });
+
+        function geo_json_1c6cc27e8210d2f6e865ed2d5d52415f_add (data) {
+            geo_json_1c6cc27e8210d2f6e865ed2d5d52415f
+                .addData(data);
+        }
+            geo_json_1c6cc27e8210d2f6e865ed2d5d52415f_add({"features": [{"geometry": {"coordinates": [[[77.59134435874003, 12.971447238249567], [77.59265564125997, 12.971447238249567], [77.59265564125997, 12.971638911785098], [77.59134435874003, 12.971638911785098], [77.59134435874003, 12.971447238249567]]], "type": "Polygon"}, "id": "0", "type": "Feature"}], "type": "FeatureCollection"});
+
+        
+    
+            geo_json_1c6cc27e8210d2f6e865ed2d5d52415f.bindTooltip(
+                `<div>
+                     Trees: ['Mango', 'Gliricidia']
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            geo_json_1c6cc27e8210d2f6e865ed2d5d52415f.addTo(map_4f35efd86be26ccc74b2e4eb7d456be2);
+        
+    
+            var layer_control_36c200043dfbadf1639d26d3d917b14b_layers = {
+                base_layers : {
+                    "Satellite" : tile_layer_303f949b5dbb11f23e82ac65bb6cdf8e,
+                    "Street Map" : tile_layer_4efd7e860cce8d02613c3a36d324851d,
+                },
+                overlays :  {
+                    "Main Crop" : geo_json_a2d18c32a61e765a8a9ea2e39a82f9e6,
+                    "Intercrop" : geo_json_a69e695bb7d6e3105c056fa76d4a1dfd,
+                    "Trees" : geo_json_1c6cc27e8210d2f6e865ed2d5d52415f,
+                },
+            };
+            let layer_control_36c200043dfbadf1639d26d3d917b14b = L.control.layers(
+                layer_control_36c200043dfbadf1639d26d3d917b14b_layers.base_layers,
+                layer_control_36c200043dfbadf1639d26d3d917b14b_layers.overlays,
+                {
+  "position": "topright",
+  "collapsed": true,
+  "autoZIndex": true,
+}
+            ).addTo(map_4f35efd86be26ccc74b2e4eb7d456be2);
+
+        
+</script>
+</html>
