@@ -1,6 +1,6 @@
 # Sasya-Mitra Dashboard Improvements
 
-This document summarizes the improvements made to the Sasya-Mitra dashboard to better collect farmer input and organize the interface according to the requirements.
+This document summarizes the improvements made to the digital-raitha dashboard to better collect farmer input and organize the interface according to the requirements.
 
 ## Key Improvements
 
