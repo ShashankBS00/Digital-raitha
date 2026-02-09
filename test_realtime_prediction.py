@@ -90,7 +90,7 @@ def test_health_check():
         print(f"❌ Error occurred: {str(e)}")
 
 if __name__ == "__main__":
-    print("SASYA-MITRA REAL-TIME PREDICTION TEST")
+    print("Digital Raitha REAL-TIME PREDICTION TEST")
     print("=" * 50)
     
     # Test health check first

@@ -1,6 +1,6 @@
-# Example: Using Your Datasets with Sasya-Mitra AI Models
+# Example: Using Your Datasets with Digital Raitha AI Models
 
-This example demonstrates how to use your agricultural datasets with the Sasya-Mitra AI system.
+This example demonstrates how to use your agricultural datasets with the Digital Raitha AI system.
 
 ## Step 1: Organize Your Datasets
 
@@ -221,6 +221,6 @@ curl -X POST http://localhost:5000/recommend \
 2. Adjust the feature engineering based on your data structure
 3. Fine-tune the models with your specific requirements
 4. Deploy the API to a production environment
-5. Integrate with the Sasya-Mitra frontend application
+5. Integrate with the Digital Raitha frontend application
 
-This example provides a foundation for using your agricultural datasets with the Sasya-Mitra AI system. Adjust the code based on your specific data format and requirements.
+This example provides a foundation for using your agricultural datasets with the Digital Raitha AI system. Adjust the code based on your specific data format and requirements.

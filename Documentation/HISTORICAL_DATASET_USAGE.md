@@ -1,10 +1,10 @@
-# Historical Dataset Usage in Sasya-Mitra
+# Historical Dataset Usage in Digital Raitha
 
-This document explains how Sasya-Mitra uses your historical agricultural datasets to train machine learning models and provide AI-powered recommendations.
+This document explains how Digital Raitha uses your historical agricultural datasets to train machine learning models and provide AI-powered recommendations.
 
 ## Datasets Overview
 
-Sasya-Mitra processes the following historical datasets:
+Digital Raitha processes the following historical datasets:
 
 ### 1. All India Level Crop Area (2001–2015)
 - **Purpose**: Understanding crop cultivation patterns
@@ -84,7 +84,7 @@ Sasya-Mitra processes the following historical datasets:
 
 ## New: Automated Historical Dataset Processing
 
-Sasya-Mitra now includes an automated script to process all historical datasets and extract features for machine learning:
+Digital Raitha now includes an automated script to process all historical datasets and extract features for machine learning:
 
 ### Process Historical Datasets Script
 - **Location**: `data/process_historical_datasets.py`
@@ -307,4 +307,4 @@ The system is designed for continuous improvement:
 - Voice-based interfaces
 - Offline functionality
 
-The historical dataset processing capabilities in Sasya-Mitra transform your agricultural data into actionable intelligence, enabling farmers to make better decisions and improve their productivity and profitability.
+The historical dataset processing capabilities in Digital Raitha transform your agricultural data into actionable intelligence, enabling farmers to make better decisions and improve their productivity and profitability.

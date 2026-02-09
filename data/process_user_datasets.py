@@ -197,7 +197,7 @@ def create_combined_dataset():
     return combined_features
 
 if __name__ == "__main__":
-    print("Processing user datasets for Sasya-Mitra AI system...")
+    print("Processing user datasets for Digital Raitha AI system...")
     
     # Load all datasets
     load_datasets()

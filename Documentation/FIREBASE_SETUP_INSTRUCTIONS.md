@@ -1,6 +1,6 @@
-# Firebase Setup Instructions for SasyaYojana
+# Firebase Setup Instructions for Digital Raitha
 
-This document provides instructions for setting up Firebase integration in the SasyaYojana application.
+This document provides instructions for setting up Firebase integration in the Digital Raitha application.
 
 ## Frontend Firebase Setup (Already Configured)
 
@@ -38,7 +38,7 @@ To enable full Firebase integration in the Python backend, you need to set up Ap
 3. **Verify Setup**:
    Run the test script:
    ```bash
-   cd SasyaYojana
+   cd Digital Raitha
    python test_firebase_storage.py
    ```
 
@@ -54,7 +54,7 @@ To enable full Firebase integration in the Python backend, you need to set up Ap
 
 3. **Set Project**:
    ```bash
-   gcloud config set project sasyayojana-79840
+   gcloud config set project Digital Raitha-79840
    ```
 
 ### Option 3: Using Firebase Admin SDK Credentials
@@ -71,7 +71,7 @@ If you prefer to use explicit credentials in the code:
            
            # Initialize Firestore and Storage
            db = firestore.client()
-           bucket = storage.bucket('sasyayojana-79840.firebasestorage.app')
+           bucket = storage.bucket('Digital Raitha-79840.firebasestorage.app')
            maps_collection = db.collection('land_layout_maps')
    ```
 
@@ -117,7 +117,7 @@ service cloud.firestore {
 After setting up credentials, test the integration:
 
 ```bash
-cd SasyaYojana
+cd Digital Raitha
 python test_firebase_storage.py
 ```
 

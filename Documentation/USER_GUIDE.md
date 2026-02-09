@@ -1,6 +1,6 @@
-# Sasya-Mitra User Guide
+# Digital Raitha User Guide
 
-This guide explains how to use the improved Sasya-Mitra dashboard with enhanced farmer input collection and better organization.
+This guide explains how to use the improved Digital Raitha dashboard with enhanced farmer input collection and better organization.
 
 ## Getting Started
 
@@ -161,16 +161,16 @@ This is the main planning interface where you'll input your farm details:
 
 ## Support
 
-For technical issues or questions about using Sasya-Mitra:
+For technical issues or questions about using Digital Raitha:
 1. Check this user guide
 2. Contact support through the feedback form
 3. Refer to the documentation in the GitHub repository
 
 ## Feedback
 
-We're constantly improving Sasya-Mitra based on user feedback. If you have suggestions or encounter issues:
+We're constantly improving Digital Raitha based on user feedback. If you have suggestions or encounter issues:
 1. Use the feedback form in the app
 2. Submit issues on GitHub
 3. Contact our support team
 
-Thank you for using Sasya-Mitra to improve your farming practices and increase your productivity!
+Thank you for using Digital Raitha to improve your farming practices and increase your productivity!

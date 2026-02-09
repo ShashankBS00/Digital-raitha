@@ -1,5 +1,5 @@
 """
-Train Sasya-Mitra AI models using the user's specific datasets.
+Train Digital Raitha AI models using the user's specific datasets.
 """
 
 import sys
@@ -53,7 +53,7 @@ def load_user_datasets():
 def train_models_with_user_data():
     """Train AI models using the user's datasets"""
     print("\n" + "="*50)
-    print("SASYA-MITRA AI MODEL TRAINING")
+    print("Digital Raitha AI MODEL TRAINING")
     print("="*50)
     
     # Load user datasets
@@ -118,7 +118,7 @@ def train_models_with_user_data():
     print("TRAINING COMPLETE")
     print("="*50)
     print("Your AI models are now trained and ready to use!")
-    print("You can now run the Sasya-Mitra web application to use these models.")
+    print("You can now run the Digital Raitha web application to use these models.")
 
 if __name__ == "__main__":
     train_models_with_user_data()

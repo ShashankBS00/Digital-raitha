@@ -39,7 +39,7 @@ const LanguageSelector = ({ onLanguageSelected }) => {
             <FaGlobe className="text-white text-4xl" />
           </div>
           <h1 className="text-5xl sm:text-6xl font-black text-transparent bg-clip-text bg-gradient-to-r from-green-600 via-emerald-600 to-green-700 mb-2">
-            {t('appName') || 'SasyaYojana'}
+            {t('appName') || 'Digital Raitha'}
           </h1>
           <div className="flex items-center justify-center space-x-2 text-green-700">
             <div className="h-px w-12 bg-green-400"></div>

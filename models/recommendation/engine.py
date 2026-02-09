@@ -1,5 +1,5 @@
 """
-Recommendation engine for Sasya-Mitra agricultural advisory system.
+Recommendation engine for Digital Raitha agricultural advisory system.
 """
 
 import pandas as pd

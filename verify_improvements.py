@@ -90,7 +90,7 @@ def check_key_features():
 
 def main():
     """Main verification function"""
-    print("Sasya-Mitra Dashboard Improvements Verification")
+    print("Digital Raitha Dashboard Improvements Verification")
     print("=" * 60)
     
     # Check file structure

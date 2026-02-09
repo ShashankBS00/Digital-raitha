@@ -1,6 +1,6 @@
-# Firebase Integration Summary for SasyaYojana
+# Firebase Integration Summary for Digital Raitha
 
-This document outlines how the SasyaYojana application stores all data in Firebase.
+This document outlines how the Digital Raitha application stores all data in Firebase.
 
 ## Firebase Services Used
 

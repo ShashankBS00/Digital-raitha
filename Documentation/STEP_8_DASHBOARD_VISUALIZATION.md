@@ -2,7 +2,7 @@
 
 ## Overview
 
-This document describes the complete implementation of STEP 8: Dashboard Visualization for the Sasya-Mitra system, which displays:
+This document describes the complete implementation of STEP 8: Dashboard Visualization for the Digital Raitha system, which displays:
 
 1. Recommended crops 🌾
 2. Predicted yield 📊
@@ -14,7 +14,7 @@ This document describes the complete implementation of STEP 8: Dashboard Visuali
 
 ### 1. Enhanced Dashboard Component
 
-The [Dashboard.jsx](file:///X:/SasyaYojana/src/components/Dashboard.jsx) component was enhanced with the following features:
+The [Dashboard.jsx](file:///X:/Digital Raitha/src/components/Dashboard.jsx) component was enhanced with the following features:
 
 #### New Predictions Tab
 - Added a new "Predictions" tab to display real-time AI model predictions
@@ -38,17 +38,17 @@ The [Dashboard.jsx](file:///X:/SasyaYojana/src/components/Dashboard.jsx) compone
 
 Added comprehensive translation support for all new UI elements:
 
-#### English ([en.json](file:///X:/SasyaYojana/src/locales/en.json))
+#### English ([en.json](file:///X:/Digital Raitha/src/locales/en.json))
 - Added 40+ new translation keys for predictions tab
 - Included translations for all new UI elements
 
-#### Hindi ([hi.json](file:///X:/SasyaYojana/src/locales/hi.json))
+#### Hindi ([hi.json](file:///X:/Digital Raitha/src/locales/hi.json))
 - Added Hindi translations for all new UI elements
 - Maintained consistency with existing translation structure
 
 ### 3. API Integration
 
-Enhanced the [agroIntelService.js](file:///X:/SasyaYojana/src/services/agroIntelService.js) with:
+Enhanced the [agroIntelService.js](file:///X:/Digital Raitha/src/services/agroIntelService.js) with:
 
 #### Real-Time Predictions Method
 ```javascript
@@ -95,11 +95,11 @@ async fetchRealTimePredictions(farmerData) {
 
 ## Files Modified/Created
 
-1. **[src/components/Dashboard.jsx](file:///X:/SasyaYojana/src/components/Dashboard.jsx)** - Enhanced dashboard with predictions tab
-2. **[src/services/agroIntelService.js](file:///X:/SasyaYojana/src/services/agroIntelService.js)** - Added real-time predictions method
-3. **[src/locales/en.json](file:///X:/SasyaYojana/src/locales/en.json)** - Added English translations
-4. **[src/locales/hi.json](file:///X:/SasyaYojana/src/locales/hi.json)** - Added Hindi translations
-5. **[STEP_8_DASHBOARD_VISUALIZATION.md](file:///X:/SasyaYojana/STEP_8_DASHBOARD_VISUALIZATION.md)** - This document
+1. **[src/components/Dashboard.jsx](file:///X:/Digital Raitha/src/components/Dashboard.jsx)** - Enhanced dashboard with predictions tab
+2. **[src/services/agroIntelService.js](file:///X:/Digital Raitha/src/services/agroIntelService.js)** - Added real-time predictions method
+3. **[src/locales/en.json](file:///X:/Digital Raitha/src/locales/en.json)** - Added English translations
+4. **[src/locales/hi.json](file:///X:/Digital Raitha/src/locales/hi.json)** - Added Hindi translations
+5. **[STEP_8_DASHBOARD_VISUALIZATION.md](file:///X:/Digital Raitha/STEP_8_DASHBOARD_VISUALIZATION.md)** - This document
 
 ## Features Implemented
 

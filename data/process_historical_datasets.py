@@ -482,7 +482,7 @@ def main():
     """
     Main function to process all historical datasets.
     """
-    print("SASYA-MITRA HISTORICAL DATASET PROCESSOR")
+    print("Digital Raitha HISTORICAL DATASET PROCESSOR")
     print("=" * 50)
     
     # Load datasets

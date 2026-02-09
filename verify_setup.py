@@ -1,5 +1,5 @@
 """
-Verification script to check that Sasya-Mitra is properly set up with your datasets.
+Verification script to check that Digital Raitha is properly set up with your datasets.
 """
 
 import os
@@ -139,7 +139,7 @@ def show_next_steps():
 
 def main():
     """Main verification function"""
-    print("Sasya-Mitra Setup Verification")
+    print("Digital Raitha Setup Verification")
     print("=" * 50)
     
     # Check file structure
@@ -166,7 +166,7 @@ def main():
     all_checks_passed = file_structure_ok and python_deps_ok and node_deps_ok and dataset_processing_ok
     
     if all_checks_passed:
-        print("\n🎉 All checks passed! Your Sasya-Mitra setup is ready.")
+        print("\n🎉 All checks passed! Your Digital Raitha setup is ready.")
         show_next_steps()
     else:
         print("\n⚠️  Some checks failed. Please address the issues above.")

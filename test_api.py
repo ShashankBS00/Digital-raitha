@@ -13,7 +13,7 @@ def test_api():
         print(f"Response: {response.json()}")
         
         # Test map endpoint
-        response = requests.get('http://localhost:5000/sasyayojana_live_map.html')
+        response = requests.get('http://localhost:5000/Digital Raitha_live_map.html')
         print(f"Map endpoint status: {response.status_code}")
         print(f"Content length: {len(response.text)}")
         

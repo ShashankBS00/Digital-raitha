@@ -2,7 +2,7 @@
 
 ## Overview
 
-This document summarizes the complete implementation of STEP 6: AI Model Prediction (Real Time) for the Sasya-Mitra system.
+This document summarizes the complete implementation of STEP 6: AI Model Prediction (Real Time) for the Digital Raitha system.
 
 ## Requirements Fulfilled
 
@@ -129,11 +129,11 @@ POST /predict/realtime
 
 ## Files Created/Modified
 
-1. **[models/api/app.py](file:///X:/SasyaYojana/models/api/app.py)** - Enhanced API with real-time prediction capabilities
-2. **[API_REALTIME_PREDICTION.md](file:///X:/SasyaYojana/API_REALTIME_PREDICTION.md)** - Detailed API documentation
-3. **[REALTIME_PREDICTION_IMPLEMENTATION.md](file:///X:/SasyaYojana/REALTIME_PREDICTION_IMPLEMENTATION.md)** - Technical implementation details
-4. **[test_realtime_prediction.py](file:///X:/SasyaYojana/test_realtime_prediction.py)** - Test script
-5. **[STEP_6_IMPLEMENTATION_SUMMARY.md](file:///X:/SasyaYojana/STEP_6_IMPLEMENTATION_SUMMARY.md)** - This document
+1. **[models/api/app.py](file:///X:/Digital Raitha/models/api/app.py)** - Enhanced API with real-time prediction capabilities
+2. **[API_REALTIME_PREDICTION.md](file:///X:/Digital Raitha/API_REALTIME_PREDICTION.md)** - Detailed API documentation
+3. **[REALTIME_PREDICTION_IMPLEMENTATION.md](file:///X:/Digital Raitha/REALTIME_PREDICTION_IMPLEMENTATION.md)** - Technical implementation details
+4. **[test_realtime_prediction.py](file:///X:/Digital Raitha/test_realtime_prediction.py)** - Test script
+5. **[STEP_6_IMPLEMENTATION_SUMMARY.md](file:///X:/Digital Raitha/STEP_6_IMPLEMENTATION_SUMMARY.md)** - This document
 
 ## System Status
 

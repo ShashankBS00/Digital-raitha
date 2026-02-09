@@ -1,6 +1,6 @@
-# Land Layout Map Visualization in Sasya-Mitra
+# Land Layout Map Visualization in Digital Raitha
 
-This document explains how the interactive land layout map visualization works in Sasya-Mitra, showing real-time AI recommendations for crop layouts.
+This document explains how the interactive land layout map visualization works in Digital Raitha, showing real-time AI recommendations for crop layouts.
 
 ## Overview
 
@@ -110,7 +110,7 @@ models/
 │   ├── land_layout_mapper.py
 │   ├── requirements.txt
 │   └── generated_maps/
-│       └── sasyayojana_live_map_*.html
+│       └── Digital Raitha_live_map_*.html
 ├── api/
 │   └── map_api.py
 └── recommendation/

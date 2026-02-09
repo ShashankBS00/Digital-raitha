@@ -1,6 +1,6 @@
 # Continuous Learning Implementation
 
-This document explains how the continuous learning system works in Sasya-Mitra to improve model accuracy over time through farmer feedback.
+This document explains how the continuous learning system works in Digital Raitha to improve model accuracy over time through farmer feedback.
 
 ## Overview
 
@@ -115,4 +115,4 @@ By default, models are retrained monthly using the last 30 days of feedback data
 4. Update retraining schedule based on data volume
 5. Implement data retention policies for older feedback
 
-This continuous learning system ensures that Sasya-Mitra becomes more accurate and valuable to farmers over time, creating a positive feedback loop that benefits the entire agricultural community.
+This continuous learning system ensures that Digital Raitha becomes more accurate and valuable to farmers over time, creating a positive feedback loop that benefits the entire agricultural community.

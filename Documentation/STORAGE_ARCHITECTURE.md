@@ -1,10 +1,10 @@
-# Storage Architecture: How SasyaYojana Stores Everything in Firebase
+# Storage Architecture: How Digital Raitha Stores Everything in Firebase
 
-This document explains how the SasyaYojana application ensures that all data is stored in Firebase, providing persistence, scalability, and accessibility.
+This document explains how the Digital Raitha application ensures that all data is stored in Firebase, providing persistence, scalability, and accessibility.
 
 ## Overview
 
-SasyaYojana uses Firebase as its primary storage solution for all application data, including:
+Digital Raitha uses Firebase as its primary storage solution for all application data, including:
 - User authentication data
 - Map metadata and visualizations
 - AI-generated recommendations
@@ -237,4 +237,4 @@ Firestore Collections:
 
 ## Conclusion
 
-SasyaYojana's comprehensive Firebase integration ensures that all application data is securely stored, easily accessible, and automatically synchronized across all user devices. This architecture provides a robust foundation for the application's current features and enables future enhancements without significant infrastructure changes.
+Digital Raitha's comprehensive Firebase integration ensures that all application data is securely stored, easily accessible, and automatically synchronized across all user devices. This architecture provides a robust foundation for the application's current features and enables future enhancements without significant infrastructure changes.

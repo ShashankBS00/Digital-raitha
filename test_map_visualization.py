@@ -1,5 +1,5 @@
 """
-Test script for map visualization in Sasya-Mitra.
+Test script for map visualization in Digital Raitha.
 """
 
 import sys

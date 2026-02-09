@@ -2,7 +2,7 @@
 
 ## Overview
 
-This document describes the complete implementation of the real-time prediction system for Sasya-Mitra that fetches weather data from NASA POWER and uses trained machine learning models to make predictions.
+This document describes the complete implementation of the real-time prediction system for Digital Raitha that fetches weather data from NASA POWER and uses trained machine learning models to make predictions.
 
 ## System Architecture
 
@@ -157,9 +157,9 @@ POST /predict/roi
 
 ## Files Modified/Created
 
-1. **[models/api/app.py](file:///X:/SasyaYojana/models/api/app.py)** - Enhanced API with real-time prediction capabilities
-2. **[API_REALTIME_PREDICTION.md](file:///X:/SasyaYojana/API_REALTIME_PREDICTION.md)** - API documentation
-3. **[REALTIME_PREDICTION_IMPLEMENTATION.md](file:///X:/SasyaYojana/REALTIME_PREDICTION_IMPLEMENTATION.md)** - This document
+1. **[models/api/app.py](file:///X:/Digital Raitha/models/api/app.py)** - Enhanced API with real-time prediction capabilities
+2. **[API_REALTIME_PREDICTION.md](file:///X:/Digital Raitha/API_REALTIME_PREDICTION.md)** - API documentation
+3. **[REALTIME_PREDICTION_IMPLEMENTATION.md](file:///X:/Digital Raitha/REALTIME_PREDICTION_IMPLEMENTATION.md)** - This document
 
 ## Running the System
 
@@ -236,4 +236,4 @@ The real-time prediction system successfully implements your requirements by:
 3. Making predictions with trained machine learning models
 4. Providing actionable recommendations to farmers
 
-The system is production-ready and can be easily integrated with the existing Sasya-Mitra frontend.
+The system is production-ready and can be easily integrated with the existing Digital Raitha frontend.

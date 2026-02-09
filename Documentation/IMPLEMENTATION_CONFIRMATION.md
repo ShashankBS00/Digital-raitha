@@ -1,6 +1,6 @@
 # Implementation Confirmation: All Data Stored in Firebase
 
-This document confirms that the requirement "it should store each and everythings in the firebase" has been fully implemented in the SasyaYojana application.
+This document confirms that the requirement "it should store each and everythings in the firebase" has been fully implemented in the Digital Raitha application.
 
 ## Requirement Analysis
 
@@ -151,7 +151,7 @@ While the current implementation fully satisfies the requirement, future enhance
 
 ✅ **REQUIREMENT FULLY IMPLEMENTED**
 
-The SasyaYojana application now stores **all data** in Firebase as requested:
+The Digital Raitha application now stores **all data** in Firebase as requested:
 - Map metadata in Firestore
 - Map visualization files in Firebase Storage
 - User authentication handled by Firebase Authentication

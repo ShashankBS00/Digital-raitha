@@ -1,6 +1,6 @@
 # Real-Time AI Model Prediction API
 
-This document explains how the real-time prediction system works in Sasya-Mitra, which fetches weather data from NASA POWER and uses trained machine learning models to make predictions.
+This document explains how the real-time prediction system works in Digital Raitha, which fetches weather data from NASA POWER and uses trained machine learning models to make predictions.
 
 ## Overview
 

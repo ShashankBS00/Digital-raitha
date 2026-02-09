@@ -255,7 +255,7 @@ def main():
     parser.add_argument('--version', type=str, default=None, help='Model version identifier')
     args = parser.parse_args()
     
-    print("=== Sasya-Mitra Model Retraining ===")
+    print("=== Digital Raitha Model Retraining ===")
     print(f"Fetching feedback data from the last {args.days} days")
     
     # Initialize Firebase

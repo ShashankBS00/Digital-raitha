@@ -42,7 +42,7 @@ def test_firebase_initialization():
         print("✅ Firestore client initialized")
         
         # Test Storage connection
-        bucket = storage.bucket('sasyayojana-79840.firebasestorage.app')
+        bucket = storage.bucket('Digital Raitha-79840.firebasestorage.app')
         print("✅ Firebase Storage bucket connected")
         
         return True
@@ -92,7 +92,7 @@ def test_storage_upload():
         return False
     
     try:
-        bucket = storage.bucket('sasyayojana-79840.firebasestorage.app')
+        bucket = storage.bucket('Digital Raitha-79840.firebasestorage.app')
         
         # Create test content
         test_content = "<html><body><h1>Test Map File</h1><p>This is a test file for Firebase Storage.</p></body></html>"

@@ -291,7 +291,7 @@ class HistoricalDataTrainer:
         """
         Run the complete training pipeline using historical datasets.
         """
-        print("SASYA-MITRA HISTORICAL DATA TRAINING PIPELINE")
+        print("Digital Raitha HISTORICAL DATA TRAINING PIPELINE")
         print("=" * 50)
         
         # Step 1: Load datasets

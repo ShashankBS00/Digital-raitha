@@ -1,6 +1,6 @@
-# Sasya-Mitra: AI-Driven Agricultural Assistant
+# Digital Raitha: AI-Driven Agricultural Assistant
 
-Sasya-Mitra is an advanced agricultural AI system that helps farmers make informed decisions about crop selection, planting schedules, and resource allocation. Built with modern technologies, it provides personalized recommendations based on location, soil conditions, weather data, and economic factors.
+Digital Raitha is an advanced agricultural AI system that helps farmers make informed decisions about crop selection, planting schedules, and resource allocation. Built with modern technologies, it provides personalized recommendations based on location, soil conditions, weather data, and economic factors.
 
 ## Features
 
@@ -33,8 +33,8 @@ Sasya-Mitra is an advanced agricultural AI system that helps farmers make inform
 
 1. Clone the repository:
    ```bash
-   git clone https://github.com/your-username/sasya-mitra.git
-   cd sasya-mitra
+   git clone https://github.com/your-username/Digital Raitha.git
+   cd Digital Raitha
    ```
 
 2. Install frontend dependencies:
@@ -66,7 +66,7 @@ Sasya-Mitra is an advanced agricultural AI system that helps farmers make inform
 
 ## Dataset Integration
 
-Sasya-Mitra uses several agricultural datasets to power its AI models:
+Digital Raitha uses several agricultural datasets to power its AI models:
 
 1. NASA POWER Data (Rainfall, Temperature, Humidity, Radiation)
 2. All India level Average Yield of Principal Crops (2001-2015)
@@ -94,7 +94,7 @@ To train the AI models with your datasets:
 
 ## Continuous Learning
 
-Sasya-Mitra implements a continuous learning system that improves prediction accuracy over time:
+Digital Raitha implements a continuous learning system that improves prediction accuracy over time:
 
 1. **Data Collection**: Prediction results and farmer feedback are stored in Firebase Firestore
 2. **Model Retraining**: Models are periodically retrained with collected feedback data
@@ -138,7 +138,7 @@ npm run preview
 ## Project Structure
 
 ```
-sasya-mitra/
+Digital Raitha/
 ├── data/                 # Agricultural datasets
 ├── models/               # AI models and training scripts
 │   ├── preprocessing/    # Data preprocessing utilities

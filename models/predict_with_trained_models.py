@@ -147,7 +147,7 @@ def main():
     """
     Main function to demonstrate model usage.
     """
-    print("SASYA-MITRA: Using Trained Models for Predictions")
+    print("Digital Raitha: Using Trained Models for Predictions")
     print("=" * 50)
     
     # Load trained models

@@ -1,5 +1,5 @@
 """
-API endpoints for land layout map visualization in Sasya-Mitra.
+API endpoints for land layout map visualization in Digital Raitha.
 """
 
 import sys
@@ -49,7 +49,7 @@ if FIREBASE_AVAILABLE:
                 try:
                     cred = credentials.ApplicationDefault()
                     firebase_admin.initialize_app(cred, {
-                        'projectId': 'sasyayojana-79840',
+                        'projectId': 'Digital Raitha-79840',
                     })
                 except Exception as e2:
                     print(f"Could not initialize Firebase with Application Default: {e2}")
@@ -67,7 +67,7 @@ if FIREBASE_AVAILABLE:
             # Initialize Firestore and Storage
             try:
                 db = firestore.client()
-                bucket = storage.bucket('sasyayojana-79840.firebasestorage.app')
+                bucket = storage.bucket('Digital Raitha-79840.firebasestorage.app')
                 maps_collection = db.collection('land_layout_maps')
             except Exception as e:
                 print(f"Could not initialize Firestore/Storage: {e}")

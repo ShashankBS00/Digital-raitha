@@ -1,5 +1,5 @@
 """
-Script to install dependencies for map visualization in Sasya-Mitra.
+Script to install dependencies for map visualization in Digital Raitha.
 """
 
 import subprocess

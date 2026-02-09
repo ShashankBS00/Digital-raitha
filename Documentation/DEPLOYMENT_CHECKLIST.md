@@ -1,4 +1,4 @@
-# Sasya-Yojana Netlify Deployment Checklist
+# Digital Raitha Netlify Deployment Checklist
 
 This checklist ensures that all necessary steps are completed for a successful Netlify deployment.
 

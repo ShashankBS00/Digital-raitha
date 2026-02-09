@@ -83,7 +83,7 @@ def demonstrate_merging_approach():
     1. merged_df = area_df.merge(yield_df, on="Crop").merge(production_df, on="Crop")
     2. merged_df["yield_per_area"] = merged_df["Production"] / merged_df["Area"]
     """
-    print("SASYA-MITRA: Random Forest with Merged Datasets Approach")
+    print("Digital Raitha: Random Forest with Merged Datasets Approach")
     print("=" * 60)
     
     # Load sample data

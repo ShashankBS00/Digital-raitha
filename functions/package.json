@@ -1,7 +1,7 @@
 {
-  "name": "sasya-yojana-functions",
+  "name": "Digital Raitha-functions",
   "version": "1.0.0",
-  "description": "Netlify functions for Sasya-Yojana",
+  "description": "Netlify functions for Digital Raitha",
   "main": "api-proxy.js",
   "type": "module",
   "scripts": {

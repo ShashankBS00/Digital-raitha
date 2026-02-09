@@ -1,6 +1,6 @@
-# Sasya-Mitra Dataset Integration Guide
+# Digital Raitha Dataset Integration Guide
 
-This guide explains how to integrate your agricultural datasets with the Sasya-Mitra AI system.
+This guide explains how to integrate your agricultural datasets with the Digital Raitha AI system.
 
 ## Your Datasets
 
@@ -17,10 +17,10 @@ You've provided the following datasets:
 
 ### 1. Place Your Datasets
 
-Place all your CSV files in the `data/` directory of the Sasya-Mitra project:
+Place all your CSV files in the `data/` directory of the Digital Raitha project:
 
 ```
-SasyaYojana/
+Digital Raitha/
 ├── data/
 │   ├── Year-wise Damage Caused Due To Floods, Cyclonic Storm, Landslides etc.csv
 │   ├── 1. NASA POWER Data (Rainfall, Temperature, Humidity, Radiation) 👆🏻.csv
@@ -60,7 +60,7 @@ This will:
 - Evaluate model performance
 - Save trained models for future use
 
-## How Your Data is Used in Sasya-Mitra
+## How Your Data is Used in Digital Raitha
 
 ### Weather Intelligence (NASA POWER Data)
 - Temperature, humidity, rainfall, and solar radiation data
@@ -108,7 +108,7 @@ const predictions = await agroIntelService.fetchRealTimePredictions({
 
 1. Run the data processing script to see how your datasets are processed
 2. Train the AI models using your data
-3. Test the AI recommendations in the Sasya-Mitra web application
+3. Test the AI recommendations in the Digital Raitha web application
 4. Customize the models based on your specific agricultural needs
 
 For any questions or support, please refer to the main documentation or contact the development team.

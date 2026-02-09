@@ -108,7 +108,7 @@ def test_data_processing(datasets):
         print()
 
 if __name__ == "__main__":
-    print("Sasya-Mitra Dataset Processing Test")
+    print("Digital Raitha Dataset Processing Test")
     print("====================================")
     
     # Test dataset loading

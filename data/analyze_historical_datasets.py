@@ -357,7 +357,7 @@ class HistoricalDatasetAnalyzer:
         report_path = self.data_dir / "dataset_analysis_report.txt"
         
         with open(report_path, 'w', encoding='utf-8') as f:
-            f.write("SASYA-MITRA HISTORICAL DATASET ANALYSIS REPORT\n")
+            f.write("Digital Raitha HISTORICAL DATASET ANALYSIS REPORT\n")
             f.write("=" * 50 + "\n\n")
             
             f.write("LOADED DATASETS:\n")
@@ -377,7 +377,7 @@ class HistoricalDatasetAnalyzer:
         """
         Run complete analysis of all historical datasets.
         """
-        print("SASYA-MITRA HISTORICAL DATASET ANALYSIS")
+        print("Digital Raitha HISTORICAL DATASET ANALYSIS")
         print("=" * 50)
         
         # Load datasets

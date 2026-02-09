@@ -55,7 +55,7 @@ function App() {
     <div className="min-h-screen bg-green-50 flex flex-col items-center justify-center p-4">
       <header className="w-full max-w-4xl mb-8 text-center">
         <h1 className="text-3xl md:text-4xl font-bold text-green-800 mb-2">
-          Sasya-Mitra (सस्य-मित्र)
+          Digital Raitha (सस्य-मित्र)
         </h1>
         <p className="text-lg text-green-600">
           {t('tagline')}

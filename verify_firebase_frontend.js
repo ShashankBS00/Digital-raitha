@@ -11,9 +11,9 @@ import { getStorage } from "firebase/storage";
 // Firebase configuration from environment variables
 const firebaseConfig = {
   apiKey: import.meta.env.REACT_APP_FIREBASE_API_KEY || "AIzaSyC_afRd0Ss4wk85D-940qtbSQPH_DUtMcU",
-  authDomain: import.meta.env.REACT_APP_FIREBASE_AUTH_DOMAIN || "sasyayojana-79840.firebaseapp.com",
-  projectId: import.meta.env.REACT_APP_FIREBASE_PROJECT_ID || "sasyayojana-79840",
-  storageBucket: import.meta.env.REACT_APP_FIREBASE_STORAGE_BUCKET || "sasyayojana-79840.firebasestorage.app",
+  authDomain: import.meta.env.REACT_APP_FIREBASE_AUTH_DOMAIN || "Digital Raitha-79840.firebaseapp.com",
+  projectId: import.meta.env.REACT_APP_FIREBASE_PROJECT_ID || "Digital Raitha-79840",
+  storageBucket: import.meta.env.REACT_APP_FIREBASE_STORAGE_BUCKET || "Digital Raitha-79840.firebasestorage.app",
   messagingSenderId: import.meta.env.REACT_APP_FIREBASE_MESSAGING_SENDER_ID || "722672208125",
   appId: import.meta.env.REACT_APP_FIREBASE_APP_ID || "1:722672208125:web:856be97e10465e89eb9694",
   measurementId: import.meta.env.REACT_APP_FIREBASE_MEASUREMENT_ID || "G-71RGGWLD25"

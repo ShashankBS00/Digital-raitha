@@ -10,7 +10,7 @@ def check_data_directory():
     # Define the data directory
     DATA_DIR = Path(__file__).parent / "data"
     
-    print("Sasya-Mitra Data Directory Check")
+    print("Digital Raitha Data Directory Check")
     print("=" * 40)
     
     # Check if data directory exists

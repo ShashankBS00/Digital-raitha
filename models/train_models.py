@@ -222,7 +222,7 @@ def main():
     """
     Main function to demonstrate the model training process with your datasets.
     """
-    print("=== Sasya-Mitra AI Model Training ===")
+    print("=== Digital Raitha AI Model Training ===")
     print("Using your agricultural datasets")
     print()
     
@@ -256,7 +256,7 @@ def main():
     print("\n=== Training Complete ===")
     print("Models have been trained and saved.")
     print("To use these models:")
-    print("1. Run the Sasya-Mitra web application")
+    print("1. Run the Digital Raitha web application")
     print("2. The AI recommendations will automatically use your trained models")
     print("3. For retraining, run this script again with updated datasets")
 

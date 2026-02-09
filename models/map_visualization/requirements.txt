@@ -1,4 +1,4 @@
-# Requirements for Map Visualization in Sasya-Mitra
+# Requirements for Map Visualization in Digital Raitha
 
 # Core mapping libraries
 folium>=0.12.0

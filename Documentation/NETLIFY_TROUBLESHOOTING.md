@@ -1,6 +1,6 @@
 # Netlify Deployment Troubleshooting Guide
 
-This guide helps resolve common issues when deploying Sasya-Yojana to Netlify.
+This guide helps resolve common issues when deploying Digital Raitha to Netlify.
 
 ## Common Build Errors and Solutions
 

@@ -136,4 +136,4 @@ To test the enhanced map implementation:
 
 ## Conclusion
 
-The enhanced map implementation provides a much more realistic and useful visualization of AI-generated land layout recommendations. By integrating satellite imagery and improving the overall user interface, farmers can better understand and implement the recommendations provided by the Sasya-Mitra system.
+The enhanced map implementation provides a much more realistic and useful visualization of AI-generated land layout recommendations. By integrating satellite imagery and improving the overall user interface, farmers can better understand and implement the recommendations provided by the Digital Raitha system.

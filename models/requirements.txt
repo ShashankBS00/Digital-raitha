@@ -1,4 +1,4 @@
-# Requirements for Sasya-Mitra AI Models
+# Requirements for Digital Raitha AI Models
 
 # Core data science libraries
 pandas>=1.3.0

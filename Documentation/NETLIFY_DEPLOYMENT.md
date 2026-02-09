@@ -1,18 +1,18 @@
-# Netlify Deployment Guide for Sasya-Yojana
+# Netlify Deployment Guide for Digital Raitha
 
-This guide explains how to deploy the Sasya-Yojana application to Netlify.
+This guide explains how to deploy the Digital Raitha application to Netlify.
 
 ## Prerequisites
 
 1. A Netlify account (free at [netlify.com](https://netlify.com))
 2. A GitHub, GitLab, or Bitbucket account
-3. The Sasya-Yojana repository
+3. The Digital Raitha repository
 
 ## Deployment Options
 
 ### Option 1: Deploy with Git (Recommended)
 
-1. Push your Sasya-Yojana code to a Git repository (GitHub, GitLab, or Bitbucket)
+1. Push your Digital Raitha code to a Git repository (GitHub, GitLab, or Bitbucket)
 2. Log in to your Netlify account
 3. Click "New site from Git"
 4. Select your Git provider and repository
@@ -122,4 +122,4 @@ This will start the development server with Netlify functions emulation.
 
 For issues with deployment, check:
 - Netlify documentation: https://docs.netlify.com/
-- Sasya-Yojana documentation in the repository
+- Digital Raitha documentation in the repository

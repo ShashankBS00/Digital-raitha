@@ -1,5 +1,5 @@
 """
-Land Layout Mapper for Sasya-Mitra agricultural advisory system.
+Land Layout Mapper for Digital Raitha agricultural advisory system.
 Generates interactive maps showing crop layout recommendations from AI engine.
 """
 
@@ -58,7 +58,7 @@ class LandLayoutMapper:
                     # Initialize Firestore and Storage
                     try:
                         db = firestore.client()
-                        bucket = storage.bucket('sasyayojana-79840.firebasestorage.app')
+                        bucket = storage.bucket('Digital Raitha-79840.firebasestorage.app')
                     except Exception as e:
                         print(f"Could not initialize Firestore/Storage: {e}")
                         FIREBASE_AVAILABLE = False
@@ -266,7 +266,7 @@ class LandLayoutMapper:
         
         return m
     
-    def save_map(self, map_obj: folium.Map, filename: str = "sasyayojana_live_map.html") -> str:
+    def save_map(self, map_obj: folium.Map, filename: str = "Digital Raitha_live_map.html") -> str:
         """
         Save the map to an HTML file.
         
@@ -308,7 +308,7 @@ class LandLayoutMapper:
         map_obj = self.generate_interactive_map(land_use_gdf, center_lat, center_lon, recommendation)
         
         # Save map
-        filepath = self.save_map(map_obj, f"sasyayojana_live_map_{int(center_lat*1000)}_{int(center_lon*1000)}.html")
+        filepath = self.save_map(map_obj, f"Digital Raitha_live_map_{int(center_lat*1000)}_{int(center_lon*1000)}.html")
         
         return filepath
     

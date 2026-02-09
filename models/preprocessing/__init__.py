@@ -1,3 +1,3 @@
 """
-Data preprocessing module for Sasya-Mitra AI models.
+Data preprocessing module for Digital Raitha AI models.
 """

@@ -1,5 +1,5 @@
 """
-Script to help install required Python dependencies for Sasya-Mitra.
+Script to help install required Python dependencies for Digital Raitha.
 """
 
 import subprocess
@@ -27,7 +27,7 @@ def check_package(package):
 
 def main():
     """Main function to install dependencies"""
-    print("Sasya-Mitra Dependency Installer")
+    print("Digital Raitha Dependency Installer")
     print("=" * 40)
     
     # List of required packages

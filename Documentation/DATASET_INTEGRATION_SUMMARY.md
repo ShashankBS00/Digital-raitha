@@ -1,8 +1,8 @@
-# Sasya-Mitra Dataset Integration Summary
+# Digital Raitha Dataset Integration Summary
 
 ## Overview
 
-This document summarizes how your agricultural datasets are integrated into the Sasya-Mitra AI system. Your datasets provide the foundation for the AI-powered recommendations that help farmers make informed decisions about crop selection, planting schedules, and resource allocation.
+This document summarizes how your agricultural datasets are integrated into the Digital Raitha AI system. Your datasets provide the foundation for the AI-powered recommendations that help farmers make informed decisions about crop selection, planting schedules, and resource allocation.
 
 ## Your Datasets and Their Uses
 
@@ -152,7 +152,7 @@ npm run model:api
 ```
 
 ### 3. Use Recommendations in the Web App
-The Sasya-Mitra web application will automatically use your trained models to provide AI-powered recommendations.
+The Digital Raitha web application will automatically use your trained models to provide AI-powered recommendations.
 
 ## Model Performance Monitoring
 
@@ -190,4 +190,4 @@ The Sasya-Mitra web application will automatically use your trained models to pr
    npm run dev
    ```
 
-Your datasets are now fully integrated into the Sasya-Mitra system and will provide the foundation for AI-powered agricultural recommendations that can help small and marginal farmers improve their productivity and profitability.
+Your datasets are now fully integrated into the Digital Raitha system and will provide the foundation for AI-powered agricultural recommendations that can help small and marginal farmers improve their productivity and profitability.

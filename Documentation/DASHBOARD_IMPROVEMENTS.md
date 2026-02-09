@@ -1,4 +1,4 @@
-# Sasya-Mitra Dashboard Improvements
+# Digital Raitha Dashboard Improvements
 
 This document summarizes the improvements made to the digital-raitha dashboard to better collect farmer input and organize the interface according to the requirements.
 
@@ -147,4 +147,4 @@ Potential areas for future development:
 - Seasonal planning features
 - Progress tracking and plan updates
 
-The improved dashboard now provides a more structured and user-friendly experience for farmers while maintaining the powerful AI-driven recommendations that make Sasya-Mitra valuable for agricultural planning.
+The improved dashboard now provides a more structured and user-friendly experience for farmers while maintaining the powerful AI-driven recommendations that make Digital Raitha valuable for agricultural planning.

@@ -1,5 +1,5 @@
 """
-API endpoints for Sasya-Mitra AI models.
+API endpoints for Digital Raitha AI models.
 """
 
 import os
@@ -150,7 +150,7 @@ def prepare_features_for_prediction(farmer_data):
 @app.route('/health', methods=['GET'])
 def health_check():
     """Health check endpoint."""
-    return jsonify({"status": "healthy", "service": "Sasya-Mitra AI API"}), 200
+    return jsonify({"status": "healthy", "service": "Digital Raitha AI API"}), 200
 
 @app.route('/predict/yield', methods=['POST'])
 def predict_yield():
@@ -442,19 +442,19 @@ def preprocess_data():
     except Exception as e:
         return jsonify({"error": f"Data preprocessing failed: {str(e)}"}), 500
 
-@app.route('/sasyayojana_live_map.html')
+@app.route('/Digital Raitha_live_map.html')
 def serve_static_map():
     """Serve the static land layout map."""
     try:
         # Return the static map HTML file
-        return app.send_static_file('sasyayojana_live_map.html')
+        return app.send_static_file('Digital Raitha_live_map.html')
     except Exception as e:
         # If the file doesn't exist, return a simple map
         return '''
         <!DOCTYPE html>
         <html>
         <head>
-            <title>Sasya-Mitra Land Layout Map</title>
+            <title>Digital Raitha Land Layout Map</title>
             <meta charset="utf-8">
             <meta name="viewport" content="width=device-width, initial-scale=1">
             <link rel="stylesheet" href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css" />

@@ -1,8 +1,8 @@
-# Sasya-Mitra AI Model Development Guide
+# Digital Raitha AI Model Development Guide
 
 ## Overview
 
-This guide explains how to develop and deploy AI models for the Sasya-Mitra agricultural advisory system using your datasets:
+This guide explains how to develop and deploy AI models for the Digital Raitha agricultural advisory system using your datasets:
 1. NASA POWER data (Rainfall, Temperature, Humidity, Radiation)
 2. Crop price datasets
 3. All India level Area Under Principal Crops (2001-02 to 2015-16)
@@ -175,7 +175,7 @@ See `notebooks/model_development.ipynb` for a complete example of how to:
 3. Add more features from your datasets
 4. Implement cross-validation for robust evaluation
 5. Deploy the API to a production environment
-6. Integrate with the existing Sasya-Mitra frontend
+6. Integrate with the existing Digital Raitha frontend
 
 ## Troubleshooting
 

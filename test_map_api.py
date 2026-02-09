@@ -1,5 +1,5 @@
 """
-Test script for the map API in Sasya-Mitra.
+Test script for the map API in Digital Raitha.
 """
 
 import requests

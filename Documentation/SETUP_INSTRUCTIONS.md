@@ -1,6 +1,6 @@
-# Sasya-Mitra Setup Instructions
+# Digital Raitha Setup Instructions
 
-This document provides step-by-step instructions to set up Sasya-Mitra with your agricultural datasets.
+This document provides step-by-step instructions to set up Digital Raitha with your agricultural datasets.
 
 ## Prerequisites
 
@@ -84,7 +84,7 @@ This will:
 
 ## Step 7: Start the Web Application
 
-Start the Sasya-Mitra web application:
+Start the Digital Raitha web application:
 
 ```bash
 npm run dev

@@ -1,5 +1,5 @@
 """
-Model training module for Sasya-Mitra AI models.
+Model training module for Digital Raitha AI models.
 """
 
 import pandas as pd
@@ -665,6 +665,6 @@ class AgriROIModel:
 
 # Example usage
 if __name__ == "__main__":
-    print("Sasya-Mitra Model Trainer")
+    print("Digital Raitha Model Trainer")
     print("This script trains AI models for agricultural yield and ROI prediction.")
     print("To use with your datasets, run the process_user_datasets.py script first.")
