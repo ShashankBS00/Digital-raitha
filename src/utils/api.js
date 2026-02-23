@@ -1,19 +1,8 @@
 import axios from 'axios';
 
-// Determine the base URL based on the environment
+// Use VITE_API_BASE_URL when set, otherwise keep relative /api paths.
 const getBaseUrl = () => {
-  // For Netlify deployments
-  if (typeof process !== 'undefined' && process.env && process.env.NETLIFY === 'true') {
-    return '/.netlify/functions/api-proxy';
-  }
-  
-  // For local development with Vite
-  if (import.meta.env && import.meta.env.DEV) {
-    return '';
-  }
-  
-  // For production deployments
-  return '';
+  return import.meta.env?.VITE_API_BASE_URL || '';
 };
 
 const API_BASE_URL = getBaseUrl();

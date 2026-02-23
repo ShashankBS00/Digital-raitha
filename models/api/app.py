@@ -82,7 +82,7 @@ def fetch_nasa_power_weather(lat, lon):
         return {
             "avg_temperature_c": round(parameters["T2M"]["ANN"]) if parameters["T2M"] else None,
             "avg_humidity": round(parameters["RH2M"]["ANN"]) if parameters["RH2M"] else None,
-            "avg_rainfall_mm": round(parameters["PRECTOTCORR"]["ANN"] * 3650) if parameters["PRECTOTCORR"] else None,  # Convert from kg/m2/s to mm/year
+            "avg_rainfall_mm": round(parameters["PRECTOTCORR"]["ANN"] * 365) if parameters["PRECTOTCORR"] else None,  # Convert from kg/m2/s to mm/year
             "solar_radiation": round(parameters["ALLSKY_SFC_SW_DWN"]["ANN"]) if parameters["ALLSKY_SFC_SW_DWN"] else None
         }
     except Exception as e:

@@ -3,8 +3,6 @@ import { join } from 'path';
 
 // Files to copy to dist directory
 const filesToCopy = [
-  'public/_headers',
-  'public/_redirects',
   'public/404.html',
   'public/robots.txt'
 ];

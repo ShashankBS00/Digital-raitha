@@ -1,6 +1,6 @@
-# Digital Raitha Netlify Deployment Checklist
+# Digital Raitha Deployment Checklist
 
-This checklist ensures that all necessary steps are completed for a successful Netlify deployment.
+This checklist covers deployment steps independent of any hosting provider.
 
 ## Pre-deployment Checklist
 
@@ -12,14 +12,12 @@ This checklist ensures that all necessary steps are completed for a successful N
 - [ ] All dependencies are listed in `package.json`
 
 ### 2. Configuration Files
-- [ ] `netlify.toml` is configured with build settings
-- [ ] `vite.config.js` is properly configured for production
-- [ ] `_headers` file exists in `public/` directory
-- [ ] `_redirects` file exists in `public/` directory
+- [ ] `vite.config.js` is configured for production
 - [ ] `404.html` exists for custom error pages
 - [ ] `robots.txt` exists for SEO
 
 ### 3. Environment Variables
+- [ ] `VITE_API_BASE_URL` - Base URL for backend API (optional for relative `/api`)
 - [ ] `VITE_WEATHER_API_KEY` - OpenWeatherMap API key
 - [ ] `REACT_APP_FIREBASE_API_KEY` - Firebase API key
 - [ ] `REACT_APP_FIREBASE_AUTH_DOMAIN` - Firebase auth domain
@@ -32,19 +30,17 @@ This checklist ensures that all necessary steps are completed for a successful N
 
 ## Deployment Steps
 
-### 1. Netlify Setup
-- [ ] Create Netlify account if needed
-- [ ] Connect Git repository (GitHub, GitLab, or Bitbucket)
+### 1. Hosting Setup
+- [ ] Connect Git repository to your hosting provider
 - [ ] Configure build settings:
   - Build command: `npm run build`
   - Publish directory: `dist`
-- [ ] Set environment variables in Netlify dashboard
+- [ ] Set environment variables in your hosting platform
 
 ### 2. Backend Configuration
-- [ ] Update `functions/api-proxy.js` with actual backend URL
-- [ ] OR configure direct API calls in `src/utils/api.js`
+- [ ] Set `VITE_API_BASE_URL` to the backend origin if frontend and backend are on different domains
 - [ ] Ensure backend has proper CORS configuration
-- [ ] Test API endpoints are accessible
+- [ ] Verify API endpoints are reachable from the deployed frontend
 
 ### 3. Domain and SSL
 - [ ] Configure custom domain (if needed)
@@ -53,7 +49,6 @@ This checklist ensures that all necessary steps are completed for a successful N
 
 ### 4. Testing
 - [ ] Test build locally: `npm run build`
-- [ ] Test locally with Netlify CLI: `netlify dev`
 - [ ] Verify all pages load correctly
 - [ ] Test API functionality
 - [ ] Check mobile responsiveness
@@ -63,7 +58,6 @@ This checklist ensures that all necessary steps are completed for a successful N
 ## Post-deployment Checklist
 
 ### 1. Monitoring
-- [ ] Set up Netlify analytics
 - [ ] Configure error tracking
 - [ ] Set up performance monitoring
 - [ ] Configure uptime monitoring
@@ -77,51 +71,11 @@ This checklist ensures that all necessary steps are completed for a successful N
 
 ### 3. Security
 - [ ] Verify HTTPS is working
-- [ ] Check security headers
 - [ ] Review Firebase security rules
 - [ ] Verify API keys are properly secured
 
-## Troubleshooting Common Issues
-
-### 1. Build Failures
-- Check Node.js version compatibility
-- Verify all dependencies are installed
-- Check for syntax errors in configuration files
-
-### 2. Runtime Errors
-- Check browser console for JavaScript errors
-- Verify environment variables are set correctly
-- Check network tab for failed API requests
-- Verify Firebase configuration
-
-### 3. Performance Issues
-- Analyze bundle sizes
-- Optimize images and assets
-- Implement code splitting
-- Use Netlify's performance features
-
-## Maintenance
-
-### 1. Updates
-- Regular dependency updates
-- Security patches
-- Content updates
-- Feature enhancements
-
-### 2. Backups
-- Regular database backups
-- Code repository backups
-- Configuration backups
-
 ## Support Resources
 
-- Netlify Documentation: https://docs.netlify.com/
 - Vite Documentation: https://vitejs.dev/
 - Firebase Documentation: https://firebase.google.com/docs/
 - React Documentation: https://reactjs.org/
-
-## Contact Information
-
-For deployment issues, contact:
-- Development Team: [team email]
-- Netlify Support: support@netlify.com
