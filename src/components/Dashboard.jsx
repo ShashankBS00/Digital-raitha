@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import axios from 'axios';
 import { useTranslation } from 'react-i18next';
 import { auth } from '../firebase';
 import { signOut } from 'firebase/auth';
@@ -31,6 +32,8 @@ const Dashboard = () => {
   const { t, i18n } = useTranslation();
   const [center, setCenter] = useState(defaultCenter);
   const [weather, setWeather] = useState(null);
+  const [weatherLoading, setWeatherLoading] = useState(true);
+  const [weatherError, setWeatherError] = useState('');
   const [soilData, setSoilData] = useState(null);
   const [rainfallData, setRainfallData] = useState(null);
   const [investmentCapacity, setInvestmentCapacity] = useState(null);
@@ -73,51 +76,61 @@ const Dashboard = () => {
   }, []);
 
   const fetchWeather = async (lat, lon) => {
+    const coordinateLabel = `${lat.toFixed(4)}, ${lon.toFixed(4)}`;
+    setWeatherLoading(true);
+    setWeatherError('');
+
     try {
-      // Check if API key is available
       const apiKey = import.meta.env.VITE_WEATHER_API_KEY;
       if (!apiKey) {
-        console.warn('Weather API key not found');
-        // Set mock data if API key is missing
-        setWeather({
-          temp: 28,
-          humidity: 65,
-          description: 'Clear Sky',
-          pressure: 1013,
-          windSpeed: 5
-        });
-        return;
+        throw new Error('Missing VITE_WEATHER_API_KEY');
       }
 
       const response = await axios.get(
-        `https://api.openweathermap.org/data/2.5/weather`,
+        'https://api.openweathermap.org/data/2.5/weather',
         {
           params: {
-            lat: lat,
-            lon: lon,
+            lat,
+            lon,
             units: 'metric',
             appid: apiKey
           }
         }
       );
-      const data = response.data;
+      const data = response.data || {};
+      const countryCode = data?.sys?.country;
+      const countryName =
+        countryCode && typeof Intl !== 'undefined' && Intl.DisplayNames
+          ? new Intl.DisplayNames(['en'], { type: 'region' }).of(countryCode)
+          : countryCode;
+      const locationName =
+        data?.name && countryName
+          ? `${data.name}, ${countryName}`
+          : coordinateLabel;
+
       setWeather({
-        temp: data.main.temp,
-        humidity: data.main.humidity,
-        description: data.weather[0].description,
-        pressure: data.main.pressure,
-        windSpeed: data.wind.speed
+        temp: data?.main?.temp ?? null,
+        humidity: data?.main?.humidity ?? null,
+        description: data?.weather?.[0]?.description ?? null,
+        pressure: data?.main?.pressure ?? null,
+        windSpeed: data?.wind?.speed ?? null,
+        location: locationName,
+        coordinates: coordinateLabel
       });
     } catch (error) {
       console.error('Error fetching weather:', error);
-      // Set mock data on error
       setWeather({
-        temp: 28,
-        humidity: 65,
-        description: 'Clear Sky',
-        pressure: 1013,
-        windSpeed: 5
+        temp: null,
+        humidity: null,
+        description: null,
+        pressure: null,
+        windSpeed: null,
+        location: coordinateLabel,
+        coordinates: coordinateLabel
       });
+      setWeatherError('Live weather unavailable');
+    } finally {
+      setWeatherLoading(false);
     }
   };
 
@@ -444,7 +457,14 @@ const Dashboard = () => {
                   <div>
                     <p className="text-gray-500 text-sm">{t('currentWeather')}</p>
                     <p className="text-xl font-semibold">
-                      {weather ? `${weather.temp}°C` : 'Loading...'}
+                      {weatherLoading
+                        ? 'Loading...'
+                        : weather?.temp !== null && weather?.temp !== undefined
+                          ? `${Math.round(weather.temp)}°C`
+                          : 'N/A'}
+                    </p>
+                    <p className="text-sm text-gray-500">
+                      {weather?.location || `${center.lat.toFixed(4)}, ${center.lng.toFixed(4)}`}
                     </p>
                   </div>
                 </div>
@@ -618,31 +638,51 @@ const Dashboard = () => {
           <div className="space-y-6">
             <div className="bg-white rounded-xl shadow-md p-6">
               <h2 className="text-2xl font-semibold text-gray-800 mb-6">{t('currentWeatherConditions')}</h2>
-              {weather ? (
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4">
+              {weatherLoading ? (
+                <p className="text-gray-500">{t('loadingWeatherData')}</p>
+              ) : weather ? (
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-6 gap-4">
+                  <div className="bg-blue-50 rounded-lg p-4 text-center md:col-span-2 lg:col-span-2">
+                    <div className="text-lg font-bold text-blue-800">{weather.location || weather.coordinates}</div>
+                    <div className="text-gray-600">Location</div>
+                  </div>
                   <div className="bg-blue-50 rounded-lg p-4 text-center">
-                    <div className="text-2xl font-bold text-blue-800">{weather.temp}°C</div>
+                    <div className="text-2xl font-bold text-blue-800">
+                      {weather.temp !== null && weather.temp !== undefined ? `${Math.round(weather.temp)}°C` : 'N/A'}
+                    </div>
                     <div className="text-gray-600">{t('temperature')}</div>
                   </div>
                   <div className="bg-blue-50 rounded-lg p-4 text-center">
-                    <div className="text-2xl font-bold text-blue-800">{weather.humidity}%</div>
+                    <div className="text-2xl font-bold text-blue-800">
+                      {weather.humidity !== null && weather.humidity !== undefined ? `${weather.humidity}%` : 'N/A'}
+                    </div>
                     <div className="text-gray-600">{t('humidity')}</div>
                   </div>
                   <div className="bg-blue-50 rounded-lg p-4 text-center">
-                    <div className="text-2xl font-bold text-blue-800">{weather.pressure} {t('pressureUnit')}</div>
+                    <div className="text-2xl font-bold text-blue-800">
+                      {weather.pressure !== null && weather.pressure !== undefined
+                        ? `${weather.pressure} ${t('pressureUnit')}`
+                        : 'N/A'}
+                    </div>
                     <div className="text-gray-600">{t('pressure')}</div>
                   </div>
                   <div className="bg-blue-50 rounded-lg p-4 text-center">
-                    <div className="text-2xl font-bold text-blue-800">{weather.windSpeed} {t('windSpeedUnit')}</div>
+                    <div className="text-2xl font-bold text-blue-800">
+                      {weather.windSpeed !== null && weather.windSpeed !== undefined
+                        ? `${weather.windSpeed} ${t('windSpeedUnit')}`
+                        : 'N/A'}
+                    </div>
                     <div className="text-gray-600">{t('windSpeed')}</div>
                   </div>
-                  <div className="bg-blue-50 rounded-lg p-4 text-center">
-                    <div className="text-2xl font-bold text-blue-800 capitalize">{t(weather.description) || weather.description}</div>
+                  <div className="bg-blue-50 rounded-lg p-4 text-center md:col-span-2 lg:col-span-2">
+                    <div className="text-2xl font-bold text-blue-800 capitalize">
+                      {weather.description ? t(weather.description) || weather.description : 'N/A'}
+                    </div>
                     <div className="text-gray-600">{t('condition')}</div>
                   </div>
                 </div>
               ) : (
-                <p className="text-gray-500">{t('loadingWeatherData')}</p>
+                <p className="text-gray-500">{weatherError || t('loadingWeatherData')}</p>
               )}
             </div>
             

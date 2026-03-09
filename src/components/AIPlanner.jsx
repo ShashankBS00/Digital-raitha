@@ -1,11 +1,25 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
+import axios from 'axios';
 import { useTranslation } from 'react-i18next';
 import FarmerInputForm from './FarmerInputForm';
+
+const formatDate = (date) => date.toISOString().split('T')[0];
+
+const average = (values) => {
+  if (!values.length) return null;
+  return values.reduce((sum, value) => sum + value, 0) / values.length;
+};
 
 const AIPlanner = () => {
   const { t } = useTranslation();
   const [agroPlan, setAgroPlan] = useState(null);
   const [planInputs, setPlanInputs] = useState(null);
+  const [locationName, setLocationName] = useState('');
+  const [locationLoading, setLocationLoading] = useState(false);
+  const [locationError, setLocationError] = useState('');
+  const [climateData, setClimateData] = useState(null);
+  const [climateLoading, setClimateLoading] = useState(false);
+  const [climateError, setClimateError] = useState('');
 
   // Handle plan generation from FarmerInputForm
   const handlePlanGenerated = (plan, inputs) => {
@@ -17,7 +31,120 @@ const AIPlanner = () => {
   const resetForm = () => {
     setAgroPlan(null);
     setPlanInputs(null);
+    setLocationName('');
+    setLocationLoading(false);
+    setLocationError('');
+    setClimateData(null);
+    setClimateLoading(false);
+    setClimateError('');
   };
+
+  useEffect(() => {
+    const latitude = Number(agroPlan?.farm_location?.latitude ?? planInputs?.latitude);
+    const longitude = Number(agroPlan?.farm_location?.longitude ?? planInputs?.longitude);
+
+    if (!Number.isFinite(latitude) || !Number.isFinite(longitude)) {
+      return;
+    }
+
+    let cancelled = false;
+
+    const fetchLocationAndClimate = async () => {
+      setLocationLoading(true);
+      setClimateLoading(true);
+      setLocationError('');
+      setClimateError('');
+
+      const climateEnd = new Date();
+      const climateStart = new Date(climateEnd);
+      climateStart.setDate(climateEnd.getDate() - 364);
+
+      const [locationResult, climateResult] = await Promise.allSettled([
+        axios.get('https://nominatim.openstreetmap.org/reverse', {
+          params: {
+            format: 'jsonv2',
+            lat: latitude,
+            lon: longitude,
+            'accept-language': 'en'
+          }
+        }),
+        axios.get('https://archive-api.open-meteo.com/v1/archive', {
+          params: {
+            latitude,
+            longitude,
+            start_date: formatDate(climateStart),
+            end_date: formatDate(climateEnd),
+            daily: 'temperature_2m_mean,precipitation_sum,shortwave_radiation_sum',
+            timezone: 'auto'
+          }
+        })
+      ]);
+
+      if (!cancelled) {
+        if (locationResult.status === 'fulfilled') {
+          const address = locationResult.value.data?.address || {};
+          const city =
+            address.city ||
+            address.town ||
+            address.village ||
+            address.municipality ||
+            address.county;
+          const country = address.country;
+          setLocationName(city && country ? `${city}, ${country}` : country || `${latitude.toFixed(6)}, ${longitude.toFixed(6)}`);
+        } else {
+          setLocationName(`${latitude.toFixed(6)}, ${longitude.toFixed(6)}`);
+          setLocationError('Unable to resolve location name');
+        }
+        setLocationLoading(false);
+
+        if (climateResult.status === 'fulfilled') {
+          const daily = climateResult.value.data?.daily || {};
+          const tempValues = (daily.temperature_2m_mean || []).filter((value) => Number.isFinite(value));
+          const precipitationValues = (daily.precipitation_sum || []).filter((value) => Number.isFinite(value));
+          const solarValues = (daily.shortwave_radiation_sum || []).filter((value) => Number.isFinite(value));
+          const dayCount = Math.max(tempValues.length, precipitationValues.length, solarValues.length);
+
+          if (dayCount > 0) {
+            const avgTemp = average(tempValues);
+            const totalRainfall = precipitationValues.reduce((sum, value) => sum + value, 0);
+            const annualizedRainfall = totalRainfall * (365 / dayCount);
+            const avgSolarMj = average(solarValues);
+            const avgSolarKwh = avgSolarMj !== null ? avgSolarMj / 3.6 : null;
+
+            setClimateData({
+              avg_rainfall_mm: Math.round(annualizedRainfall),
+              avg_temperature_c: avgTemp !== null ? Number(avgTemp.toFixed(1)) : null,
+              solar_radiation_kwh_m2_day: avgSolarKwh !== null ? Number(avgSolarKwh.toFixed(1)) : null
+            });
+          } else {
+            setClimateData(null);
+            setClimateError('No climate data returned from API');
+          }
+        } else {
+          setClimateData(null);
+          setClimateError('Unable to fetch live climate data');
+        }
+        setClimateLoading(false);
+      }
+    };
+
+    fetchLocationAndClimate();
+
+    return () => {
+      cancelled = true;
+    };
+  }, [agroPlan, planInputs]);
+
+  const displayedRainfall = climateData?.avg_rainfall_mm ?? agroPlan?.climate_summary?.avg_rainfall_mm ?? null;
+  const displayedTemperature = climateData?.avg_temperature_c ?? agroPlan?.climate_summary?.avg_temperature_c ?? null;
+  const displayedSolar =
+    climateData?.solar_radiation_kwh_m2_day !== undefined && climateData?.solar_radiation_kwh_m2_day !== null
+      ? `${climateData.solar_radiation_kwh_m2_day} kWh/m²/day`
+      : agroPlan?.climate_summary?.solar_radiation || null;
+  const farmLatitude = Number(agroPlan?.farm_location?.latitude);
+  const farmLongitude = Number(agroPlan?.farm_location?.longitude);
+  const displayedLatitude = Number.isFinite(farmLatitude) ? farmLatitude.toFixed(6) : 'N/A';
+  const displayedLongitude = Number.isFinite(farmLongitude) ? farmLongitude.toFixed(6) : 'N/A';
 
   return (
     <div className="bg-white rounded-xl shadow-md p-6">
@@ -59,24 +186,29 @@ const AIPlanner = () => {
           {/* Farm Location */}
           <div className="border border-gray-200 rounded-lg p-4">
             <h3 className="text-lg font-medium text-gray-800 mb-3">📍 {t('farmLocation')}</h3>
-            <div className="grid grid-cols-1 md:grid-cols-4 gap-3">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
               <div>
                 <span className="text-gray-600">{t('latitude')}:</span>
-                <span className="ml-2 font-medium">{agroPlan?.farm_location?.latitude || 'N/A'}</span>
+                <span className="ml-2 font-medium break-all">{displayedLatitude}</span>
               </div>
               <div>
                 <span className="text-gray-600">{t('longitude')}:</span>
-                <span className="ml-2 font-medium">{agroPlan?.farm_location?.longitude || 'N/A'}</span>
+                <span className="ml-2 font-medium break-all">{displayedLongitude}</span>
               </div>
               <div>
-                <span className="text-gray-600">{t('region')}:</span>
-                <span className="ml-2 font-medium">{agroPlan?.farm_location?.region || 'N/A'}</span>
+                <span className="text-gray-600">{t('location')}:</span>
+                <span className="ml-2 font-medium">
+                  {locationLoading ? 'Loading...' : locationName || `${displayedLatitude}, ${displayedLongitude}`}
+                </span>
               </div>
               <div>
                 <span className="text-gray-600">{t('elevation')}:</span>
                 <span className="ml-2 font-medium">{agroPlan?.farm_location?.elevation || 'N/A'} m</span>
               </div>
             </div>
+            {locationError && (
+              <p className="text-sm text-amber-700 mt-3">{locationError}. Showing coordinates.</p>
+            )}
           </div>
           
           {/* Soil Summary */}
@@ -100,14 +232,29 @@ const AIPlanner = () => {
           {/* Climate Summary */}
           <div className="border border-gray-200 rounded-lg p-4">
             <h3 className="text-lg font-medium text-gray-800 mb-3">☀️ {t('climateSummary')}</h3>
+            {climateLoading && (
+              <p className="text-sm text-gray-500 mb-3">Fetching live climate data...</p>
+            )}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div>
-                <p><span className="text-gray-600">{t('averageRainfall')}:</span> <span className="font-medium">{agroPlan?.climate_summary?.avg_rainfall_mm || 'N/A'} mm</span></p>
-                <p><span className="text-gray-600">{t('averageTemperature')}:</span> <span className="font-medium">{agroPlan?.climate_summary?.avg_temperature_c || 'N/A'}°C</span></p>
-                <p><span className="text-gray-600">{t('solarRadiation')}:</span> <span className="font-medium">{agroPlan?.climate_summary?.solar_radiation || 'N/A'}</span></p>
+                <p>
+                  <span className="text-gray-600">{t('averageRainfall')}:</span>{' '}
+                  <span className="font-medium">{displayedRainfall !== null ? `${displayedRainfall} mm` : 'N/A'}</span>
+                </p>
+                <p>
+                  <span className="text-gray-600">{t('averageTemperature')}:</span>{' '}
+                  <span className="font-medium">{displayedTemperature !== null ? `${displayedTemperature}°C` : 'N/A'}</span>
+                </p>
+                <p>
+                  <span className="text-gray-600">{t('solarRadiation')}:</span>{' '}
+                  <span className="font-medium">{displayedSolar || 'N/A'}</span>
+                </p>
               </div>
               <div>
                 <p className="text-gray-700">{agroPlan?.climate_summary?.recommendation || 'N/A'}</p>
+                {climateError && (
+                  <p className="text-sm text-amber-700 mt-2">{climateError}. Showing available plan values.</p>
+                )}
               </div>
             </div>
           </div>
