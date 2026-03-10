@@ -8,7 +8,13 @@ const FarmerInputForm = ({ onPlanGenerated }) => {
     location: {
       type: 'gps', // 'gps' or 'village'
       gps: { lat: '', lng: '' },
-      village: ''
+      village: {
+        village: '',
+        district: '',
+        state: '',
+        country: '',
+        pincode: ''
+      }
     },
     land_area: '',
     budget: '',
@@ -38,39 +44,30 @@ const FarmerInputForm = ({ onPlanGenerated }) => {
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
-    
+
     if (name === 'location_type') {
       setFormData(prev => ({
         ...prev,
-        location: {
-          ...prev.location,
-          type: value
-        }
+        location: { ...prev.location, type: value }
       }));
     } else if (name === 'lat' || name === 'lng') {
       setFormData(prev => ({
         ...prev,
         location: {
           ...prev.location,
-          gps: {
-            ...prev.location.gps,
-            [name]: value
-          }
+          gps: { ...prev.location.gps, [name]: value }
         }
       }));
-    } else if (name === 'village') {
+    } else if (['village', 'district', 'state', 'country', 'pincode'].includes(name)) {
       setFormData(prev => ({
         ...prev,
         location: {
           ...prev.location,
-          village: value
+          village: { ...prev.location.village, [name]: value }
         }
       }));
     } else {
-      setFormData(prev => ({
-        ...prev,
-        [name]: value
-      }));
+      setFormData(prev => ({ ...prev, [name]: value }));
     }
   };
 
@@ -93,14 +90,12 @@ const FarmerInputForm = ({ onPlanGenerated }) => {
     e.preventDefault();
     setLoading(true);
     setError(null);
-    
+
     try {
-      // Validate inputs
       if (!formData.land_area || !formData.budget) {
         throw new Error(t('pleaseFillRequiredFields'));
       }
-      
-      // Parse location data
+
       let lat, lng;
       if (formData.location.type === 'gps') {
         if (!formData.location.gps.lat || !formData.location.gps.lng) {
@@ -112,34 +107,48 @@ const FarmerInputForm = ({ onPlanGenerated }) => {
           throw new Error(t('pleaseEnterValidCoordinates'));
         }
       } else {
-        // For village, we would need to geocode it
-        // For now, we'll use a default location
-        lat = 20.5937; // Default India coordinates
-        lng = 78.9629;
-        console.log('Village geocoding not implemented, using default location');
+        const { village, district, state, country, pincode } = formData.location.village;
+        if (!village && !district && !pincode) {
+          throw new Error(t('pleaseEnterVillageDetails') || 'Please enter at least village, district, or pincode.');
+        }
+        // Geocode village address
+        const addressParts = [village, district, state, pincode, country].filter(Boolean);
+        const addressStr = addressParts.join(', ');
+        try {
+          const geoRes = await fetch(
+            `https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(addressStr)}&limit=1`
+          );
+          const geoData = await geoRes.json();
+          if (geoData && geoData.length > 0) {
+            lat = parseFloat(geoData[0].lat);
+            lng = parseFloat(geoData[0].lon);
+          } else {
+            // Fallback to default India coordinates
+            lat = 20.5937;
+            lng = 78.9629;
+            console.log('Could not geocode address, using default location');
+          }
+        } catch {
+          lat = 20.5937;
+          lng = 78.9629;
+          console.log('Geocoding failed, using default location');
+        }
       }
-      
-      // Parse land area and budget
+
       const landArea = parseFloat(formData.land_area);
       const budget = parseFloat(formData.budget);
-      
+
       if (isNaN(landArea) || isNaN(budget)) {
         throw new Error(t('pleaseEnterValidNumbers'));
       }
-      
-      // Determine investment capacity based on budget
+
       let investmentCapacity = 'low';
-      if (budget > 100000) {
-        investmentCapacity = 'high';
-      } else if (budget > 50000) {
-        investmentCapacity = 'medium';
-      }
-      
-      // Fetch soil and weather data
+      if (budget > 100000) investmentCapacity = 'high';
+      else if (budget > 50000) investmentCapacity = 'medium';
+
       const soilData = await agroIntelService.fetchSoilData(lat, lng);
       const weatherData = await agroIntelService.fetchWeatherData(lat, lng);
-      
-      // Prepare inputs for AI model
+
       const inputs = {
         latitude: lat,
         longitude: lng,
@@ -157,11 +166,8 @@ const FarmerInputForm = ({ onPlanGenerated }) => {
         investment_capacity: investmentCapacity,
         crop_preference: formData.crop_preference || null
       };
-      
-      // Generate agroforestry plan
+
       const plan = await agroIntelService.generateAgroforestryPlan(inputs);
-      
-      // Pass the plan to the parent component
       onPlanGenerated(plan, inputs);
     } catch (err) {
       console.error('Error generating plan:', err);
@@ -171,28 +177,44 @@ const FarmerInputForm = ({ onPlanGenerated }) => {
     }
   };
 
+  const resetForm = () => {
+    setFormData({
+      location: {
+        type: 'gps',
+        gps: { lat: '', lng: '' },
+        village: { village: '', district: '', state: '', country: '', pincode: '' }
+      },
+      land_area: '',
+      budget: '',
+      crop_preference: '',
+      investment_capacity: 'medium'
+    });
+  };
+
+  const inputClass =
+    'w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500';
+
   return (
     <div className="bg-white rounded-xl shadow-md p-6">
       <h2 className="text-2xl font-semibold text-gray-800 mb-6">
         🌱 {t('farmerInputForm')}
       </h2>
-      
+
       {error && (
-        <div className="bg-red-50 text-red-700 p-3 rounded-lg mb-4">
-          {error}
-        </div>
+        <div className="bg-red-50 text-red-700 p-3 rounded-lg mb-4">{error}</div>
       )}
-      
+
       <form onSubmit={handleSubmit} className="space-y-6">
         {/* Location Input */}
         <div className="border border-gray-200 rounded-lg p-4">
           <h3 className="text-lg font-medium text-gray-800 mb-3">
             📍 {t('location')}
           </h3>
-          
+
           <div className="space-y-4">
+            {/* Radio toggle */}
             <div className="flex space-x-4">
-              <label className="flex items-center">
+              <label className="flex items-center cursor-pointer">
                 <input
                   type="radio"
                   name="location_type"
@@ -203,7 +225,7 @@ const FarmerInputForm = ({ onPlanGenerated }) => {
                 />
                 <span>{t('useGPS')}</span>
               </label>
-              <label className="flex items-center">
+              <label className="flex items-center cursor-pointer">
                 <input
                   type="radio"
                   name="location_type"
@@ -215,7 +237,8 @@ const FarmerInputForm = ({ onPlanGenerated }) => {
                 <span>{t('enterVillage')}</span>
               </label>
             </div>
-            
+
+            {/* GPS fields */}
             {formData.location.type === 'gps' ? (
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div>
@@ -243,7 +266,7 @@ const FarmerInputForm = ({ onPlanGenerated }) => {
                     )}
                   </div>
                 </div>
-                
+
                 <div>
                   <label className="block text-gray-700 mb-2 font-medium">
                     {t('longitude')}
@@ -254,37 +277,105 @@ const FarmerInputForm = ({ onPlanGenerated }) => {
                     value={formData.location.gps.lng}
                     onChange={handleInputChange}
                     placeholder={t('enterLongitude')}
-                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500"
+                    className={inputClass}
                   />
                 </div>
               </div>
             ) : (
-              <div>
-                <label className="block text-gray-700 mb-2 font-medium">
-                  {t('villageName')}
-                </label>
-                <input
-                  type="text"
-                  name="village"
-                  value={formData.location.village}
-                  onChange={handleInputChange}
-                  placeholder={t('enterVillageName')}
-                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500"
-                />
-                <p className="text-sm text-gray-500 mt-1">
-                  {t('noteVillageLocation')}
+              /* Village structured fields */
+              <div className="space-y-4">
+                {/* Row 1: Village + District */}
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div>
+                    <label className="block text-gray-700 mb-2 font-medium">
+                      🏘️ {t('villageName') || 'Village / Town'}
+                    </label>
+                    <input
+                      type="text"
+                      name="village"
+                      value={formData.location.village.village}
+                      onChange={handleInputChange}
+                      placeholder={t('enterVillageName') || 'Enter village or town name'}
+                      className={inputClass}
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-gray-700 mb-2 font-medium">
+                      🏙️ {t('district') || 'District'}
+                    </label>
+                    <input
+                      type="text"
+                      name="district"
+                      value={formData.location.village.district}
+                      onChange={handleInputChange}
+                      placeholder={t('enterDistrict') || 'Enter district'}
+                      className={inputClass}
+                    />
+                  </div>
+                </div>
+
+                {/* Row 2: State + Country */}
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div>
+                    <label className="block text-gray-700 mb-2 font-medium">
+                      🗺️ {t('state') || 'State'}
+                    </label>
+                    <input
+                      type="text"
+                      name="state"
+                      value={formData.location.village.state}
+                      onChange={handleInputChange}
+                      placeholder={t('enterState') || 'Enter state'}
+                      className={inputClass}
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-gray-700 mb-2 font-medium">
+                      🌍 {t('country') || 'Country'}
+                    </label>
+                    <input
+                      type="text"
+                      name="country"
+                      value={formData.location.village.country}
+                      onChange={handleInputChange}
+                      placeholder={t('enterCountry') || 'Enter country'}
+                      className={inputClass}
+                    />
+                  </div>
+                </div>
+
+                {/* Row 3: Pincode */}
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div>
+                    <label className="block text-gray-700 mb-2 font-medium">
+                      📮 {t('pincode') || 'Pincode / ZIP'}
+                    </label>
+                    <input
+                      type="text"
+                      name="pincode"
+                      value={formData.location.village.pincode}
+                      onChange={handleInputChange}
+                      placeholder={t('enterPincode') || 'Enter pincode or ZIP code'}
+                      className={inputClass}
+                      maxLength={10}
+                    />
+                  </div>
+                </div>
+
+                <p className="text-sm text-gray-500">
+                  ℹ️ {t('noteVillageLocation') || 'Location will be auto-detected using geocoding services based on the address you enter.'}
                 </p>
               </div>
             )}
           </div>
         </div>
-        
+
         {/* Farm Details */}
         <div className="border border-gray-200 rounded-lg p-4">
           <h3 className="text-lg font-medium text-gray-800 mb-3">
             🏡 {t('farmDetails')}
           </h3>
-          
+
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div>
               <label className="block text-gray-700 mb-2 font-medium">
@@ -298,11 +389,11 @@ const FarmerInputForm = ({ onPlanGenerated }) => {
                 placeholder={t('enterLandArea')}
                 step="0.1"
                 min="0.1"
-                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500"
+                className={inputClass}
                 required
               />
             </div>
-            
+
             <div>
               <label className="block text-gray-700 mb-2 font-medium">
                 {t('budgetInRupees')} <span className="text-red-500">*</span>
@@ -314,19 +405,19 @@ const FarmerInputForm = ({ onPlanGenerated }) => {
                 onChange={handleInputChange}
                 placeholder={t('enterBudget')}
                 min="0"
-                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500"
+                className={inputClass}
                 required
               />
             </div>
           </div>
         </div>
-        
+
         {/* Preferences */}
         <div className="border border-gray-200 rounded-lg p-4">
           <h3 className="text-lg font-medium text-gray-800 mb-3">
             ⚙️ {t('preferences')}
           </h3>
-          
+
           <div>
             <label className="block text-gray-700 mb-2 font-medium">
               {t('cropPreference')} ({t('optional')})
@@ -337,14 +428,14 @@ const FarmerInputForm = ({ onPlanGenerated }) => {
               value={formData.crop_preference}
               onChange={handleInputChange}
               placeholder={t('enterCropPreference')}
-              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500"
+              className={inputClass}
             />
             <p className="text-sm text-gray-500 mt-1">
               {t('cropPreferenceNote')}
             </p>
           </div>
         </div>
-        
+
         {/* Action Buttons */}
         <div className="flex flex-wrap gap-3 pt-4">
           <button
@@ -354,9 +445,18 @@ const FarmerInputForm = ({ onPlanGenerated }) => {
           >
             {loading ? (
               <span className="flex items-center">
-                <svg className="animate-spin -ml-1 mr-3 h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-                  <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
-                  <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                <svg
+                  className="animate-spin -ml-1 mr-3 h-5 w-5 text-white"
+                  xmlns="http://www.w3.org/2000/svg"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                >
+                  <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
+                  <path
+                    className="opacity-75"
+                    fill="currentColor"
+                    d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+                  />
                 </svg>
                 {t('generatingPlan')}
               </span>
@@ -364,20 +464,10 @@ const FarmerInputForm = ({ onPlanGenerated }) => {
               t('generateAgroforestryPlan')
             )}
           </button>
-          
+
           <button
             type="button"
-            onClick={() => setFormData({
-              location: {
-                type: 'gps',
-                gps: { lat: '', lng: '' },
-                village: ''
-              },
-              land_area: '',
-              budget: '',
-              crop_preference: '',
-              investment_capacity: 'medium'
-            })}
+            onClick={resetForm}
             className="bg-gray-200 hover:bg-gray-300 text-gray-800 font-medium py-3 px-6 rounded-lg transition duration-300"
           >
             {t('reset')}
