@@ -6,7 +6,6 @@ import { createUserWithEmailAndPassword, updateProfile } from 'firebase/auth';
 const Signup = ({ onSwitchToLogin }) => {
   const { t } = useTranslation();
   const [fullName, setFullName] = useState('');
-  const [phone, setPhone] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
@@ -22,12 +21,6 @@ const Signup = ({ onSwitchToLogin }) => {
     return '';
   };
 
-  const validatePhone = (value) => {
-    if (!value.trim()) return t('phoneRequired') || 'Phone number is required';
-    const phoneRegex = /^[6-9]\d{9}$/;
-    if (!phoneRegex.test(value.replace(/\s/g, ''))) return t('invalidPhone') || 'Please enter a valid 10-digit Indian mobile number';
-    return '';
-  };
 
   const validateEmail = (value) => {
     if (!value.trim()) return t('emailRequired') || 'Email is required';
@@ -73,7 +66,7 @@ const Signup = ({ onSwitchToLogin }) => {
     let err = '';
     switch (field) {
       case 'fullName': err = validateName(fullName); break;
-      case 'phone': err = validatePhone(phone); break;
+
       case 'email': err = validateEmail(email); break;
       case 'password': err = validatePassword(password); break;
       case 'confirmPassword': err = validateConfirmPassword(confirmPassword); break;
@@ -87,7 +80,7 @@ const Signup = ({ onSwitchToLogin }) => {
       let err = '';
       switch (field) {
         case 'fullName': err = validateName(value); break;
-        case 'phone': err = validatePhone(value); break;
+
         case 'email': err = validateEmail(value); break;
         case 'password':
           err = validatePassword(value);
@@ -109,13 +102,12 @@ const Signup = ({ onSwitchToLogin }) => {
     // Validate all fields
     const errors = {
       fullName: validateName(fullName),
-      phone: validatePhone(phone),
       email: validateEmail(email),
       password: validatePassword(password),
       confirmPassword: validateConfirmPassword(confirmPassword),
     };
     setFieldErrors(errors);
-    setTouched({ fullName: true, phone: true, email: true, password: true, confirmPassword: true });
+    setTouched({ fullName: true, email: true, password: true, confirmPassword: true });
 
     // Check if any errors
     if (Object.values(errors).some(err => err !== '')) return;
@@ -204,36 +196,7 @@ const Signup = ({ onSwitchToLogin }) => {
           {renderFieldError('fullName')}
         </div>
 
-        {/* Phone Number */}
-        <div className="mb-4">
-          <label htmlFor="signup-phone" className="block text-gray-700 mb-1.5 text-sm font-medium">
-            {t('phoneNumber') || 'Phone Number'}
-          </label>
-          <div className="flex">
-            <span className="inline-flex items-center px-3 bg-gray-100 text-gray-600 border border-r-0 border-gray-300 rounded-l-lg text-sm font-medium">
-              +91
-            </span>
-            <input
-              type="tel"
-              id="signup-phone"
-              value={phone}
-              onChange={(e) => {
-                const val = e.target.value.replace(/\D/g, '').slice(0, 10);
-                handleFieldChange('phone', val, setPhone);
-              }}
-              onBlur={() => handleBlur('phone')}
-              className={`flex-1 px-4 py-2.5 border rounded-r-lg transition-all duration-200 focus:ring-2 focus:outline-none ${
-                fieldErrors.phone && touched.phone
-                  ? 'border-red-400 focus:ring-red-500 focus:border-red-500 bg-red-50'
-                  : 'border-gray-300 focus:ring-green-500 focus:border-green-500'
-              }`}
-              placeholder={t('enterMobileNumber') || 'Enter 10-digit mobile number'}
-              disabled={loading}
-              maxLength={10}
-            />
-          </div>
-          {renderFieldError('phone')}
-        </div>
+
 
         {/* Email */}
         <div className="mb-4">
