@@ -555,15 +555,15 @@ const Dashboard = () => {
           </div>
         )}
         
-        {/* AI Planner Tab */}
-        {activeTab === 'aiplanner' && (
+        {/* AI Planner Tab - kept mounted to preserve generated plan data */}
+        <div style={{ display: activeTab === 'aiplanner' ? 'block' : 'none' }}>
           <AIPlanner />
-        )}
+        </div>
         
-        {/* Agroforestry Tab */}
-        {activeTab === 'agroforestry' && (
+        {/* Agroforestry Tab - kept mounted to preserve data */}
+        <div style={{ display: activeTab === 'agroforestry' ? 'block' : 'none' }}>
           <AgroforestryPlanner />
-        )}
+        </div>
         
         {/* Soil Analysis Tab */}
         {activeTab === 'soil' && (
