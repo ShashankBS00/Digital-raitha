@@ -3,44 +3,38 @@ import continuousLearningService from './continuousLearningService';
 
 // Service to integrate with free APIs for AgroIntel AI system
 class AgroIntelService {
-  // Fetch soil data from ISRIC SoilGrids API
+  // Fetch soil data from Kaegro Global Soil API (free, no auth required)
   async fetchSoilData(lat, lon) {
     try {
-      // SoilGrids API endpoint for soil properties
       const response = await axios.get(
-        `https://rest.isric.org/soilgrids/v2.0/properties/query`,
+        `/api/soil`,
         {
-          params: {
-            lat: lat,
-            lon: lon,
-            property: ['phh2o', 'ocd', 'nitrogen', 'cec', 'sand', 'silt', 'clay'],
-            depth: '0-5cm',
-            value: 'mean'
-          }
+          params: { lat, lon },
+          timeout: 15000
         }
       );
-      
-      return {
-        ph: response.data.properties.phh2o ? response.data.properties.phh2o.mean / 10 : null,
-        organic_carbon: response.data.properties.ocd ? response.data.properties.ocd.mean / 10 : null,
-        nitrogen: response.data.properties.nitrogen ? response.data.properties.nitrogen.mean : null,
-        cec: response.data.properties.cec ? response.data.properties.cec.mean : null, // Cation Exchange Capacity
-        sand: response.data.properties.sand ? response.data.properties.sand.mean : null,
-        silt: response.data.properties.silt ? response.data.properties.silt.mean : null,
-        clay: response.data.properties.clay ? response.data.properties.clay.mean : null
+
+      const data = response.data;
+      const result = {
+        ph: data?.chemical?.ph_h2o ?? null,
+        organic_carbon: data?.chemical?.organic_matter_pct ?? null,
+        nitrogen: data?.chemical?.nitrogen_g_kg ? Math.round(data.chemical.nitrogen_g_kg * 100) : null,
+        cec: data?.chemical?.cec_cmol_kg ?? null,
+        sand: data?.physical?.sand_pct ?? null,
+        silt: data?.physical?.silt_pct ?? null,
+        clay: data?.physical?.clay_pct ?? null
       };
+
+      // If API returned all nulls (no coverage for this location), use defaults
+      if (result.ph === null && result.sand === null) {
+        console.warn('Soil API returned no data for this location, using defaults');
+        return { ph: 6.7, organic_carbon: 1.2, nitrogen: 150, cec: 12, sand: 45, silt: 35, clay: 20 };
+      }
+
+      return result;
     } catch (error) {
       console.error('Error fetching soil data:', error);
-      // Return mock data if API fails
-      return {
-        ph: 6.7,
-        organic_carbon: 1.2,
-        nitrogen: 150,
-        cec: 12,
-        sand: 45,
-        silt: 35,
-        clay: 20
-      };
+      return { ph: 6.7, organic_carbon: 1.2, nitrogen: 150, cec: 12, sand: 45, silt: 35, clay: 20 };
     }
   }
 
@@ -264,12 +258,12 @@ class AgroIntelService {
         elevation: 500 // Mock elevation
       },
       soil_summary: {
-        ph: soil_pH,
-        organic_carbon: `${organic_carbon}%`,
-        nitrogen: `${nitrogen} kg/ha`,
-        cec: `${cec} cmol/kg`,
-        texture: soilTexture,
-        drainage: drainageQuality,
+        ph: soil_pH ?? 'N/A',
+        organic_carbon: organic_carbon != null ? `${organic_carbon}%` : 'N/A',
+        nitrogen: nitrogen != null ? `${nitrogen} kg/ha` : 'N/A',
+        cec: cec != null ? `${cec} cmol/kg` : 'N/A',
+        texture: soilTexture || 'N/A',
+        drainage: drainageQuality || 'N/A',
         recommendation: this.getSoilRecommendation(soil_pH, organic_carbon, soilTexture, nitrogen, cec)
       },
       climate_summary: {
@@ -370,12 +364,12 @@ class AgroIntelService {
         elevation: 500 // Mock elevation
       },
       soil_summary: {
-        ph: soil_pH,
-        organic_carbon: `${organic_carbon}%`,
-        nitrogen: `${nitrogen} kg/ha`,
-        cec: `${cec} cmol/kg`,
-        texture: soilTexture,
-        drainage: drainageQuality,
+        ph: soil_pH ?? 'N/A',
+        organic_carbon: organic_carbon != null ? `${organic_carbon}%` : 'N/A',
+        nitrogen: nitrogen != null ? `${nitrogen} kg/ha` : 'N/A',
+        cec: cec != null ? `${cec} cmol/kg` : 'N/A',
+        texture: soilTexture || 'N/A',
+        drainage: drainageQuality || 'N/A',
         recommendation: this.getSoilRecommendation(soil_pH, organic_carbon, soilTexture, nitrogen, cec)
       },
       climate_summary: {
@@ -428,30 +422,36 @@ class AgroIntelService {
     const intercrops = [];
     const herbs = [];
     
+    // Use safe defaults for null values
+    const safePh = ph ?? 6.5;
+    const safeRainfall = rainfall ?? 800;
+    const safeTemp = temperature ?? 28;
+    const safeNitrogen = nitrogen ?? 150;
+    
     // Main crops based on conditions
-    if (ph >= 6.0 && ph <= 7.5 && rainfall >= 600) {
-      if (temperature >= 20 && temperature <= 35) {
+    if (safePh >= 6.0 && safePh <= 7.5 && safeRainfall >= 600) {
+      if (safeTemp >= 20 && safeTemp <= 35) {
         mainCrops.push({name: "Maize", planting_density: "50,000 plants/ha", spacing: "75cm rows"});
       }
     }
     
-    if (ph >= 5.5 && ph <= 7.0 && rainfall >= 500) {
-      if (temperature >= 25 && temperature <= 35) {
+    if (safePh >= 5.5 && safePh <= 7.0 && safeRainfall >= 500) {
+      if (safeTemp >= 25 && safeTemp <= 35) {
         mainCrops.push({name: "Sorghum", planting_density: "60,000 plants/ha", spacing: "45cm rows"});
       }
     }
     
     // Intercrops based on conditions
-    if (nitrogen < 200) {
+    if (safeNitrogen < 200) {
       intercrops.push({name: "Cowpea", planting_density: "40,000 plants/ha", benefit: "Nitrogen fixation"});
     }
     
-    if (temperature >= 20 && temperature <= 30) {
+    if (safeTemp >= 20 && safeTemp <= 30) {
       intercrops.push({name: "Black Gram", planting_density: "35,000 plants/ha", benefit: "Protein source"});
     }
     
     // Herbs based on conditions
-    if (temperature >= 20 && temperature <= 35) {
+    if (safeTemp >= 20 && safeTemp <= 35) {
       herbs.push({name: "Turmeric", planting_density: "125,000 rhizomes/ha", benefit: "High value spice"});
     }
     
@@ -474,8 +474,13 @@ class AgroIntelService {
   determineSuitableTrees(rainfall, temperature, ph, drainage) {
     const trees = [];
     
+    // Use safe defaults for null values
+    const safePh = ph ?? 6.5;
+    const safeRainfall = rainfall ?? 800;
+    const safeTemp = temperature ?? 28;
+    
     // Recommend trees based on climate and soil
-    if (rainfall > 800 && temperature > 25 && ph >= 5.5 && ph <= 7.5) {
+    if (safeRainfall > 800 && safeTemp > 25 && safePh >= 5.5 && safePh <= 7.5) {
       trees.push({
         name: "Mango", 
         spacing_m: "10x10", 
@@ -485,7 +490,7 @@ class AgroIntelService {
       });
     }
     
-    if (ph >= 5.0 && ph <= 8.0 && drainage !== "Poorly Drained") {
+    if (safePh >= 5.0 && safePh <= 8.0 && drainage !== "Poorly Drained") {
       trees.push({
         name: "Gliricidia", 
         spacing_m: "2x2", 
@@ -495,7 +500,7 @@ class AgroIntelService {
       });
     }
     
-    if (rainfall > 600 && temperature >= 20 && temperature <= 35) {
+    if (safeRainfall > 600 && safeTemp >= 20 && safeTemp <= 35) {
       trees.push({
         name: "Neem", 
         spacing_m: "8x8", 
@@ -621,21 +626,21 @@ class AgroIntelService {
   generateSoilImprovementTips(ph, organicCarbon, nitrogen, cec) {
     const tips = [];
     
-    if (ph < 6.0) {
+    if (ph != null && ph < 6.0) {
       tips.push("Soil is acidic. Add lime (calcium carbonate) to raise pH. Apply 1-2 tons/ha based on current pH.");
-    } else if (ph > 7.5) {
+    } else if (ph != null && ph > 7.5) {
       tips.push("Soil is alkaline. Add organic matter like compost to lower pH. Apply 5-10 tons/ha of well-decomposed compost.");
     }
     
-    if (organicCarbon < 1.0) {
+    if (organicCarbon != null && organicCarbon < 1.0) {
       tips.push("Low organic matter. Add compost or farmyard manure. Apply 5-10 tons/ha annually.");
     }
     
-    if (nitrogen < 150) {
+    if (nitrogen != null && nitrogen < 150) {
       tips.push("Low nitrogen content. Plant nitrogen-fixing crops like legumes. Apply neem cake @ 100 kg/ha.");
     }
     
-    if (cec < 10) {
+    if (cec != null && cec < 10) {
       tips.push("Low cation exchange capacity. Add organic matter to improve soil structure and nutrient retention.");
     }
     
@@ -656,27 +661,33 @@ class AgroIntelService {
   getSoilRecommendation(ph, organic_carbon, texture, nitrogen, cec) {
     let recommendation = "";
     
-    if (ph < 6.0) {
-      recommendation += "Soil is acidic. Add lime to raise pH. ";
-    } else if (ph > 7.5) {
-      recommendation += "Soil is alkaline. Add organic matter to lower pH. ";
-    } else {
-      recommendation += "Soil pH is optimal for most crops. ";
+    if (ph != null) {
+      if (ph < 6.0) {
+        recommendation += "Soil is acidic. Add lime to raise pH. ";
+      } else if (ph > 7.5) {
+        recommendation += "Soil is alkaline. Add organic matter to lower pH. ";
+      } else {
+        recommendation += "Soil pH is optimal for most crops. ";
+      }
     }
     
-    if (organic_carbon < 1.0) {
-      recommendation += "Low organic matter. Add compost or manure. ";
-    } else {
-      recommendation += "Good organic matter content. ";
+    if (organic_carbon != null) {
+      if (organic_carbon < 1.0) {
+        recommendation += "Low organic matter. Add compost or manure. ";
+      } else {
+        recommendation += "Good organic matter content. ";
+      }
     }
     
-    if (nitrogen < 150) {
+    if (nitrogen != null && nitrogen < 150) {
       recommendation += "Low nitrogen. Include nitrogen-fixing crops. ";
     }
     
-    recommendation += `Ideal for ${texture.toLowerCase()} soil crops.`;
+    if (texture) {
+      recommendation += `Ideal for ${texture.toLowerCase()} soil crops.`;
+    }
     
-    return recommendation;
+    return recommendation || "Soil data is being analyzed. General recommendations apply.";
   }
   
   getClimateRecommendation(rainfall, temperature, solar) {

@@ -22,7 +22,15 @@ export default defineConfig({
   server: {
     port: 5173,
     strictPort: true,
-    host: true
+    host: true,
+    proxy: {
+      '/api/soil': {
+        target: 'https://www.kaegro.com',
+        changeOrigin: true,
+        rewrite: (path) => path.replace(/^\/api\/soil/, '/farms/api/soil'),
+        secure: true
+      }
+    }
   },
   resolve: {
     alias: {
