@@ -161,8 +161,9 @@ const Dashboard = () => {
     } catch (error) {
       console.error('Error fetching real-time predictions:', error);
       // Set mock data on error
+      const mockPredictionId = `mock-pred-${Date.now()}`;
       setRealTimePredictions({
-        prediction_id: 'mock-prediction-id',
+        prediction_id: mockPredictionId,
         predictions: {
           yield_kg_per_acre: 3000,
           confidence: 0.85,
@@ -186,6 +187,7 @@ const Dashboard = () => {
           labor: 15000
         }
       });
+      setCurrentPredictionId(mockPredictionId);
     }
   };
 
@@ -1067,18 +1069,57 @@ const Dashboard = () => {
         
         {/* Feedback Form Modal */}
         {showFeedbackForm && currentPredictionId && (
-          <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
-            <div className="bg-white rounded-xl shadow-xl max-w-md w-full max-h-[90vh] overflow-y-auto">
-              <div className="sticky top-0 bg-white border-b border-gray-200 p-4 flex justify-between items-center rounded-t-xl">
-                <h3 className="text-lg font-semibold text-gray-800">
-                  {t('provideFeedback')}
-                </h3>
+          <div 
+            className="fixed inset-0 flex items-center justify-center p-4 z-50"
+            style={{ backgroundColor: 'rgba(0, 0, 0, 0.6)', backdropFilter: 'blur(4px)' }}
+          >
+            <div 
+              className="bg-white rounded-2xl shadow-2xl w-full max-h-[90vh] overflow-y-auto"
+              style={{ maxWidth: '480px' }}
+            >
+              <div 
+                className="sticky top-0 p-5 flex justify-between items-center rounded-t-2xl z-10"
+                style={{ 
+                  background: 'linear-gradient(135deg, #166534 0%, #16a34a 100%)',
+                  color: '#ffffff',
+                }}
+              >
+                <div className="flex items-center gap-3">
+                  <div style={{
+                    width: '36px',
+                    height: '36px',
+                    borderRadius: '10px',
+                    background: 'rgba(255,255,255,0.2)',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    fontSize: '18px',
+                  }}>
+                    📝
+                  </div>
+                  <h3 style={{ fontSize: '17px', fontWeight: 700, margin: 0 }}>
+                    {t('provideFeedback')}
+                  </h3>
+                </div>
                 <button
                   onClick={() => setShowFeedbackForm(false)}
-                  className="text-gray-500 hover:text-gray-700"
+                  style={{
+                    background: 'rgba(255,255,255,0.15)',
+                    border: 'none',
+                    borderRadius: '8px',
+                    padding: '6px',
+                    cursor: 'pointer',
+                    color: '#ffffff',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    transition: 'background 0.2s ease',
+                  }}
+                  onMouseEnter={(e) => e.target.closest('button').style.background = 'rgba(255,255,255,0.3)'}
+                  onMouseLeave={(e) => e.target.closest('button').style.background = 'rgba(255,255,255,0.15)'}
                 >
-                  <svg className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12" />
+                  <svg style={{ width: '20px', height: '20px' }} fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M6 18L18 6M6 6l12 12" />
                   </svg>
                 </button>
               </div>

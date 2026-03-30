@@ -33,7 +33,7 @@ class AgriDataPreprocessor:
             raise ValueError("Data must be a DataFrame or file path")
         
         # Handle missing values
-        data = data.fillna(method='ffill').fillna(method='bfill')
+        data = data.ffill().bfill()
         
         # Feature engineering
         # Calculate additional features from the raw data

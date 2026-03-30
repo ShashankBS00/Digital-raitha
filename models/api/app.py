@@ -33,17 +33,34 @@ def load_models():
     """Load trained models."""
     global yield_model, roi_model, recommendation_engine
     
+    # Use absolute paths relative to this file's directory
+    models_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+    saved_models_dir = os.path.join(os.path.dirname(os.path.abspath(__file__)), '..', 'saved_models')
+    saved_models_dir = os.path.normpath(saved_models_dir)
+    
     try:
         # Initialize models
         yield_model = AgriYieldModel()
         roi_model = AgriROIModel()
         recommendation_engine = AgriRecommendationEngine()
         
-        # Load trained models from disk
-        yield_model.load_model("saved_models/yield_model")
-        roi_model.load_model("saved_models/roi_model")
+        yield_path = os.path.join(saved_models_dir, "yield_model")
+        roi_path = os.path.join(saved_models_dir, "roi_model")
         
-        print("Models loaded successfully")
+        # Load trained models from disk
+        if os.path.exists(f"{yield_path}_rf.pkl"):
+            yield_model.load_model(yield_path)
+            print(f"Yield model loaded from {yield_path}")
+        else:
+            print(f"No trained yield model found at {yield_path}. Will use fallback predictions.")
+        
+        if os.path.exists(f"{roi_path}_roi.pkl"):
+            roi_model.load_model(roi_path)
+            print(f"ROI model loaded from {roi_path}")
+        else:
+            print(f"No trained ROI model found at {roi_path}. Will use fallback predictions.")
+        
+        print("Models initialization complete")
         return True
     except Exception as e:
         print(f"Error loading models: {e}")

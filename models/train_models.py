@@ -189,8 +189,10 @@ def train_yield_model(datasets):
         print(f"XGBoost - MSE: {metrics['xgb_metrics']['mse']:.2f}, R²: {metrics['xgb_metrics']['r2']:.2f}")
     
     # Save the model
-    model.save_model("models/saved_models/yield_model")
-    print("Yield model saved to models/saved_models/yield_model")
+    save_dir = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'saved_models')
+    os.makedirs(save_dir, exist_ok=True)
+    model.save_model(os.path.join(save_dir, "yield_model"))
+    print(f"Yield model saved to {save_dir}")
     
     return model
 
@@ -213,8 +215,10 @@ def train_roi_model(datasets):
         print(f"MSE: {metrics['mse']:.2f}, R²: {metrics['r2']:.2f}")
     
     # Save the model
-    model.save_model("models/saved_models/roi_model")
-    print("ROI model saved to models/saved_models/roi_model")
+    save_dir = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'saved_models')
+    os.makedirs(save_dir, exist_ok=True)
+    model.save_model(os.path.join(save_dir, "roi_model"))
+    print(f"ROI model saved to {save_dir}")
     
     return model
 
