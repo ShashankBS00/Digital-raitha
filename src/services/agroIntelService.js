@@ -467,9 +467,9 @@ class AgroIntelService {
       }
     }
     
-    // Sort by climate compatibility, take top 2
+    // Sort by climate compatibility, take top 3
     scoredCrops.sort((a, b) => b.score - a.score);
-    mainCrops.push(...scoredCrops.slice(0, 2));
+    mainCrops.push(...scoredCrops.slice(0, 3));
     
     // Intercrops - add up to 2 region-specific intercrops
     if (regionCrops.intercrops) {
@@ -560,19 +560,65 @@ class AgroIntelService {
   // Helper methods for crop data
   getCropClimateRequirements(cropName) {
     const cropRequirements = {
-      "Wheat": { ph_min: 6.0, ph_max: 7.5, rainfall_min: 400, rainfall_max: 800, temp_min: 10, temp_max: 25 },
-      "Rice": { ph_min: 5.0, ph_max: 8.5, rainfall_min: 800, rainfall_max: 1500, temp_min: 20, temp_max: 35 },
-      "Maize": { ph_min: 6.0, ph_max: 7.5, rainfall_min: 600, rainfall_max: 1200, temp_min: 20, temp_max: 35 },
-      "Cotton": { ph_min: 6.0, ph_max: 8.0, rainfall_min: 600, rainfall_max: 1200, temp_min: 20, temp_max: 35 },
-      "Soyabean": { ph_min: 6.0, ph_max: 7.5, rainfall_min: 600, rainfall_max: 1100, temp_min: 20, temp_max: 30 },
-      "Pigeonpea": { ph_min: 5.5, ph_max: 8.0, rainfall_min: 600, rainfall_max: 1200, temp_min: 20, temp_max: 35 },
-      "Chickpea": { ph_min: 7.0, ph_max: 8.0, rainfall_min: 400, rainfall_max: 800, temp_min: 15, temp_max: 30 },
-      "Groundnut": { ph_min: 6.0, ph_max: 8.0, rainfall_min: 500, rainfall_max: 1000, temp_min: 20, temp_max: 35 },
-      "Jowar": { ph_min: 6.0, ph_max: 8.0, rainfall_min: 400, rainfall_max: 900, temp_min: 20, temp_max: 35 },
-      "Pearl Millet": { ph_min: 6.0, ph_max: 8.0, rainfall_min: 300, rainfall_max: 700, temp_min: 20, temp_max: 35 },
-      "Coconut": { ph_min: 5.5, ph_max: 8.0, rainfall_min: 800, rainfall_max: 3000, temp_min: 20, temp_max: 35 },
-      "Sugarcane": { ph_min: 6.5, ph_max: 8.0, rainfall_min: 1200, rainfall_max: 2250, temp_min: 20, temp_max: 30 },
-      "Turmeric": { ph_min: 5.5, ph_max: 7.5, rainfall_min: 1200, rainfall_max: 2250, temp_min: 20, temp_max: 30 }
+      // Cereals & Staples
+      "Wheat":        { ph_min: 6.0, ph_max: 7.5, rainfall_min: 400,  rainfall_max: 800,  temp_min: 10, temp_max: 25 },
+      "Rice":         { ph_min: 5.0, ph_max: 8.5, rainfall_min: 800,  rainfall_max: 1500, temp_min: 20, temp_max: 35 },
+      "Maize":        { ph_min: 6.0, ph_max: 7.5, rainfall_min: 600,  rainfall_max: 1200, temp_min: 20, temp_max: 35 },
+      "Jowar":        { ph_min: 6.0, ph_max: 8.0, rainfall_min: 400,  rainfall_max: 900,  temp_min: 20, temp_max: 35 },
+      "Pearl Millet": { ph_min: 6.0, ph_max: 8.0, rainfall_min: 300,  rainfall_max: 700,  temp_min: 22, temp_max: 38 },
+      "Finger Millet":{ ph_min: 5.5, ph_max: 7.5, rainfall_min: 500,  rainfall_max: 1000, temp_min: 18, temp_max: 32 },
+      // Cash Crops
+      "Cotton":       { ph_min: 6.0, ph_max: 8.0, rainfall_min: 600,  rainfall_max: 1200, temp_min: 21, temp_max: 37 },
+      "Sugarcane":    { ph_min: 6.5, ph_max: 8.0, rainfall_min: 1200, rainfall_max: 2250, temp_min: 20, temp_max: 30 },
+      "Tobacco":      { ph_min: 5.5, ph_max: 7.0, rainfall_min: 600,  rainfall_max: 1100, temp_min: 18, temp_max: 30 },
+      // Pulses / Legumes
+      "Soyabean":     { ph_min: 6.0, ph_max: 7.5, rainfall_min: 600,  rainfall_max: 1100, temp_min: 20, temp_max: 30 },
+      "Pigeonpea":    { ph_min: 5.5, ph_max: 8.0, rainfall_min: 600,  rainfall_max: 1200, temp_min: 20, temp_max: 35 },
+      "Chickpea":     { ph_min: 7.0, ph_max: 8.0, rainfall_min: 400,  rainfall_max: 800,  temp_min: 15, temp_max: 30 },
+      "Groundnut":    { ph_min: 6.0, ph_max: 8.0, rainfall_min: 500,  rainfall_max: 1000, temp_min: 20, temp_max: 35 },
+      "Black Gram":   { ph_min: 6.0, ph_max: 7.5, rainfall_min: 500,  rainfall_max: 900,  temp_min: 25, temp_max: 35 },
+      "Green Gram":   { ph_min: 6.0, ph_max: 7.5, rainfall_min: 500,  rainfall_max: 900,  temp_min: 25, temp_max: 35 },
+      "Cowpea":       { ph_min: 5.5, ph_max: 7.5, rainfall_min: 400,  rainfall_max: 900,  temp_min: 18, temp_max: 35 },
+      "Lentils":      { ph_min: 6.0, ph_max: 8.0, rainfall_min: 300,  rainfall_max: 700,  temp_min: 10, temp_max: 25 },
+      // Fruits
+      "Banana":       { ph_min: 5.5, ph_max: 7.0, rainfall_min: 1000, rainfall_max: 2500, temp_min: 20, temp_max: 35 },
+      "Mango":        { ph_min: 5.5, ph_max: 7.5, rainfall_min: 700,  rainfall_max: 2000, temp_min: 22, temp_max: 38 },
+      "Papaya":       { ph_min: 5.5, ph_max: 7.0, rainfall_min: 800,  rainfall_max: 2000, temp_min: 22, temp_max: 35 },
+      "Grapes":       { ph_min: 6.0, ph_max: 7.5, rainfall_min: 500,  rainfall_max: 900,  temp_min: 15, temp_max: 30 },
+      "Pomegranate":  { ph_min: 5.5, ph_max: 7.5, rainfall_min: 400,  rainfall_max: 900,  temp_min: 18, temp_max: 42 },
+      "Guava":        { ph_min: 4.5, ph_max: 8.0, rainfall_min: 500,  rainfall_max: 1500, temp_min: 15, temp_max: 40 },
+      "Sapota":       { ph_min: 6.0, ph_max: 8.0, rainfall_min: 1200, rainfall_max: 2500, temp_min: 22, temp_max: 38 },
+      "Amla":         { ph_min: 6.0, ph_max: 8.0, rainfall_min: 600,  rainfall_max: 1500, temp_min: 18, temp_max: 38 },
+      "Jackfruit":    { ph_min: 5.0, ph_max: 7.5, rainfall_min: 1200, rainfall_max: 2500, temp_min: 22, temp_max: 38 },
+      "Litchi":       { ph_min: 5.0, ph_max: 7.0, rainfall_min: 900,  rainfall_max: 1800, temp_min: 18, temp_max: 32 },
+      "Apple":        { ph_min: 5.5, ph_max: 7.0, rainfall_min: 700,  rainfall_max: 1200, temp_min:  5, temp_max: 20 },
+      "Watermelon":   { ph_min: 6.0, ph_max: 7.0, rainfall_min: 500,  rainfall_max: 1000, temp_min: 22, temp_max: 38 },
+      // Plantation Crops
+      "Coffee":       { ph_min: 5.5, ph_max: 6.5, rainfall_min: 1500, rainfall_max: 2500, temp_min: 15, temp_max: 28 },
+      "Tea":          { ph_min: 4.5, ph_max: 5.5, rainfall_min: 1500, rainfall_max: 3000, temp_min: 13, temp_max: 28 },
+      "Coconut":      { ph_min: 5.5, ph_max: 8.0, rainfall_min: 800,  rainfall_max: 3000, temp_min: 20, temp_max: 35 },
+      "Cashew":       { ph_min: 5.0, ph_max: 7.5, rainfall_min: 800,  rainfall_max: 1800, temp_min: 20, temp_max: 35 },
+      "Arecanut":     { ph_min: 5.0, ph_max: 7.0, rainfall_min: 1400, rainfall_max: 2800, temp_min: 14, temp_max: 36 },
+      "Rubber":       { ph_min: 4.5, ph_max: 6.5, rainfall_min: 1800, rainfall_max: 3000, temp_min: 20, temp_max: 35 },
+      // Spices & Condiments
+      "Turmeric":     { ph_min: 5.5, ph_max: 7.5, rainfall_min: 1200, rainfall_max: 2250, temp_min: 20, temp_max: 30 },
+      "Ginger":       { ph_min: 5.5, ph_max: 7.0, rainfall_min: 1200, rainfall_max: 2000, temp_min: 20, temp_max: 32 },
+      "Cardamom":     { ph_min: 5.0, ph_max: 6.5, rainfall_min: 1800, rainfall_max: 3000, temp_min: 10, temp_max: 35 },
+      "Black Pepper": { ph_min: 5.0, ph_max: 6.5, rainfall_min: 1500, rainfall_max: 3000, temp_min: 18, temp_max: 35 },
+      "Chilli":       { ph_min: 6.0, ph_max: 7.5, rainfall_min: 600,  rainfall_max: 1200, temp_min: 18, temp_max: 35 },
+      "Coriander":    { ph_min: 6.0, ph_max: 8.0, rainfall_min: 300,  rainfall_max: 700,  temp_min: 10, temp_max: 30 },
+      "Cumin":        { ph_min: 7.0, ph_max: 8.0, rainfall_min: 200,  rainfall_max: 500,  temp_min: 10, temp_max: 30 },
+      "Fennel":       { ph_min: 6.0, ph_max: 7.5, rainfall_min: 300,  rainfall_max: 700,  temp_min: 12, temp_max: 28 },
+      // Oilseeds
+      "Mustard":      { ph_min: 6.0, ph_max: 8.0, rainfall_min: 300,  rainfall_max: 700,  temp_min: 10, temp_max: 25 },
+      "Sesame":       { ph_min: 5.5, ph_max: 7.5, rainfall_min: 400,  rainfall_max: 900,  temp_min: 25, temp_max: 38 },
+      "Sunflower":    { ph_min: 6.0, ph_max: 7.5, rainfall_min: 500,  rainfall_max: 1000, temp_min: 18, temp_max: 33 },
+      "Safflower":    { ph_min: 6.0, ph_max: 8.0, rainfall_min: 300,  rainfall_max: 700,  temp_min: 15, temp_max: 35 },
+      // Vegetables
+      "Tomato":       { ph_min: 6.0, ph_max: 7.0, rainfall_min: 600,  rainfall_max: 1200, temp_min: 18, temp_max: 32 },
+      "Onion":        { ph_min: 5.5, ph_max: 7.0, rainfall_min: 500,  rainfall_max: 900,  temp_min: 13, temp_max: 28 },
+      "Potato":       { ph_min: 5.0, ph_max: 7.5, rainfall_min: 500,  rainfall_max: 900,  temp_min: 10, temp_max: 22 },
+      "Brinjal":      { ph_min: 5.5, ph_max: 7.5, rainfall_min: 600,  rainfall_max: 1000, temp_min: 18, temp_max: 35 }
     };
     
     return cropRequirements[cropName] || { ph_min: 6.0, ph_max: 7.5, rainfall_min: 600, rainfall_max: 1200, temp_min: 20, temp_max: 35 };
@@ -580,54 +626,111 @@ class AgroIntelService {
   
   getCropPlantingDensity(cropName) {
     const densities = {
-      "Maize": "50,000 plants/ha",
-      "Cowpea": "40,000 plants/ha",
-      "Chickpea": "40,000 plants/ha",
-      "Lentils": "30,000 plants/ha",
-      "Groundnut": "50,000 plants/ha",
-      "Soyabean": "60,000 plants/ha",
-      "Turmeric": "125,000 rhizomes/ha",
-      "Ginger": "100,000 rhizomes/ha",
-      "Pigeonpea": "60,000 plants/ha",
-      "Jowar": "50,000 plants/ha",
-      "Cotton": "55,000 plants/ha",
-      "Rice": "50,000 plants/ha",
+      // Cereals
+      "Maize":        "50,000 plants/ha",
+      "Rice":         "50,000 plants/ha",
+      "Wheat":        "100 kg seed/ha",
+      "Jowar":        "50,000 plants/ha",
       "Pearl Millet": "45,000 plants/ha",
-      "Wheat": "100 kg seed/ha",
-      "Sugarcane": "40,000 setts/ha",
-      "Coconut": "175 palms/ha",
-      "Black Gram": "40,000 plants/ha",
-      "Green Gram": "40,000 plants/ha",
-      "Peas": "35,000 plants/ha",
-      "Mustard": "30,000 plants/ha",
-      "Coriander": "500,000 plants/ha",
-      "Methi (Fenugreek)": "400,000 plants/ha",
-      "Fenugreek": "400,000 plants/ha",
-      "Cumin": "300,000 plants/ha",
-      "Mint": "80,000 plants/ha",
-      "Cardamom": "2,000 plants/ha",
+      "Finger Millet":"50,000 plants/ha",
+      // Cash
+      "Cotton":       "55,000 plants/ha",
+      "Sugarcane":    "40,000 setts/ha",
+      "Tobacco":      "50,000 plants/ha",
+      // Pulses
+      "Cowpea":       "40,000 plants/ha",
+      "Chickpea":     "40,000 plants/ha",
+      "Lentils":      "30,000 plants/ha",
+      "Groundnut":    "50,000 plants/ha",
+      "Soyabean":     "60,000 plants/ha",
+      "Pigeonpea":    "60,000 plants/ha",
+      "Black Gram":   "40,000 plants/ha",
+      "Green Gram":   "40,000 plants/ha",
+      "Peas":         "35,000 plants/ha",
+      // Fruits
+      "Banana":       "1,600 plants/ha",
+      "Mango":        "100 trees/ha",
+      "Papaya":       "1,800 plants/ha",
+      "Grapes":       "1,500 vines/ha",
+      "Pomegranate":  "400 plants/ha",
+      "Guava":        "400 trees/ha",
+      "Sapota":       "250 trees/ha",
+      "Amla":         "200 trees/ha",
+      "Jackfruit":    "125 trees/ha",
+      "Litchi":       "250 trees/ha",
+      "Apple":        "200 trees/ha",
+      "Watermelon":   "4,000 plants/ha",
+      "Coconut":      "175 palms/ha",
+      // Plantation
+      "Coffee":       "1,000 plants/ha",
+      "Tea":          "10,000 plants/ha",
+      "Cashew":       "250 trees/ha",
+      "Arecanut":     "1,000 palms/ha",
+      "Rubber":       "450 trees/ha",
+      // Spices
+      "Turmeric":     "125,000 rhizomes/ha",
+      "Ginger":       "100,000 rhizomes/ha",
+      "Cardamom":     "2,000 plants/ha",
       "Black Pepper": "2,500 vines/ha",
-      "Fennel": "200,000 plants/ha",
-      "Curry Leaf": "10,000 plants/ha",
-      "Chilli": "60,000 plants/ha",
-      "Safflower": "50,000 plants/ha",
-      "Lac crop": "Lac host trees/ha"
+      "Chilli":       "60,000 plants/ha",
+      "Coriander":    "500,000 plants/ha",
+      "Cumin":        "300,000 plants/ha",
+      "Fennel":       "200,000 plants/ha",
+      "Mustard":      "30,000 plants/ha",
+      "Safflower":    "50,000 plants/ha",
+      "Methi (Fenugreek)": "400,000 plants/ha",
+      "Fenugreek":    "400,000 plants/ha",
+      "Mint":         "80,000 plants/ha",
+      "Curry Leaf":   "10,000 plants/ha",
+      "Lac crop":     "Lac host trees/ha",
+      // Oilseeds
+      "Sesame":       "300,000 plants/ha",
+      "Sunflower":    "55,000 plants/ha",
+      // Vegetables
+      "Tomato":       "25,000 plants/ha",
+      "Onion":        "200,000 plants/ha",
+      "Potato":       "40,000 plants/ha",
+      "Brinjal":      "25,000 plants/ha"
     };
     return densities[cropName] || "60,000 plants/ha";
   }
   
   getCropBenefit(cropName) {
     const benefits = {
-      "Cowpea": "Nitrogen fixation",
-      "Lentils": "Protein source, nitrogen fixation",
-      "Chickpea": "Protein source",
-      "Pigeonpea": "Nitrogen fixation, protein",
-      "Black Gram": "Protein source",
-      "Green Gram": "Nitrogen fixation",
-      "Groundnut": "Oil crop, nitrogen fixation",
-      "Soyabean": "Protein source"
+      // Legumes
+      "Cowpea":       "Nitrogen fixation, dual-purpose food & fodder",
+      "Lentils":      "Protein source, nitrogen fixation",
+      "Chickpea":     "High-protein pulse, soil nitrogen enrichment",
+      "Pigeonpea":    "Nitrogen fixation, perennial income",
+      "Black Gram":   "High market value protein pulse",
+      "Green Gram":   "Nitrogen fixation, short-duration crop",
+      "Groundnut":    "Oil crop, nitrogen fixation",
+      "Soyabean":     "High-protein oilseed, soil improvement",
+      // Fruits
+      "Banana":       "Year-round income, high local demand",
+      "Papaya":       "Quick income (fruits in 9 months), medicinal value",
+      "Grapes":       "High-value cash crop, wine & raisin potential",
+      "Pomegranate":  "Drought-tolerant, high export value",
+      "Guava":        "Hardy crop, vitamin-C rich, good market demand",
+      "Sapota":       "Low maintenance, long bearing period",
+      "Amla":         "Rich in antioxidants, rising demand for processing",
+      "Jackfruit":    "High biomass, fruit & timber combined value",
+      "Litchi":       "Premium fruit, high export potential",
+      "Apple":        "Premium high-altitude fruit, strong market",
+      "Watermelon":   "Short duration, high water content, summer demand",
+      // Plantation
+      "Coffee":       "Premium export crop, shade-grown possible",
+      "Tea":          "Perennial income, high export value",
+      "Cashew":       "High-value nut, raw cashew export.",
+      "Arecanut":     "High market price, traditional crop",
+      "Rubber":       "Industrial crop, long-term income",
+      // Vegetables
+      "Tomato":       "High demand, can be grown season-round",
+      "Onion":        "Staple crop, high price stability",
+      "Potato":       "Staple food, large processing market",
+      "Brinjal":      "Low input cost, high local demand"
     };
-    return benefits[cropName] || "Improves soil health";
+    return benefits[cropName] || "Improves soil health and farm income";
   }
   
   determineSuitableTrees(rainfall, temperature, ph, drainage, region = "India") {
@@ -759,46 +862,60 @@ class AgroIntelService {
   }
   
   calculateEconomicProjection(land_area, investment_capacity, crops, trees) {
-    // Simplified economic calculation
-    let estimated_investment = 0;
-    let expected_income = 0;
-    
-    switch(investment_capacity) {
+    // Scale base figures by land area (default 1 acre if not provided)
+    const acres = Math.max(parseFloat(land_area) || 1, 0.1);
+
+    // Base investment & income per acre by capacity tier
+    let baseInvestmentPerAcre = 0;
+    let baseIncomePerAcre = 0;
+
+    switch (investment_capacity) {
       case 'low':
-        estimated_investment = 20000;
-        expected_income = 60000;
+        baseInvestmentPerAcre = 15000;
+        baseIncomePerAcre    = 45000;
         break;
       case 'medium':
-        estimated_investment = 35000;
-        expected_income = 120000;
+        baseInvestmentPerAcre = 28000;
+        baseIncomePerAcre    = 90000;
         break;
       case 'high':
-        estimated_investment = 60000;
-        expected_income = 200000;
+        baseInvestmentPerAcre = 50000;
+        baseIncomePerAcre    = 160000;
         break;
       default:
-        estimated_investment = 35000;
-        expected_income = 120000;
+        baseInvestmentPerAcre = 28000;
+        baseIncomePerAcre    = 90000;
     }
-    
-    const roi = (expected_income / estimated_investment).toFixed(1) + "x";
+
+    const estimated_investment = Math.round(baseInvestmentPerAcre * acres);
+    const expected_income      = Math.round(baseIncomePerAcre * acres);
+    const roi                  = (expected_income / estimated_investment).toFixed(1) + "x";
     const payback_period_months = Math.round(estimated_investment / (expected_income / 12));
-    
-    // Calculate per crop/tree income (simplified)
+
+    // Safe access to crop/tree arrays
+    const mainCrops  = crops?.mainCrops  || [];
+    const intercrops = crops?.intercrops || [];
+    const treeList   = trees || [];
+
+    // Income split: 50% to main crops, 20% to intercrops, 30% to trees
+    // Divided equally among items in each category
+    const mainCropShare  = mainCrops.length  > 0 ? (expected_income * 0.50) / mainCrops.length  : 0;
+    const intercropShare = intercrops.length > 0 ? (expected_income * 0.20) / intercrops.length : 0;
+    const treeShare      = treeList.length   > 0 ? (expected_income * 0.30) / treeList.length   : 0;
+
     const cropIncome = {};
-    crops.mainCrops.forEach(crop => {
-      cropIncome[crop.name] = Math.round(expected_income * 0.4);
+    mainCrops.forEach(crop => {
+      if (crop?.name) cropIncome[crop.name] = Math.round(mainCropShare);
     });
-    
-    crops.intercrops.forEach(crop => {
-      cropIncome[crop.name] = Math.round(expected_income * 0.2);
+    intercrops.forEach(crop => {
+      if (crop?.name) cropIncome[crop.name] = Math.round(intercropShare);
     });
-    
+
     const treeIncome = {};
-    trees.forEach(tree => {
-      treeIncome[tree.name] = Math.round(expected_income * 0.4);
+    treeList.forEach(tree => {
+      if (tree?.name) treeIncome[tree.name] = Math.round(treeShare);
     });
-    
+
     return {
       estimated_investment,
       expected_income,
@@ -966,99 +1083,104 @@ class AgroIntelService {
   getRegionalCropDatabase() {
     return {
       "Punjab/Haryana": {
-        mainCrops: ["Wheat", "Rice", "Maize", "Cotton"],
-        intercrops: ["Peas", "Mustard", "Lentils"],
-        trees: ["Poplar", "Neem", "Mango"]
+        mainCrops: ["Wheat", "Rice", "Maize", "Cotton", "Potato", "Sunflower"],
+        intercrops: ["Peas", "Mustard", "Lentils", "Chickpea"],
+        trees: ["Poplar", "Neem", "Mango", "Guava"]
       },
       "Uttar Pradesh": {
-        mainCrops: ["Wheat", "Rice", "Sugarcane", "Maize"],
-        intercrops: ["Pigeonpea", "Lentils", "Chickpea"],
-        trees: ["Mango", "Neem", "Teak"]
+        mainCrops: ["Wheat", "Rice", "Sugarcane", "Maize", "Potato", "Guava"],
+        intercrops: ["Pigeonpea", "Lentils", "Chickpea", "Mustard"],
+        trees: ["Mango", "Neem", "Teak", "Guava", "Amla"]
       },
       "Rajasthan": {
-        mainCrops: ["Pearl Millet", "Jowar", "Maize", "Groundnut"],
-        intercrops: ["Chickpea", "Cowpea", "Groundnut"],
-        trees: ["Neem", "Tamarind", "Gliricidia"]
+        mainCrops: ["Pearl Millet", "Jowar", "Maize", "Groundnut", "Pomegranate", "Mustard"],
+        intercrops: ["Chickpea", "Cowpea", "Groundnut", "Sesame"],
+        trees: ["Neem", "Tamarind", "Gliricidia", "Pomegranate"]
       },
       "Bihar": {
-        mainCrops: ["Rice", "Wheat", "Maize", "Sugarcane"],
-        intercrops: ["Lentils", "Chickpea", "Cowpea"],
-        trees: ["Mango", "Bamboo", "Neem"]
+        mainCrops: ["Rice", "Wheat", "Maize", "Sugarcane", "Litchi", "Banana"],
+        intercrops: ["Lentils", "Chickpea", "Cowpea", "Mustard"],
+        trees: ["Mango", "Bamboo", "Neem", "Litchi"]
       },
       "Jharkhand": {
-        mainCrops: ["Rice", "Maize", "Jowar", "Groundnut"],
-        intercrops: ["Pigeonpea", "Black Gram", "Cowpea"],
-        trees: ["Sal", "Bamboo", "Mango"]
+        mainCrops: ["Rice", "Maize", "Jowar", "Groundnut", "Guava"],
+        intercrops: ["Pigeonpea", "Black Gram", "Cowpea", "Green Gram"],
+        trees: ["Sal", "Bamboo", "Mango", "Jackfruit"]
       },
       "Madhya Pradesh": {
-        mainCrops: ["Soyabean", "Wheat", "Chickpea", "Cotton"],
-        intercrops: ["Pigeonpea", "Lentils", "Black Gram"],
-        trees: ["Teak", "Neem", "Mango"]
+        mainCrops: ["Soyabean", "Wheat", "Chickpea", "Cotton", "Tomato", "Onion"],
+        intercrops: ["Pigeonpea", "Lentils", "Black Gram", "Sesame"],
+        trees: ["Teak", "Neem", "Mango", "Amla"]
       },
       "Maharashtra": {
-        mainCrops: ["Cotton", "Soyabean", "Jowar", "Sugarcane"],
-        intercrops: ["Pigeonpea", "Groundnut", "Green Gram"],
-        trees: ["Teak", "Mango", "Tamarind"]
+        mainCrops: ["Cotton", "Soyabean", "Jowar", "Sugarcane", "Grapes", "Pomegranate", "Banana"],
+        intercrops: ["Pigeonpea", "Groundnut", "Green Gram", "Onion"],
+        trees: ["Teak", "Mango", "Tamarind", "Sapota"]
       },
       "Gujarat": {
-        mainCrops: ["Cotton", "Groundnut", "Pearl Millet", "Maize"],
-        intercrops: ["Pigeonpea", "Soyabean", "Cowpea"],
-        trees: ["Neem", "Mango", "Tamarind"]
+        mainCrops: ["Cotton", "Groundnut", "Pearl Millet", "Maize", "Castor", "Banana"],
+        intercrops: ["Pigeonpea", "Soyabean", "Cowpea", "Sesame"],
+        trees: ["Neem", "Mango", "Tamarind", "Sapota"]
       },
       "Chhattisgarh": {
-        mainCrops: ["Rice", "Maize", "Jowar", "Soyabean"],
-        intercrops: ["Chickpea", "Pigeonpea", "Black Gram"],
-        trees: ["Teak", "Bamboo", "Sal"]
+        mainCrops: ["Rice", "Maize", "Jowar", "Soyabean", "Tomato"],
+        intercrops: ["Chickpea", "Pigeonpea", "Black Gram", "Green Gram"],
+        trees: ["Teak", "Bamboo", "Sal", "Mango"]
       },
       "Odisha": {
-        mainCrops: ["Rice", "Maize", "Groundnut", "Sugarcane"],
-        intercrops: ["Pigeonpea", "Green Gram", "Black Gram"],
-        trees: ["Mango", "Neem", "Bamboo"]
+        mainCrops: ["Rice", "Maize", "Groundnut", "Sugarcane", "Papaya"],
+        intercrops: ["Pigeonpea", "Green Gram", "Black Gram", "Cowpea"],
+        trees: ["Mango", "Neem", "Bamboo", "Cashew", "Jackfruit"]
       },
       "Karnataka": {
-        mainCrops: ["Jowar", "Rice", "Maize", "Groundnut"],
-        intercrops: ["Pigeonpea", "Groundnut", "Cowpea"],
-        trees: ["Neem", "Mango", "Tamarind"]
+        mainCrops: ["Jowar", "Rice", "Maize", "Groundnut", "Coffee", "Grapes", "Pomegranate"],
+        intercrops: ["Pigeonpea", "Groundnut", "Cowpea", "Green Gram"],
+        trees: ["Neem", "Mango", "Tamarind", "Coconut", "Arecanut"]
       },
       "Telangana": {
-        mainCrops: ["Rice", "Cotton", "Maize", "Jowar"],
-        intercrops: ["Pigeonpea", "Black Gram", "Groundnut"],
-        trees: ["Neem", "Tamarind", "Mango"]
+        mainCrops: ["Rice", "Cotton", "Maize", "Jowar", "Turmeric", "Chilli", "Banana"],
+        intercrops: ["Pigeonpea", "Black Gram", "Groundnut", "Sesame"],
+        trees: ["Neem", "Tamarind", "Mango", "Cashew"]
       },
       "Andhra Pradesh": {
-        mainCrops: ["Rice", "Maize", "Cotton", "Groundnut"],
-        intercrops: ["Pigeonpea", "Black Gram", "Green Gram"],
-        trees: ["Mango", "Coconut", "Neem"]
+        mainCrops: ["Rice", "Maize", "Cotton", "Groundnut", "Chilli", "Banana", "Papaya"],
+        intercrops: ["Pigeonpea", "Black Gram", "Green Gram", "Sesame"],
+        trees: ["Mango", "Coconut", "Neem", "Cashew"]
       },
       "Tamil Nadu": {
-        mainCrops: ["Rice", "Sugarcane", "Maize", "Cotton"],
-        intercrops: ["Groundnut", "Black Gram", "Green Gram"],
-        trees: ["Coconut", "Mango", "Neem"]
+        mainCrops: ["Rice", "Sugarcane", "Maize", "Cotton", "Banana", "Coconut", "Turmeric"],
+        intercrops: ["Groundnut", "Black Gram", "Green Gram", "Cowpea"],
+        trees: ["Coconut", "Mango", "Neem", "Sapota", "Jackfruit"]
       },
       "Kerala": {
-        mainCrops: ["Coconut", "Rice", "Sugarcane", "Maize"],
-        intercrops: ["Cowpea", "Green Gram", "Groundnut"],
-        trees: ["Coconut", "Bamboo", "Mango"]
+        mainCrops: ["Coconut", "Rice", "Banana", "Coffee", "Rubber", "Arecanut"],
+        intercrops: ["Cowpea", "Green Gram", "Groundnut", "Ginger"],
+        trees: ["Coconut", "Bamboo", "Mango", "Jackfruit", "Rubber"]
       },
       "West Bengal": {
-        mainCrops: ["Rice", "Wheat", "Maize", "Sugarcane"],
-        intercrops: ["Lentils", "Chickpea", "Cowpea"],
-        trees: ["Mango", "Bamboo", "Neem"]
+        mainCrops: ["Rice", "Wheat", "Maize", "Sugarcane", "Potato", "Litchi", "Banana"],
+        intercrops: ["Lentils", "Chickpea", "Cowpea", "Mustard"],
+        trees: ["Mango", "Bamboo", "Neem", "Jackfruit", "Litchi"]
       },
       "Assam/Northeast": {
-        mainCrops: ["Rice", "Maize", "Sugarcane", "Jowar"],
-        intercrops: ["Black Gram", "Green Gram", "Cowpea"],
-        trees: ["Bamboo", "Mango", "Neem"]
+        mainCrops: ["Rice", "Maize", "Sugarcane", "Tea", "Banana", "Pineapple"],
+        intercrops: ["Black Gram", "Green Gram", "Cowpea", "Ginger"],
+        trees: ["Bamboo", "Mango", "Neem", "Jackfruit"]
+      },
+      "Himachal/J&K": {
+        mainCrops: ["Apple", "Wheat", "Maize", "Potato", "Peas"],
+        intercrops: ["Lentils", "Chickpea", "Peas", "Mustard"],
+        trees: ["Apple", "Walnut", "Poplar", "Deodar"]
       },
       "India": {
-        mainCrops: ["Maize", "Rice", "Wheat", "Soyabean"],
-        intercrops: ["Cowpea", "Black Gram", "Pigeonpea"],
-        trees: ["Neem", "Mango", "Gliricidia"]
+        mainCrops: ["Maize", "Rice", "Wheat", "Soyabean", "Banana", "Tomato"],
+        intercrops: ["Cowpea", "Black Gram", "Pigeonpea", "Green Gram"],
+        trees: ["Neem", "Mango", "Gliricidia", "Guava"]
       },
       "Global": {
-        mainCrops: ["Maize", "Rice", "Wheat", "Soyabean"],
-        intercrops: ["Cowpea", "Lentils", "Pigeonpea"],
-        trees: ["Neem", "Mango", "Gliricidia"]
+        mainCrops: ["Maize", "Rice", "Wheat", "Soyabean", "Banana", "Potato"],
+        intercrops: ["Cowpea", "Lentils", "Pigeonpea", "Groundnut"],
+        trees: ["Neem", "Mango", "Gliricidia", "Guava"]
       }
     };
   }

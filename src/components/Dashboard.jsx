@@ -35,6 +35,8 @@ const Dashboard = () => {
   const [weatherLoading, setWeatherLoading] = useState(true);
   const [weatherError, setWeatherError] = useState('');
   const [soilData, setSoilData] = useState(null);
+  const [soilLoading, setSoilLoading] = useState(false);
+  const [soilError, setSoilError] = useState('');
   const [rainfallData, setRainfallData] = useState(null);
   const [investmentCapacity, setInvestmentCapacity] = useState(null);
   const [aiRecommendations, setAiRecommendations] = useState(null);
@@ -54,24 +56,21 @@ const Dashboard = () => {
             lng: position.coords.longitude
           };
           setCenter(userCenter);
-
-          // Fetch weather for user location
           fetchWeather(userCenter.lat, userCenter.lng);
-          
-          // Fetch real-time predictions
           fetchRealTimePredictions(userCenter.lat, userCenter.lng);
+          fetchSoilAnalysis(userCenter.lat, userCenter.lng);
         },
         (error) => {
           console.error('Error getting location:', error);
-          // Fetch weather for default location if geolocation fails
           fetchWeather(defaultCenter.lat, defaultCenter.lng);
           fetchRealTimePredictions(defaultCenter.lat, defaultCenter.lng);
+          fetchSoilAnalysis(defaultCenter.lat, defaultCenter.lng);
         }
       );
     } else {
-      // Fetch weather for default location if geolocation not supported
       fetchWeather(defaultCenter.lat, defaultCenter.lng);
       fetchRealTimePredictions(defaultCenter.lat, defaultCenter.lng);
+      fetchSoilAnalysis(defaultCenter.lat, defaultCenter.lng);
     }
   }, []);
 
@@ -134,6 +133,41 @@ const Dashboard = () => {
     }
   };
 
+  const fetchSoilAnalysis = async (lat, lon) => {
+    setSoilLoading(true);
+    setSoilError('');
+    try {
+      const raw = await agroIntelService.fetchSoilData(lat, lon);
+      // Map service response fields to display-friendly labels
+      setSoilData({
+        pH:           raw.ph         != null ? raw.ph         : 'N/A',
+        texture:      raw.sand != null && raw.clay != null && raw.silt != null
+                        ? agroIntelService.determineSoilTexture(raw.sand, raw.silt, raw.clay)
+                        : 'N/A',
+        organicCarbon: raw.organic_carbon != null ? `${raw.organic_carbon}%`  : 'N/A',
+        bulkDensity:  'N/A',  // not returned by SoilGrids proxy
+        nitrogen:     raw.nitrogen       != null ? `${raw.nitrogen} kg/ha`    : 'N/A',
+        phosphorus:   'N/A',  // not returned by SoilGrids proxy
+        potassium:    'N/A',  // not returned by SoilGrids proxy
+        cec:          raw.cec           != null ? `${raw.cec} cmol/kg`       : 'N/A',
+        sand:         raw.sand          != null ? `${raw.sand}%`             : 'N/A',
+        silt:         raw.silt          != null ? `${raw.silt}%`             : 'N/A',
+        clay:         raw.clay          != null ? `${raw.clay}%`             : 'N/A',
+        _raw: raw
+      });
+    } catch (err) {
+      console.error('Error fetching soil data:', err);
+      setSoilError('Could not fetch live soil data. Showing estimated values.');
+      setSoilData({
+        pH: 6.8, texture: 'Loamy', organicCarbon: '1.2%', bulkDensity: '1.3 g/cm³',
+        nitrogen: '150 kg/ha', phosphorus: 'N/A', potassium: 'N/A',
+        cec: 'N/A', sand: 'N/A', silt: 'N/A', clay: 'N/A'
+      });
+    } finally {
+      setSoilLoading(false);
+    }
+  };
+
   const fetchRealTimePredictions = async (lat, lon) => {
     try {
       // Prepare farmer data for prediction
@@ -191,60 +225,40 @@ const Dashboard = () => {
     }
   };
 
-  // Mock data for soil, rainfall, and investment capacity
+  // Static data for rainfall, investment capacity, and AI recommendations
   useEffect(() => {
-    try {
-      // Mock soil data
-      setSoilData({
-        pH: 6.8,
-        texture: 'Loamy',
-        organicCarbon: '1.2%',
-        bulkDensity: '1.3 g/cm³',
-        nitrogen: '25 kg/ha',
-        phosphorus: '15 kg/ha',
-        potassium: '30 kg/ha'
-      });
-
-      // Mock rainfall data
-      setRainfallData({
-        annual: '950 mm',
-        seasonal: 'Monsoon: 750 mm, Winter: 150 mm, Summer: 50 mm',
-        soilWetness: 'Moderate'
-      });
-
-      // Mock investment capacity
-      setInvestmentCapacity({
-        category: 'Medium',
-        budget: '₹50,000 - ₹1,00,000',
-        riskTolerance: 'Moderate'
-      });
-
-      // Mock AI recommendations
-      setAiRecommendations({
-        cropRotation: [
-          { season: 'Kharif', crop: 'Rice', reason: 'High rainfall season' },
-          { season: 'Rabi', crop: 'Wheat', reason: 'Cooler temperatures' },
-          { season: 'Summer', crop: 'Moong Dal', reason: 'Drought-resistant legume' }
-        ],
-        soilManagement: [
-          'Add organic compost to improve soil fertility',
-          'Practice crop rotation to maintain soil health',
-          'Use natural pest control methods'
-        ],
-        irrigation: [
-          'Install drip irrigation for water efficiency',
-          'Collect rainwater during monsoon season',
-          'Schedule irrigation based on soil moisture levels'
-        ],
-        economicForecast: {
-          expectedYield: 'Rice: 4 tons/ha, Wheat: 3.5 tons/ha',
-          inputCost: '₹25,000/ha',
-          expectedProfit: '₹45,000/ha'
-        }
-      });
-    } catch (error) {
-      console.error('Error setting mock data:', error);
-    }
+    setRainfallData({
+      annual: '950 mm',
+      seasonal: 'Monsoon: 750 mm, Winter: 150 mm, Summer: 50 mm',
+      soilWetness: 'Moderate'
+    });
+    setInvestmentCapacity({
+      category: 'Medium',
+      budget: '₹50,000 - ₹1,00,000',
+      riskTolerance: 'Moderate'
+    });
+    setAiRecommendations({
+      cropRotation: [
+        { season: 'Kharif', crop: 'Rice', reason: 'High rainfall season' },
+        { season: 'Rabi', crop: 'Wheat', reason: 'Cooler temperatures' },
+        { season: 'Summer', crop: 'Moong Dal', reason: 'Drought-resistant legume' }
+      ],
+      soilManagement: [
+        'Add organic compost to improve soil fertility',
+        'Practice crop rotation to maintain soil health',
+        'Use natural pest control methods'
+      ],
+      irrigation: [
+        'Install drip irrigation for water efficiency',
+        'Collect rainwater during monsoon season',
+        'Schedule irrigation based on soil moisture levels'
+      ],
+      economicForecast: {
+        expectedYield: 'Rice: 4 tons/ha, Wheat: 3.5 tons/ha',
+        inputCost: '₹25,000/ha',
+        expectedProfit: '₹45,000/ha'
+      }
+    });
   }, []);
 
   const handleLogout = async () => {
@@ -570,57 +584,119 @@ const Dashboard = () => {
         {/* Soil Analysis Tab */}
         {activeTab === 'soil' && (
           <div className="bg-white rounded-xl shadow-md p-6">
-            <h2 className="text-2xl font-semibold text-gray-800 mb-6">{t('soilAnalysisReport')}</h2>
-            {soilData ? (
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                <div>
-                  <h3 className="text-lg font-medium text-gray-800 mb-4">{t('soilProperties')}</h3>
-                  <div className="space-y-3">
-                    <div className="flex justify-between border-b border-gray-100 pb-2">
-                      <span className="text-gray-600">{t('phLevel')}</span>
-                      <span className="font-medium">{soilData.pH}</span>
-                    </div>
-                    <div className="flex justify-between border-b border-gray-100 pb-2">
-                      <span className="text-gray-600">{t('texture')}</span>
-                      <span className="font-medium">{soilData.texture}</span>
-                    </div>
-                    <div className="flex justify-between border-b border-gray-100 pb-2">
-                      <span className="text-gray-600">{t('organicCarbon')}</span>
-                      <span className="font-medium">{soilData.organicCarbon}</span>
-                    </div>
-                    <div className="flex justify-between border-b border-gray-100 pb-2">
-                      <span className="text-gray-600">{t('bulkDensity')}</span>
-                      <span className="font-medium">{soilData.bulkDensity}</span>
+            <div className="flex items-center justify-between mb-6">
+              <h2 className="text-2xl font-semibold text-gray-800">{t('soilAnalysisReport')}</h2>
+              {soilLoading && (
+                <span className="text-sm text-blue-600 flex items-center gap-2">
+                  <svg className="animate-spin h-4 w-4" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                    <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"/>
+                    <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"/>
+                  </svg>
+                  Fetching live soil data...
+                </span>
+              )}
+            </div>
+
+            {soilError && (
+              <div className="mb-4 p-3 bg-amber-50 border border-amber-200 rounded-lg text-sm text-amber-700">
+                ⚠️ {soilError}
+              </div>
+            )}
+
+            {soilLoading && !soilData ? (
+              <p className="text-gray-500">{t('loadingSoilData')}</p>
+            ) : soilData ? (
+              <div className="space-y-6">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                  {/* Soil Properties */}
+                  <div className="bg-green-50 rounded-lg p-4">
+                    <h3 className="text-lg font-medium text-gray-800 mb-4">🌍 {t('soilProperties')}</h3>
+                    <div className="space-y-3">
+                      <div className="flex justify-between border-b border-green-100 pb-2">
+                        <span className="text-gray-600">{t('phLevel')}</span>
+                        <span className={`font-bold ${
+                          soilData.pH !== 'N/A'
+                            ? soilData.pH < 6 ? 'text-red-600'
+                            : soilData.pH > 7.5 ? 'text-orange-600'
+                            : 'text-green-700'
+                          : 'text-gray-500'
+                        }`}>{soilData.pH}</span>
+                      </div>
+                      <div className="flex justify-between border-b border-green-100 pb-2">
+                        <span className="text-gray-600">{t('texture')}</span>
+                        <span className="font-medium">{soilData.texture}</span>
+                      </div>
+                      <div className="flex justify-between border-b border-green-100 pb-2">
+                        <span className="text-gray-600">{t('organicCarbon')}</span>
+                        <span className="font-medium">{soilData.organicCarbon}</span>
+                      </div>
+                      <div className="flex justify-between border-b border-green-100 pb-2">
+                        <span className="text-gray-600">Sand / Silt / Clay</span>
+                        <span className="font-medium">{soilData.sand} / {soilData.silt} / {soilData.clay}</span>
+                      </div>
+                      {soilData.cec !== 'N/A' && (
+                        <div className="flex justify-between">
+                          <span className="text-gray-600">CEC</span>
+                          <span className="font-medium">{soilData.cec}</span>
+                        </div>
+                      )}
                     </div>
                   </div>
-                </div>
-                
-                <div>
-                  <h3 className="text-lg font-medium text-gray-800 mb-4">{t('nutrientContent')}</h3>
-                  <div className="space-y-3">
-                    <div className="flex justify-between border-b border-gray-100 pb-2">
-                      <span className="text-gray-600">{t('nitrogen')}</span>
-                      <span className="font-medium">{soilData.nitrogen}</span>
+
+                  {/* Nutrient Content */}
+                  <div className="bg-blue-50 rounded-lg p-4">
+                    <h3 className="text-lg font-medium text-gray-800 mb-4">🧪 {t('nutrientContent')}</h3>
+                    <div className="space-y-3">
+                      <div className="flex justify-between border-b border-blue-100 pb-2">
+                        <span className="text-gray-600">{t('nitrogen')}</span>
+                        <span className={`font-bold ${
+                          soilData._raw?.nitrogen != null && soilData._raw.nitrogen < 150
+                            ? 'text-red-600' : 'text-blue-700'
+                        }`}>{soilData.nitrogen}</span>
+                      </div>
+                      <div className="flex justify-between border-b border-blue-100 pb-2">
+                        <span className="text-gray-600">{t('phosphorus')}</span>
+                        <span className="font-medium">{soilData.phosphorus}</span>
+                      </div>
+                      <div className="flex justify-between">
+                        <span className="text-gray-600">{t('potassium')}</span>
+                        <span className="font-medium">{soilData.potassium}</span>
+                      </div>
                     </div>
-                    <div className="flex justify-between border-b border-gray-100 pb-2">
-                      <span className="text-gray-600">{t('phosphorus')}</span>
-                      <span className="font-medium">{soilData.phosphorus}</span>
-                    </div>
-                    <div className="flex justify-between border-b border-gray-100 pb-2">
-                      <span className="text-gray-600">{t('potassium')}</span>
-                      <span className="font-medium">{soilData.potassium}</span>
-                    </div>
+
+                    {/* pH status indicator */}
+                    {soilData.pH !== 'N/A' && (
+                      <div className="mt-4 pt-3 border-t border-blue-100">
+                        <p className="text-sm font-medium text-gray-700 mb-1">pH Status</p>
+                        <div className="w-full bg-gray-200 rounded-full h-3">
+                          <div
+                            className={`h-3 rounded-full ${
+                              soilData.pH < 6 ? 'bg-red-500'
+                              : soilData.pH > 7.5 ? 'bg-orange-500'
+                              : 'bg-green-500'
+                            }`}
+                            style={{ width: `${Math.min(((soilData.pH - 4) / 6) * 100, 100)}%` }}
+                          />
+                        </div>
+                        <div className="flex justify-between text-xs text-gray-500 mt-1">
+                          <span>Acidic (4)</span>
+                          <span className="text-green-600 font-medium">Optimal (6–7.5)</span>
+                          <span>Alkaline (10)</span>
+                        </div>
+                      </div>
+                    )}
                   </div>
                 </div>
-                
-                <div className="md:col-span-2 mt-6">
-                  <h3 className="text-lg font-medium text-gray-800 mb-4">{t('aiSoilManagement')}</h3>
+
+                {/* AI Soil Management */}
+                <div className="bg-gray-50 rounded-lg p-4">
+                  <h3 className="text-lg font-medium text-gray-800 mb-4">🤖 {t('aiSoilManagement')}</h3>
                   {aiRecommendations ? (
                     <ul className="space-y-2">
-                      {aiRecommendations.soilManagement.map((recommendation, index) => (
-                        <li key={index} className="flex items-start">
-                          <span className="text-green-500 mr-2">✓</span>
-                          <span className="text-gray-700">{recommendation}</span>
+                      {aiRecommendations.soilManagement.map((rec, i) => (
+                        <li key={i} className="flex items-start">
+                          <span className="text-green-500 mr-2 mt-0.5">✓</span>
+                          <span className="text-gray-700">{rec}</span>
                         </li>
                       ))}
                     </ul>
@@ -628,6 +704,10 @@ const Dashboard = () => {
                     <p className="text-gray-500">{t('loadingRecommendations')}</p>
                   )}
                 </div>
+
+                <p className="text-xs text-gray-400 text-right">
+                  📍 Data sourced from SoilGrids API · {center.lat.toFixed(4)}, {center.lng.toFixed(4)}
+                </p>
               </div>
             ) : (
               <p className="text-gray-500">{t('loadingSoilData')}</p>
