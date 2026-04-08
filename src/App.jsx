@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import { onAuthStateChanged } from 'firebase/auth';
 import { auth } from './firebase';
-import LanguageSelector from './components/LanguageSelector';
+
 import Login from './components/Login';
 import Signup from './components/Signup';
 import Dashboard from './components/Dashboard';
@@ -13,7 +13,7 @@ function App() {
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
   const [authMode, setAuthMode] = useState('login'); // 'login' or 'signup'
-  const [showLanguageSelection, setShowLanguageSelection] = useState(true);
+
 
   // Check auth state on app load
   useEffect(() => {
@@ -28,7 +28,7 @@ function App() {
 
   const switchToLogin = () => setAuthMode('login');
   const switchToSignup = () => setAuthMode('signup');
-  const handleLanguageSelected = () => setShowLanguageSelection(false);
+
 
   if (loading) {
     return (
@@ -46,10 +46,7 @@ function App() {
     return <Dashboard />;
   }
 
-  // Show language selection first
-  if (showLanguageSelection) {
-    return <LanguageSelector onLanguageSelected={handleLanguageSelected} />;
-  }
+
 
   return (
     <div className="min-h-screen bg-green-50 flex flex-col items-center justify-center p-4">
