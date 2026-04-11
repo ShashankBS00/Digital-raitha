@@ -53,20 +53,20 @@ const AIPlanner = () => {
     setAgroPlan(plan);
     setPlanInputs(inputs);
 
-    // Save to Firebase
+    // Save to Firebase. If the user is not authenticated, still persist the plan using a null user ID.
     const user = auth.currentUser;
-    if (user) {
-      setSaveStatus('saving');
-      try {
-        await planStorageService.savePlan(user.uid, plan, inputs);
-        setSaveStatus('saved');
-        // Clear the status after 3 seconds
-        setTimeout(() => setSaveStatus(''), 3000);
-      } catch (err) {
-        console.error('Error saving plan to Firebase:', err);
-        setSaveStatus('error');
-        setTimeout(() => setSaveStatus(''), 5000);
-      }
+    const userId = user ? user.uid : null;
+
+    setSaveStatus('saving');
+    try {
+      await planStorageService.savePlan(userId, plan, inputs);
+      setSaveStatus('saved');
+      // Clear the status after 3 seconds
+      setTimeout(() => setSaveStatus(''), 3000);
+    } catch (err) {
+      console.error('Error saving plan to Firebase:', err);
+      setSaveStatus('error');
+      setTimeout(() => setSaveStatus(''), 5000);
     }
   };
 

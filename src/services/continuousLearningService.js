@@ -15,17 +15,24 @@ class ContinuousLearningService {
    */
   async storePrediction(predictionData) {
     try {
+      console.log('🔥 Attempting to store prediction in Firebase...');
+      console.log('Prediction data:', predictionData);
+      
       const predictionDoc = {
         ...predictionData,
         timestamp: Timestamp.now(),
         feedback_received: false
       };
 
+      console.log('Document to store:', predictionDoc);
+      
       const docRef = await addDoc(collection(db, this.predictionsCollection), predictionDoc);
-      console.log('Prediction stored with ID: ', docRef.id);
+      console.log('✅ Prediction stored successfully with ID: ', docRef.id);
       return docRef.id;
     } catch (error) {
-      console.error('Error storing prediction: ', error);
+      console.error('❌ Error storing prediction in Firebase: ', error);
+      console.error('Error code:', error.code);
+      console.error('Error message:', error.message);
       throw error;
     }
   }
@@ -38,14 +45,20 @@ class ContinuousLearningService {
    */
   async storeFeedback(predictionId, feedbackData) {
     try {
+      console.log('🔥 Attempting to store feedback in Firebase...');
+      console.log('Prediction ID:', predictionId);
+      console.log('Feedback data:', feedbackData);
+      
       const feedbackDoc = {
         prediction_id: predictionId,
         ...feedbackData,
         timestamp: Timestamp.now()
       };
 
+      console.log('Document to store:', feedbackDoc);
+      
       const docRef = await addDoc(collection(db, this.feedbackCollection), feedbackDoc);
-      console.log('Feedback stored with ID: ', docRef.id);
+      console.log('✅ Feedback stored successfully with ID: ', docRef.id);
       
       // Update the prediction to mark feedback as received
       // This would require updating the prediction document, but for simplicity,
@@ -54,7 +67,9 @@ class ContinuousLearningService {
       
       return docRef.id;
     } catch (error) {
-      console.error('Error storing feedback: ', error);
+      console.error('❌ Error storing feedback in Firebase: ', error);
+      console.error('Error code:', error.code);
+      console.error('Error message:', error.message);
       throw error;
     }
   }

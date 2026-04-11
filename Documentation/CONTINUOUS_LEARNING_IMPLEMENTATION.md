@@ -91,13 +91,35 @@ By default, models are retrained monthly using the last 30 days of feedback data
 - `models/retrain_model.py`: Main retraining logic
 - `models/schedule_retraining.py`: Scheduling mechanism
 
-## Future Improvements
+## Troubleshooting
 
-1. **Advanced Feedback Analysis**: Implement more sophisticated analysis of feedback data
-2. **Automated Model Selection**: Automatically choose the best model based on feedback
-3. **A/B Testing**: Compare multiple model versions simultaneously
-4. **Real-time Learning**: Implement online learning algorithms for immediate updates
-5. **Data Quality Checks**: Add validation for feedback data before retraining
+### Data Not Storing in Firebase
+
+If data is not being stored in Firebase for continuous learning, check the following:
+
+1. **Firebase Security Rules**: Ensure Firestore and Storage rules allow write access to the collections:
+   - `predictions`
+   - `feedback` 
+   - `model_versions`
+
+2. **Deploy Rules**: Use the provided scripts to deploy the security rules:
+   ```bash
+   # On Linux/Mac
+   ./deploy_firebase_rules.sh
+   
+   # On Windows
+   deploy_firebase_rules.bat
+   ```
+
+3. **Manual Deployment**: Or manually update rules in Firebase Console:
+   - Go to Firebase Console → Firestore Database → Rules
+   - Update rules to allow public read/write for continuous learning collections
+
+4. **Check Console Logs**: Look for permission-denied errors in browser console when submitting feedback.
+
+### Fallback Behavior
+
+The system includes fallback storage in localStorage when Firebase is unavailable, ensuring the application continues to work even if Firebase storage fails.
 
 ## Benefits
 

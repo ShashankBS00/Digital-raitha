@@ -1,0 +1,23 @@
+rules_version = '2';
+service firebase.storage {
+  match /b/{bucket}/o {
+    // Allow authenticated users to read and write their own files
+    match /{allPaths=**} {
+      allow read, write: if request.auth != null;
+    }
+
+    // Allow public read and write access for land layout maps and plan visualizations
+    match /land-layout-maps/{allPaths=**} {
+      allow read, write: if true;
+    }
+
+    match /agroforestry-plans/{allPaths=**} {
+      allow read, write: if true;
+    }
+
+    // Allow public read for test files
+    match /test-files/{allPaths=**} {
+      allow read, write: if true;
+    }
+  }
+}

@@ -177,6 +177,8 @@ class AgroIntelService {
         response.data.prediction_id = predictionId;
       } catch (storageError) {
         console.warn('Firebase storage unavailable, using local prediction ID:', storageError.message);
+        console.warn('To fix this, update Firebase security rules to allow writes to predictions collection');
+        // Keep the fallback prediction ID
       }
       
       return response.data;
@@ -1252,6 +1254,7 @@ class AgroIntelService {
       return feedbackId;
     } catch (firebaseError) {
       console.warn('Firebase feedback storage failed, saving locally:', firebaseError.message);
+      console.warn('To fix this, update Firebase security rules to allow writes to feedback collection');
       
       // Fallback: store feedback in localStorage when Firebase is unavailable
       try {
