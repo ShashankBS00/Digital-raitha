@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
 import agroIntelService from '../services/agroIntelService';
 
@@ -7,17 +7,34 @@ const SoilAnalysisComponent = ({ lat, lon, aiRecommendations }) => {
   const [soilData, setSoilData] = useState(null);
   const [soilLoading, setSoilLoading] = useState(true);
   const [soilError, setSoilError] = useState('');
+  const cachedLocation = useRef(null);
 
   useEffect(() => {
     const fetchSoilAnalysis = async () => {
       const latNum = Number(lat);
       const lonNum = Number(lon);
+      
+      // Check if coordinates are valid
       if (!Number.isFinite(latNum) || !Number.isFinite(lonNum)) {
         setSoilData(null);
         setSoilLoading(false);
         return;
       }
 
+      // Check if coordinates have changed significantly (more than 0.01 degree)
+      if (
+        cachedLocation.current &&
+        Math.abs(cachedLocation.current.lat - latNum) < 0.01 &&
+        Math.abs(cachedLocation.current.lon - lonNum) < 0.01
+      ) {
+        // Same location, use cached data - don't set loading
+        setSoilLoading(false);
+        return;
+      }
+
+      // Save current location to cache
+      cachedLocation.current = { lat: latNum, lon: lonNum };
+      
       setSoilLoading(true);
       setSoilError('');
       try {
@@ -30,10 +47,7 @@ const SoilAnalysisComponent = ({ lat, lon, aiRecommendations }) => {
               ? agroIntelService.determineSoilTexture(raw.sand, raw.silt, raw.clay)
               : 'N/A',
           organicCarbon: raw.organic_carbon != null ? `${raw.organic_carbon}%` : 'N/A',
-          bulkDensity: 'N/A',
           nitrogen: raw.nitrogen != null ? `${raw.nitrogen} kg/ha` : 'N/A',
-          phosphorus: 'N/A',
-          potassium: 'N/A',
           cec: raw.cec != null ? `${raw.cec} cmol/kg` : 'N/A',
           sand: raw.sand != null ? `${raw.sand}%` : 'N/A',
           silt: raw.silt != null ? `${raw.silt}%` : 'N/A',
@@ -47,10 +61,7 @@ const SoilAnalysisComponent = ({ lat, lon, aiRecommendations }) => {
           pH: 6.8,
           texture: 'Loamy',
           organicCarbon: '1.2%',
-          bulkDensity: '1.3 g/cm³',
           nitrogen: '150 kg/ha',
-          phosphorus: 'N/A',
-          potassium: 'N/A',
           cec: 'N/A',
           sand: 'N/A',
           silt: 'N/A',
@@ -170,14 +181,6 @@ const SoilAnalysisComponent = ({ lat, lon, aiRecommendations }) => {
                   >
                     {soilData.nitrogen}
                   </span>
-                </div>
-                <div className="flex justify-between border-b border-blue-100 pb-2">
-                  <span className="text-gray-600">{t('phosphorus')}</span>
-                  <span className="font-medium">{soilData.phosphorus}</span>
-                </div>
-                <div className="flex justify-between">
-                  <span className="text-gray-600">{t('potassium')}</span>
-                  <span className="font-medium">{soilData.potassium}</span>
                 </div>
               </div>
 
