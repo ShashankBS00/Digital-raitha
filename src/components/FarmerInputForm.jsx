@@ -226,97 +226,56 @@ const FarmerInputForm = ({ onPlanGenerated }) => {
 
   return (
     <div style={{
-      background: 'linear-gradient(135deg, #f0fdf4 0%, #dcfce7 40%, #d1fae5 100%)',
-      borderRadius: '24px',
-      padding: '0',
-      boxShadow: '0 8px 40px rgba(16,185,129,0.12), 0 2px 8px rgba(0,0,0,0.06)',
-      overflow: 'hidden',
       fontFamily: "'Inter', 'Segoe UI', sans-serif",
     }}>
-      {/* Header Banner */}
-      <div style={{
-        background: 'linear-gradient(135deg, #14532d 0%, #166534 50%, #15803d 100%)',
-        padding: '28px 32px 24px',
-        position: 'relative',
-        overflow: 'hidden',
-      }}>
-        {/* Decorative circles */}
-        <div style={{
-          position: 'absolute', top: '-30px', right: '-30px',
-          width: '120px', height: '120px',
-          borderRadius: '50%',
-          background: 'rgba(255,255,255,0.06)',
-        }} />
-        <div style={{
-          position: 'absolute', bottom: '-20px', right: '80px',
-          width: '80px', height: '80px',
-          borderRadius: '50%',
-          background: 'rgba(255,255,255,0.04)',
-        }} />
-        <div style={{ position: 'relative', zIndex: 1 }}>
-          <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '6px' }}>
-            <div style={{
-              width: '44px', height: '44px', borderRadius: '14px',
-              background: 'rgba(255,255,255,0.15)',
-              display: 'flex', alignItems: 'center', justifyContent: 'center',
-              fontSize: '22px',
-              backdropFilter: 'blur(10px)',
-            }}>🌱</div>
-            <div>
-              <h2 style={{ margin: 0, color: '#ffffff', fontSize: '22px', fontWeight: '700', letterSpacing: '-0.02em' }}>
-                {t('farmerInputForm') || 'Farmer Input Form'}
-              </h2>
-              <p style={{ margin: 0, color: 'rgba(255,255,255,0.65)', fontSize: '13px', marginTop: '2px' }}>
-                {t('fillDetailsToGeneratePlan') || 'Fill in your farm details to generate an AI-powered plan'}
-              </p>
-            </div>
-          </div>
-        </div>
 
-        {/* Step indicators */}
-        <div style={{ display: 'flex', gap: '8px', marginTop: '20px', position: 'relative', zIndex: 1 }}>
-          {steps.map((step, idx) => (
-            <button
-              key={step.id}
-              type="button"
-              onClick={() => setActiveStep(step.id)}
-              style={{
-                flex: 1,
-                padding: '8px 4px',
-                borderRadius: '10px',
-                border: 'none',
-                cursor: 'pointer',
-                background: activeStep === idx ? 'rgba(255,255,255,0.25)' : 'rgba(255,255,255,0.08)',
-                color: activeStep === idx ? '#ffffff' : 'rgba(255,255,255,0.55)',
-                fontSize: '12px',
-                fontWeight: activeStep === idx ? '700' : '500',
-                transition: 'all 0.25s ease',
-                display: 'flex',
-                flexDirection: 'column',
-                alignItems: 'center',
-                gap: '4px',
-                backdropFilter: 'blur(6px)',
-                outline: 'none',
-              }}
-            >
-              <span style={{ fontSize: '16px' }}>{step.icon}</span>
-              <span>{step.label}</span>
-              {activeStep === idx && (
-                <div style={{
-                  width: '20px', height: '3px',
-                  background: '#4ade80',
-                  borderRadius: '2px',
-                }} />
-              )}
-            </button>
-          ))}
-        </div>
+      {/* ── Inline step indicator ── */}
+      <div style={{
+        display: 'flex',
+        background: 'rgba(255,255,255,0.5)',
+        borderRadius: '14px',
+        padding: '5px',
+        marginBottom: '18px',
+        gap: '4px',
+        border: '1.5px solid rgba(16,185,129,0.15)',
+        backdropFilter: 'blur(8px)',
+      }}>
+        {steps.map((step, idx) => (
+          <button
+            key={step.id}
+            type="button"
+            onClick={() => setActiveStep(step.id)}
+            style={{
+              flex: 1,
+              padding: '9px 6px',
+              borderRadius: '10px',
+              border: 'none',
+              cursor: 'pointer',
+              background: activeStep === idx
+                ? 'linear-gradient(135deg, #15803d, #16a34a)'
+                : 'transparent',
+              color: activeStep === idx ? '#ffffff' : '#6b7280',
+              fontSize: '12px',
+              fontWeight: activeStep === idx ? '700' : '500',
+              transition: 'all 0.25s ease',
+              display: 'flex',
+              flexDirection: 'column',
+              alignItems: 'center',
+              gap: '3px',
+              outline: 'none',
+              boxShadow: activeStep === idx ? '0 2px 8px rgba(21,128,61,0.35)' : 'none',
+            }}
+          >
+            <span style={{ fontSize: '15px' }}>{step.icon}</span>
+            <span>{step.label}</span>
+          </button>
+        ))}
       </div>
 
       {/* Error message */}
       {error && (
         <div style={{
-          margin: '20px 24px 0',
+          marginBottom: '16px',
           padding: '14px 18px',
           background: 'rgba(254,226,226,0.9)',
           border: '1.5px solid rgba(239,68,68,0.3)',
@@ -332,7 +291,7 @@ const FarmerInputForm = ({ onPlanGenerated }) => {
         </div>
       )}
 
-      <form onSubmit={handleSubmit} style={{ padding: '24px' }}>
+      <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '0' }}>
 
         {/* === STEP 0: LOCATION === */}
         <div style={{ display: activeStep === 0 ? 'block' : 'none' }}>
