@@ -773,66 +773,6 @@ const Dashboard = () => {
           </div>
         )}
         
-        {/* Real-time Predictions Section */}
-        {realTimePredictions && (
-          <div className="bg-white rounded-xl shadow-md p-6 mb-8">
-            <div className="flex justify-between items-center mb-4">
-              <h2 className="text-xl font-semibold text-gray-800">
-                📊 {t('realTimePredictions')}
-              </h2>
-              {currentPredictionId && (
-                <button
-                  onClick={() => setShowFeedbackForm(true)}
-                  className="bg-blue-600 hover:bg-blue-700 text-white text-sm font-medium py-2 px-4 rounded-lg transition duration-300"
-                >
-                  {t('provideFeedback')}
-                </button>
-              )}
-            </div>
-            
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
-              <div className="bg-green-50 rounded-lg p-4 text-center">
-                <p className="text-gray-600">{t('predictedYield')}</p>
-                <p className="text-2xl font-bold text-green-700">
-                  {realTimePredictions.predictions?.yield_kg_per_acre || 'N/A'} kg/acre
-                </p>
-                <p className="text-sm text-gray-500">
-                  {t('confidence')}: {realTimePredictions.predictions?.confidence ? (realTimePredictions.predictions.confidence * 100).toFixed(0) : 'N/A'}%
-                </p>
-              </div>
-              
-              <div className="bg-blue-50 rounded-lg p-4 text-center">
-                <p className="text-gray-600">{t('predictedROI')}</p>
-                <p className="text-2xl font-bold text-blue-700">
-                  {realTimePredictions.predictions?.roi ? `${realTimePredictions.predictions.roi}x` : 'N/A'}
-                </p>
-                <p className="text-sm text-gray-500">
-                  {t('returnOnInvestment')}
-                </p>
-              </div>
-              
-              <div className="bg-purple-50 rounded-lg p-4 text-center">
-                <p className="text-gray-600">{t('recommendedCrop')}</p>
-                <p className="text-2xl font-bold text-purple-700">
-                  {realTimePredictions.recommendations?.best_crop || 'N/A'}
-                </p>
-                <p className="text-sm text-gray-500">
-                  {realTimePredictions.recommendations?.planting_time || 'N/A'}
-                </p>
-              </div>
-            </div>
-            
-            <div className="border-t border-gray-200 pt-4">
-              <h3 className="font-medium text-gray-800 mb-2">{t('recommendations')}</h3>
-              <ul className="list-disc list-inside space-y-1 text-gray-700">
-                <li>{t('bestCrop')}: {realTimePredictions.recommendations?.best_crop || 'N/A'}</li>
-                <li>{t('plantingTime')}: {realTimePredictions.recommendations?.planting_time || 'N/A'}</li>
-                <li>{t('irrigationNeeds')}: {realTimePredictions.recommendations?.irrigation_needs || 'N/A'}</li>
-              </ul>
-            </div>
-          </div>
-        )}
-        
         {/* Feedback Form Modal */}
         {showFeedbackForm && currentPredictionId && (
           <div 
