@@ -12,7 +12,7 @@ const average = (values) => {
   return values.reduce((sum, value) => sum + value, 0) / values.length;
 };
 
-const AIPlanner = () => {
+const AIPlanner = ({ onLocationChange }) => {
   const { t } = useTranslation();
   const [agroPlan, setAgroPlan] = useState(null);
   const [planInputs, setPlanInputs] = useState(null);
@@ -52,6 +52,14 @@ const AIPlanner = () => {
   const handlePlanGenerated = async (plan, inputs) => {
     setAgroPlan(plan);
     setPlanInputs(inputs);
+
+    // Notify parent component of location change
+    if (onLocationChange && inputs?.latitude && inputs?.longitude) {
+      onLocationChange({
+        lat: inputs.latitude,
+        lng: inputs.longitude
+      });
+    }
 
     // Save to Firebase. If the user is not authenticated, still persist the plan using a null user ID.
     const user = auth.currentUser;

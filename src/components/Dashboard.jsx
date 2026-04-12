@@ -10,6 +10,8 @@ import agroIntelService from '../services/agroIntelService';
 import FeedbackForm from './FeedbackForm';
 import mapStorageService from '../services/mapStorageService';
 import { generateLandLayoutMap } from '../utils/api';
+import WeatherComponent from './WeatherComponent';
+import RainfallComponent from './RainfallComponent';
 
 // Map container style
 const mapContainerStyle = {
@@ -31,13 +33,11 @@ const farmPolygon = [
 const Dashboard = () => {
   const { t, i18n } = useTranslation();
   const [center, setCenter] = useState(defaultCenter);
+  const [selectedLocation, setSelectedLocation] = useState(defaultCenter);
   const [weather, setWeather] = useState(null);
-  const [weatherLoading, setWeatherLoading] = useState(true);
-  const [weatherError, setWeatherError] = useState('');
   const [soilData, setSoilData] = useState(null);
   const [soilLoading, setSoilLoading] = useState(false);
   const [soilError, setSoilError] = useState('');
-  const [rainfallData, setRainfallData] = useState(null);
   const [investmentCapacity, setInvestmentCapacity] = useState(null);
   const [aiRecommendations, setAiRecommendations] = useState(null);
   const [realTimePredictions, setRealTimePredictions] = useState(null);
@@ -56,82 +56,22 @@ const Dashboard = () => {
             lng: position.coords.longitude
           };
           setCenter(userCenter);
-          fetchWeather(userCenter.lat, userCenter.lng);
           fetchRealTimePredictions(userCenter.lat, userCenter.lng);
           fetchSoilAnalysis(userCenter.lat, userCenter.lng);
         },
         (error) => {
           console.error('Error getting location:', error);
-          fetchWeather(defaultCenter.lat, defaultCenter.lng);
           fetchRealTimePredictions(defaultCenter.lat, defaultCenter.lng);
           fetchSoilAnalysis(defaultCenter.lat, defaultCenter.lng);
         }
       );
     } else {
-      fetchWeather(defaultCenter.lat, defaultCenter.lng);
       fetchRealTimePredictions(defaultCenter.lat, defaultCenter.lng);
       fetchSoilAnalysis(defaultCenter.lat, defaultCenter.lng);
     }
   }, []);
 
-  const fetchWeather = async (lat, lon) => {
-    const coordinateLabel = `${lat.toFixed(4)}, ${lon.toFixed(4)}`;
-    setWeatherLoading(true);
-    setWeatherError('');
 
-    try {
-      const apiKey = import.meta.env.VITE_WEATHER_API_KEY;
-      if (!apiKey) {
-        throw new Error('Missing VITE_WEATHER_API_KEY');
-      }
-
-      const response = await axios.get(
-        'https://api.openweathermap.org/data/2.5/weather',
-        {
-          params: {
-            lat,
-            lon,
-            units: 'metric',
-            appid: apiKey
-          }
-        }
-      );
-      const data = response.data || {};
-      const countryCode = data?.sys?.country;
-      const countryName =
-        countryCode && typeof Intl !== 'undefined' && Intl.DisplayNames
-          ? new Intl.DisplayNames(['en'], { type: 'region' }).of(countryCode)
-          : countryCode;
-      const locationName =
-        data?.name && countryName
-          ? `${data.name}, ${countryName}`
-          : coordinateLabel;
-
-      setWeather({
-        temp: data?.main?.temp ?? null,
-        humidity: data?.main?.humidity ?? null,
-        description: data?.weather?.[0]?.description ?? null,
-        pressure: data?.main?.pressure ?? null,
-        windSpeed: data?.wind?.speed ?? null,
-        location: locationName,
-        coordinates: coordinateLabel
-      });
-    } catch (error) {
-      console.error('Error fetching weather:', error);
-      setWeather({
-        temp: null,
-        humidity: null,
-        description: null,
-        pressure: null,
-        windSpeed: null,
-        location: coordinateLabel,
-        coordinates: coordinateLabel
-      });
-      setWeatherError('Live weather unavailable');
-    } finally {
-      setWeatherLoading(false);
-    }
-  };
 
   const fetchSoilAnalysis = async (lat, lon) => {
     setSoilLoading(true);
@@ -225,13 +165,8 @@ const Dashboard = () => {
     }
   };
 
-  // Static data for rainfall, investment capacity, and AI recommendations
+  // Static data for investment capacity and AI recommendations
   useEffect(() => {
-    setRainfallData({
-      annual: '950 mm',
-      seasonal: 'Monsoon: 750 mm, Winter: 150 mm, Summer: 50 mm',
-      soilWetness: 'Moderate'
-    });
     setInvestmentCapacity({
       category: 'Medium',
       budget: '₹50,000 - ₹1,00,000',
@@ -272,6 +207,11 @@ const Dashboard = () => {
 
   const changeLanguage = (lng) => {
     i18n.changeLanguage(lng);
+  };
+
+  // Handle location change from AI Planner
+  const handleLocationChangeFromPlanner = (location) => {
+    setSelectedLocation(location);
   };
 
   const languages = [
@@ -473,11 +413,9 @@ const Dashboard = () => {
                   <div>
                     <p className="text-gray-500 text-sm">{t('currentWeather')}</p>
                     <p className="text-xl font-semibold">
-                      {weatherLoading
-                        ? 'Loading...'
-                        : weather?.temp !== null && weather?.temp !== undefined
-                          ? `${Math.round(weather.temp)}°C`
-                          : 'N/A'}
+                      {weather?.temp !== null && weather?.temp !== undefined
+                        ? `${Math.round(weather.temp)}°C`
+                        : 'Loading...'}
                     </p>
                     <p className="text-sm text-gray-500">
                       {weather?.location || `${center.lat.toFixed(4)}, ${center.lng.toFixed(4)}`}
@@ -573,7 +511,7 @@ const Dashboard = () => {
         
         {/* AI Planner Tab - kept mounted to preserve generated plan data */}
         <div style={{ display: activeTab === 'aiplanner' ? 'block' : 'none' }}>
-          <AIPlanner />
+          <AIPlanner onLocationChange={handleLocationChangeFromPlanner} />
         </div>
         
         {/* Agroforestry Tab - kept mounted to preserve data */}
@@ -718,103 +656,16 @@ const Dashboard = () => {
         {/* Weather & Rainfall Tab */}
         {activeTab === 'weather' && (
           <div className="space-y-6">
-            <div className="bg-white rounded-xl shadow-md p-6">
-              <h2 className="text-2xl font-semibold text-gray-800 mb-6">{t('currentWeatherConditions')}</h2>
-              {weatherLoading ? (
-                <p className="text-gray-500">{t('loadingWeatherData')}</p>
-              ) : weather ? (
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-6 gap-4">
-                  <div className="bg-blue-50 rounded-lg p-4 text-center md:col-span-2 lg:col-span-2">
-                    <div className="text-lg font-bold text-blue-800">{weather.location || weather.coordinates}</div>
-                    <div className="text-gray-600">Location</div>
-                  </div>
-                  <div className="bg-blue-50 rounded-lg p-4 text-center">
-                    <div className="text-2xl font-bold text-blue-800">
-                      {weather.temp !== null && weather.temp !== undefined ? `${Math.round(weather.temp)}°C` : 'N/A'}
-                    </div>
-                    <div className="text-gray-600">{t('temperature')}</div>
-                  </div>
-                  <div className="bg-blue-50 rounded-lg p-4 text-center">
-                    <div className="text-2xl font-bold text-blue-800">
-                      {weather.humidity !== null && weather.humidity !== undefined ? `${weather.humidity}%` : 'N/A'}
-                    </div>
-                    <div className="text-gray-600">{t('humidity')}</div>
-                  </div>
-                  <div className="bg-blue-50 rounded-lg p-4 text-center">
-                    <div className="text-2xl font-bold text-blue-800">
-                      {weather.pressure !== null && weather.pressure !== undefined
-                        ? `${weather.pressure} ${t('pressureUnit')}`
-                        : 'N/A'}
-                    </div>
-                    <div className="text-gray-600">{t('pressure')}</div>
-                  </div>
-                  <div className="bg-blue-50 rounded-lg p-4 text-center">
-                    <div className="text-2xl font-bold text-blue-800">
-                      {weather.windSpeed !== null && weather.windSpeed !== undefined
-                        ? `${weather.windSpeed} ${t('windSpeedUnit')}`
-                        : 'N/A'}
-                    </div>
-                    <div className="text-gray-600">{t('windSpeed')}</div>
-                  </div>
-                  <div className="bg-blue-50 rounded-lg p-4 text-center md:col-span-2 lg:col-span-2">
-                    <div className="text-2xl font-bold text-blue-800 capitalize">
-                      {weather.description ? t(weather.description) || weather.description : 'N/A'}
-                    </div>
-                    <div className="text-gray-600">{t('condition')}</div>
-                  </div>
-                </div>
-              ) : (
-                <p className="text-gray-500">{weatherError || t('loadingWeatherData')}</p>
-              )}
-            </div>
-            
-            <div className="bg-white rounded-xl shadow-md p-6">
-              <h2 className="text-2xl font-semibold text-gray-800 mb-6">{t('rainfallAnalysis')}</h2>
-              {rainfallData ? (
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                  <div>
-                    <h3 className="text-lg font-medium text-gray-800 mb-4">{t('annualRainfall')}</h3>
-                    <div className="text-3xl font-bold text-blue-600 mb-2">{rainfallData.annual}</div>
-                    <p className="text-gray-600">{t('basedOnHistoricalData')}</p>
-                  </div>
-                  
-                  <div>
-                    <h3 className="text-lg font-medium text-gray-800 mb-4">{t('seasonalDistribution')}</h3>
-                    <p className="text-gray-700">{rainfallData.seasonal}</p>
-                  </div>
-                  
-                  <div className="md:col-span-2 mt-4">
-                    <h3 className="text-lg font-medium text-gray-800 mb-4">{t('soilWetnessIndex')}</h3>
-                    <div className="w-full bg-gray-200 rounded-full h-4">
-                      <div className="bg-blue-600 h-4 rounded-full" style={{ width: '60%' }}></div>
-                    </div>
-                    <div className="flex justify-between mt-2">
-                      <span className="text-sm text-gray-600">{t('dry')}</span>
-                      <span className="text-sm font-medium text-gray-800">{rainfallData.soilWetness}</span>
-                      <span className="text-sm text-gray-600">{t('wet')}</span>
-                    </div>
-                  </div>
-                </div>
-              ) : (
-                <p className="text-gray-500">{t('loadingRainfallData')}</p>
-              )}
-            </div>
-            
-            <div className="bg-white rounded-xl shadow-md p-6">
-              <h2 className="text-2xl font-semibold text-gray-800 mb-6">{t('aiIrrigationRecommendations')}</h2>
-              {aiRecommendations ? (
-                <ul className="space-y-3">
-                  {aiRecommendations.irrigation.map((recommendation, index) => (
-                    <li key={index} className="flex items-start">
-                      <span className="text-green-500 mr-2">✓</span>
-                      <span className="text-gray-700">{recommendation}</span>
-                    </li>
-                  ))}
-                </ul>
-              ) : (
-                <p className="text-gray-500">{t('loadingRecommendations')}</p>
-              )}
-            </div>
+            <WeatherComponent 
+              initialLat={selectedLocation.lat} 
+              initialLon={selectedLocation.lng}
+              onWeatherFetch={setWeather}
+            />
+            <RainfallComponent
+              lat={selectedLocation.lat}
+              lon={selectedLocation.lng}
+              aiRecommendations={aiRecommendations}
+            />
           </div>
         )}
         
