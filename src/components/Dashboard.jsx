@@ -512,14 +512,15 @@ const OverviewPage = ({ user, weather, onNavigate }) => {
       <div
         className="relative rounded-3xl overflow-hidden"
         style={{
-          background: 'linear-gradient(135deg, #14532d 0%, #166534 50%, #15803d 100%)',
+          background: 'linear-gradient(135deg, #16a34a 0%, #059669 50%, #064e3b 100%)',
           minHeight: 180,
+          boxShadow: 'inset 0 2px 10px rgba(255,255,255,0.1)',
         }}
       >
-        {/* decorative circles */}
-        <div className="absolute -top-10 -right-10 w-48 h-48 rounded-full bg-white/5" />
-        <div className="absolute top-8 right-16 w-24 h-24 rounded-full bg-white/5" />
-        <div className="absolute -bottom-8 left-1/3 w-36 h-36 rounded-full bg-white/5" />
+        {/* decorative light beams & glowing orbs */}
+        <div className="absolute -top-32 -right-32 w-96 h-96 rounded-full bg-emerald-300/30 blur-[80px] pointer-events-none" />
+        <div className="absolute -bottom-32 -left-16 w-80 h-80 rounded-full bg-green-300/20 blur-[80px] pointer-events-none" />
+        <div className="absolute top-1/2 left-1/3 w-64 h-64 rounded-full bg-yellow-200/10 blur-[60px] pointer-events-none" />
 
         <div className="relative z-10 p-7">
           <p className="text-green-300 text-sm font-semibold mb-1 tracking-wide">
