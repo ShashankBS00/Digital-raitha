@@ -429,9 +429,9 @@ const SoilAnalysisComponent = ({ lat, lon, aiRecommendations }) => {
                 title={t('aiSoilManagement') || 'AI Soil Management Recommendations'}
                 badge="AI Powered"
               />
-              {aiRecommendations ? (
+              {aiRecommendations && aiRecommendations.soilManagement?.length > 0 ? (
                 <div style={s({ display:'grid',gridTemplateColumns:'repeat(auto-fill,minmax(260px,1fr))',gap:'10px' })}>
-                  {aiRecommendations.soilManagement.map((rec, i) => (
+                  {(aiRecommendations.soilManagement || []).map((rec, i) => (
                     <div key={i} style={s({
                       display:'flex',alignItems:'flex-start',gap:'10px',
                       padding:'12px 14px',borderRadius:'12px',
