@@ -52,23 +52,23 @@ import SoilAnalysisComponent from './SoilAnalysisComponent';
 
 /* ─── constants ─────────────────────────────────────────────── */
 const mapContainerStyle = { width: '100%', height: '400px' };
-const defaultCenter = { lat: 20.5937, lng: 78.9629 };
+const defaultCenter = { lat: 12.9629, lng: 77.5775 };
 const farmPolygon = [
-  { lat: 12.6, lng: 77.95 },
-  { lat: 12.61, lng: 77.95 },
-  { lat: 12.61, lng: 77.97 },
-  { lat: 12.6, lng: 77.97 },
+  { lat: 12.9629, lng: 77.5775 },
+  { lat: 12.9629, lng: 77.5775 },
+  { lat: 12.9629, lng: 77.5775 },
+  { lat: 12.9629, lng: 77.5775 },
 ];
 
 const NAV_ITEMS = [
-  { id: 'overview',     label: 'Overview',         icon: LayoutDashboard },
-  { id: 'aiplanner',    label: 'AI Planner',       icon: Bot        },
-  { id: 'agroforestry', label: 'Agroforestry',     icon: Trees      },
-  { id: 'soil',         label: 'Soil Analysis',    icon: FlaskConical },
-  { id: 'weather',      label: 'Weather & Rain',   icon: CloudRain  },
-  { id: 'map',          label: 'Farm Map',         icon: Map        },
-  { id: 'predictions',  label: 'Predictions',      icon: BarChart3  },
-  { id: 'profile',      label: 'Profile',          icon: User       },
+  { id: 'overview', label: 'Overview', icon: LayoutDashboard },
+  { id: 'aiplanner', label: 'AI Planner', icon: Bot },
+  { id: 'agroforestry', label: 'Agroforestry', icon: Trees },
+  { id: 'soil', label: 'Soil Analysis', icon: FlaskConical },
+  { id: 'weather', label: 'Weather & Rain', icon: CloudRain },
+  { id: 'map', label: 'Farm Map', icon: Map },
+  { id: 'predictions', label: 'Predictions', icon: BarChart3 },
+  { id: 'profile', label: 'Profile', icon: User },
 ];
 
 const LANGUAGES = [
@@ -95,9 +95,9 @@ const Card = ({ children, className = '' }) => (
 
 const StatBadge = ({ icon: Icon, label, value, color = 'green' }) => {
   const colors = {
-    green:  { bg: 'bg-green-100',  text: 'text-green-700',  icon: 'text-green-600'  },
-    amber:  { bg: 'bg-amber-100',  text: 'text-amber-700',  icon: 'text-amber-600'  },
-    sky:    { bg: 'bg-sky-100',    text: 'text-sky-700',    icon: 'text-sky-600'    },
+    green: { bg: 'bg-green-100', text: 'text-green-700', icon: 'text-green-600' },
+    amber: { bg: 'bg-amber-100', text: 'text-amber-700', icon: 'text-amber-600' },
+    sky: { bg: 'bg-sky-100', text: 'text-sky-700', icon: 'text-sky-600' },
     purple: { bg: 'bg-purple-100', text: 'text-purple-700', icon: 'text-purple-600' },
   };
   const c = colors[color] || colors.green;
@@ -120,14 +120,14 @@ const StatBadge = ({ icon: Icon, label, value, color = 'green' }) => {
 /* ─── ProfilePage ────────────────────────────────────────────── */
 const ProfilePage = ({ user, onLogout, t }) => {
   const displayName = user?.displayName || 'Farmer';
-  const email       = user?.email       || 'Not linked';
-  const phone       = user?.phoneNumber  || 'Not linked';
-  const joined      = user?.metadata?.creationTime
+  const email = user?.email || 'Not linked';
+  const phone = user?.phoneNumber || 'Not linked';
+  const joined = user?.metadata?.creationTime
     ? new Date(user.metadata.creationTime).toLocaleDateString('en-IN', {
-        day: '2-digit', month: 'long', year: 'numeric',
-      })
+      day: '2-digit', month: 'long', year: 'numeric',
+    })
     : '—';
-  const initials    = displayName
+  const initials = displayName
     .split(' ')
     .map((w) => w[0])
     .join('')
@@ -181,10 +181,10 @@ const ProfilePage = ({ user, onLogout, t }) => {
       {/* Info grid */}
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
         {[
-          { icon: Mail,     label: 'Email',        value: email,  },
-          { icon: Phone,    label: 'Phone',        value: phone,  },
-          { icon: MapPin,   label: 'Location',     value: 'India' },
-          { icon: Calendar, label: 'Member Since', value: joined  },
+          { icon: Mail, label: 'Email', value: email, },
+          { icon: Phone, label: 'Phone', value: phone, },
+          { icon: MapPin, label: 'Location', value: 'India' },
+          { icon: Calendar, label: 'Member Since', value: joined },
         ].map(({ icon: Icon, label, value }) => (
           <Card key={label} className="p-5 flex items-center gap-4">
             <div className="p-3 bg-green-50 rounded-xl text-green-600">
@@ -211,11 +211,10 @@ const ProfilePage = ({ user, onLogout, t }) => {
             <div key={label} className="flex items-center justify-between py-2 border-b border-gray-100 last:border-0">
               <span className="text-sm text-gray-600">{label}</span>
               <span
-                className={`text-xs font-semibold px-2 py-0.5 rounded-full ${
-                  ok
-                    ? 'bg-green-100 text-green-700'
-                    : 'bg-amber-100 text-amber-700'
-                }`}
+                className={`text-xs font-semibold px-2 py-0.5 rounded-full ${ok
+                  ? 'bg-green-100 text-green-700'
+                  : 'bg-amber-100 text-amber-700'
+                  }`}
               >
                 {ok ? 'Active' : 'Not set'}
               </span>
@@ -245,8 +244,8 @@ const PredictionsTab = ({ realTimePredictions, t }) => {
     potential === 'High'
       ? 'text-green-700 bg-green-100'
       : potential === 'Medium'
-      ? 'text-amber-700 bg-amber-100'
-      : 'text-red-700 bg-red-100';
+        ? 'text-amber-700 bg-amber-100'
+        : 'text-red-700 bg-red-100';
 
   return (
     <motion.div variants={fadeUp} initial="hidden" animate="visible" className="space-y-5">
@@ -258,8 +257,8 @@ const PredictionsTab = ({ realTimePredictions, t }) => {
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
           {[
             { crop: recommendations?.best_crop || 'Maize', note: t('bestCropForConditions'), color: 'bg-green-50 border-green-200 text-green-800' },
-            { crop: t('cowpea') || 'Cowpea',               note: t('nitrogenFixingCrop'),    color: 'bg-sky-50 border-sky-200 text-sky-800'     },
-            { crop: t('turmeric') || 'Turmeric',           note: t('highValueCrop'),         color: 'bg-amber-50 border-amber-200 text-amber-800'},
+            { crop: t('cowpea') || 'Cowpea', note: t('nitrogenFixingCrop'), color: 'bg-sky-50 border-sky-200 text-sky-800' },
+            { crop: t('turmeric') || 'Turmeric', note: t('highValueCrop'), color: 'bg-amber-50 border-amber-200 text-amber-800' },
           ].map(({ crop, note, color }) => (
             <div key={crop} className={`rounded-xl border p-4 text-center ${color}`}>
               <p className="text-xl font-bold">{crop}</p>
@@ -271,8 +270,8 @@ const PredictionsTab = ({ realTimePredictions, t }) => {
 
       {/* Yield stats */}
       <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-        <StatBadge icon={BarChart3} label={t('estimatedYieldPerAcre')} value={`${yieldVal.toLocaleString()} kg`}  color="sky"    />
-        <StatBadge icon={Leaf}      label={t('estimatedRevenue')}      value="₹1,20,000"                          color="green"  />
+        <StatBadge icon={BarChart3} label={t('estimatedYieldPerAcre')} value={`${yieldVal.toLocaleString()} kg`} color="sky" />
+        <StatBadge icon={Leaf} label={t('estimatedRevenue')} value="₹1,20,000" color="green" />
         <div className={`flex items-center gap-3 p-4 rounded-xl ${potentialColor} border`}>
           <span className="text-2xl font-extrabold">{potential}</span>
           <div>
@@ -289,10 +288,10 @@ const PredictionsTab = ({ realTimePredictions, t }) => {
         </h3>
         <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
           {[
-            { label: t('returnOnInvestment'),  value: `${predictions?.roi?.toFixed(1) || '2.8'}x`, color: 'bg-green-50 text-green-800'  },
-            { label: t('estimatedInvestment'), value: '₹50,000',                                    color: 'bg-sky-50 text-sky-800'      },
-            { label: t('estimatedIncome'),     value: '₹1,20,000',                                  color: 'bg-purple-50 text-purple-800'},
-            { label: t('paybackPeriod'),       value: `${predictions?.payback_period || 18} mo`,    color: 'bg-amber-50 text-amber-800'  },
+            { label: t('returnOnInvestment'), value: `${predictions?.roi?.toFixed(1) || '2.8'}x`, color: 'bg-green-50 text-green-800' },
+            { label: t('estimatedInvestment'), value: '₹50,000', color: 'bg-sky-50 text-sky-800' },
+            { label: t('estimatedIncome'), value: '₹1,20,000', color: 'bg-purple-50 text-purple-800' },
+            { label: t('paybackPeriod'), value: `${predictions?.payback_period || 18} mo`, color: 'bg-amber-50 text-amber-800' },
           ].map(({ label, value, color }) => (
             <div key={label} className={`rounded-xl p-4 text-center ${color}`}>
               <p className="text-xl font-bold">{value}</p>
@@ -306,9 +305,9 @@ const PredictionsTab = ({ realTimePredictions, t }) => {
           <p className="text-sm font-semibold text-gray-600 mb-3">{t('costBreakdown')}</p>
           <div className="grid grid-cols-3 gap-3">
             {[
-              { label: t('seedsAndSaplings'), val: costs?.seeds_and_saplings || 8000  },
-              { label: t('fertilizers'),      val: costs?.fertilizers        || 12000 },
-              { label: t('labor'),            val: costs?.labor              || 15000 },
+              { label: t('seedsAndSaplings'), val: costs?.seeds_and_saplings || 8000 },
+              { label: t('fertilizers'), val: costs?.fertilizers || 12000 },
+              { label: t('labor'), val: costs?.labor || 15000 },
             ].map(({ label, val }) => (
               <div key={label} className="bg-gray-50 rounded-xl p-3 text-center border border-gray-100">
                 <p className="text-sm font-bold text-green-700">₹{val.toLocaleString()}</p>
@@ -326,10 +325,10 @@ const PredictionsTab = ({ realTimePredictions, t }) => {
         </h3>
         <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
           {[
-            { label: t('temperature'),   value: `${weather_data?.avg_temperature_c || 28}°C`,       color: 'bg-sky-50 text-sky-800'      },
-            { label: t('humidity'),      value: `${weather_data?.avg_humidity       || 65}%`,        color: 'bg-green-50 text-green-800'  },
-            { label: t('annualRainfall'),value: `${weather_data?.avg_rainfall_mm    || 980} mm`,     color: 'bg-amber-50 text-amber-800'  },
-            { label: t('solarRadiation'),value: `${weather_data?.solar_radiation    || 5.5} kWh/m²`, color: 'bg-purple-50 text-purple-800'},
+            { label: t('temperature'), value: `${weather_data?.avg_temperature_c || 28}°C`, color: 'bg-sky-50 text-sky-800' },
+            { label: t('humidity'), value: `${weather_data?.avg_humidity || 65}%`, color: 'bg-green-50 text-green-800' },
+            { label: t('annualRainfall'), value: `${weather_data?.avg_rainfall_mm || 980} mm`, color: 'bg-amber-50 text-amber-800' },
+            { label: t('solarRadiation'), value: `${weather_data?.solar_radiation || 5.5} kWh/m²`, color: 'bg-purple-50 text-purple-800' },
           ].map(({ label, value, color }) => (
             <div key={label} className={`rounded-xl p-4 text-center ${color}`}>
               <p className="text-lg font-bold">{value}</p>
@@ -398,9 +397,9 @@ const FarmMapTab = ({ center, mapId, onGenerateMap, t }) => (
     </Card>
 
     <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-      <StatBadge icon={Leaf}   label={t('farmArea')}       value="2.5 acres"                                    color="green"  />
+      <StatBadge icon={Leaf} label={t('farmArea')} value="2.5 acres" color="green" />
       <StatBadge icon={MapPin} label={t('gpsCoordinates')} value={`${center.lat.toFixed(4)}, ${center.lng.toFixed(4)}`} color="sky" />
-      <StatBadge icon={Shield} label={t('boundaryStatus')} value={t('verified')}                               color="purple" />
+      <StatBadge icon={Shield} label={t('boundaryStatus')} value={t('verified')} color="purple" />
     </div>
 
     <Card className="p-5">
@@ -424,9 +423,9 @@ const FarmMapTab = ({ center, mapId, onGenerateMap, t }) => (
         </button>
         <div className="flex items-center gap-4 text-xs text-gray-500">
           {[
-            { color: 'bg-green-500',   label: `${t('mainCropArea')} 60%`  },
-            { color: 'bg-yellow-500',  label: `${t('intercropArea')} 25%` },
-            { color: 'bg-green-900',   label: `${t('treesArea')} 15%`     },
+            { color: 'bg-green-500', label: `${t('mainCropArea')} 60%` },
+            { color: 'bg-yellow-500', label: `${t('intercropArea')} 25%` },
+            { color: 'bg-green-900', label: `${t('treesArea')} 15%` },
           ].map(({ color, label }) => (
             <span key={label} className="flex items-center gap-1">
               <span className={`w-3 h-3 rounded-sm ${color}`} /> {label}
@@ -450,17 +449,17 @@ const OverviewPage = ({ user, weather, onNavigate }) => {
   const hour = new Date().getHours();
   const greeting =
     hour < 12 ? 'Good Morning' :
-    hour < 17 ? 'Good Afternoon' : 'Good Evening';
+      hour < 17 ? 'Good Afternoon' : 'Good Evening';
 
   const greetEmoji =
     hour < 12 ? '🌅' : hour < 17 ? '☀️' : '🌙';
 
   /* weather display helpers */
-  const temp         = weather?.temp != null ? `${Math.round(weather.temp)}°C` : '—';
-  const humidity     = weather?.humidity != null ? `${weather.humidity}%` : '—';
-  const windSpeed    = weather?.wind != null ? `${weather.wind} km/h` : '—';
-  const rainChance   = weather?.rain_chance != null ? `${weather.rain_chance}%` : weather ? '20%' : '—';
-  const weatherDesc  = weather?.description || 'Partly Cloudy';
+  const temp = weather?.temp != null ? `${Math.round(weather.temp)}°C` : '—';
+  const humidity = weather?.humidity != null ? `${weather.humidity}%` : '—';
+  const windSpeed = weather?.wind != null ? `${weather.wind} km/h` : '—';
+  const rainChance = weather?.rain_chance != null ? `${weather.rain_chance}%` : weather ? '20%' : '—';
+  const weatherDesc = weather?.description || 'Partly Cloudy';
   const locationName = weather?.location || 'Your Farm';
 
   const quickActions = [
@@ -555,10 +554,10 @@ const OverviewPage = ({ user, weather, onNavigate }) => {
         </h2>
         <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
           {[
-            { icon: Thermometer, label: 'Temperature',  value: temp,        color: 'text-orange-600', bg: 'bg-orange-50 border-orange-100' },
-            { icon: Droplets,    label: 'Humidity',     value: humidity,    color: 'text-blue-600',   bg: 'bg-blue-50 border-blue-100'     },
-            { icon: Wind,        label: 'Wind Speed',   value: windSpeed,   color: 'text-teal-600',   bg: 'bg-teal-50 border-teal-100'     },
-            { icon: CloudRain,   label: 'Rain Chance',  value: rainChance,  color: 'text-indigo-600', bg: 'bg-indigo-50 border-indigo-100' },
+            { icon: Thermometer, label: 'Temperature', value: temp, color: 'text-orange-600', bg: 'bg-orange-50 border-orange-100' },
+            { icon: Droplets, label: 'Humidity', value: humidity, color: 'text-blue-600', bg: 'bg-blue-50 border-blue-100' },
+            { icon: Wind, label: 'Wind Speed', value: windSpeed, color: 'text-teal-600', bg: 'bg-teal-50 border-teal-100' },
+            { icon: CloudRain, label: 'Rain Chance', value: rainChance, color: 'text-indigo-600', bg: 'bg-indigo-50 border-indigo-100' },
           ].map(({ icon: Icon, label, value, color, bg }) => (
             <motion.div
               key={label}
@@ -638,16 +637,16 @@ const Dashboard = () => {
   const { t, i18n } = useTranslation();
   const user = auth.currentUser;
 
-  const [center, setCenter]                     = useState(defaultCenter);
+  const [center, setCenter] = useState(defaultCenter);
   const [selectedLocation, setSelectedLocation] = useState(defaultCenter);
-  const [weather, setWeather]                   = useState(null);
+  const [weather, setWeather] = useState(null);
   const [aiRecommendations, setAiRecommendations] = useState(null);
   const [realTimePredictions, setRealTimePredictions] = useState(null);
-  const [activeTab, setActiveTab]               = useState('overview');
+  const [activeTab, setActiveTab] = useState('overview');
   const [showFeedbackForm, setShowFeedbackForm] = useState(false);
   const [currentPredictionId, setCurrentPredictionId] = useState(null);
-  const [mapId, setMapId]                       = useState(null);
-  const [sidebarOpen, setSidebarOpen]           = useState(false);
+  const [mapId, setMapId] = useState(null);
+  const [sidebarOpen, setSidebarOpen] = useState(false);
 
   /* geolocation */
   useEffect(() => {
@@ -669,9 +668,9 @@ const Dashboard = () => {
   useEffect(() => {
     setAiRecommendations({
       cropRotation: [
-        { season: 'Kharif', crop: 'Rice',     reason: 'High rainfall season'    },
-        { season: 'Rabi',   crop: 'Wheat',    reason: 'Cooler temperatures'     },
-        { season: 'Summer', crop: 'Moong Dal',reason: 'Drought-resistant legume'},
+        { season: 'Kharif', crop: 'Rice', reason: 'High rainfall season' },
+        { season: 'Rabi', crop: 'Wheat', reason: 'Cooler temperatures' },
+        { season: 'Summer', crop: 'Moong Dal', reason: 'Drought-resistant legume' },
       ],
       soilManagement: [
         'Add organic compost to improve soil fertility',
@@ -703,10 +702,10 @@ const Dashboard = () => {
       const mockId = `mock-pred-${Date.now()}`;
       setRealTimePredictions({
         prediction_id: mockId,
-        predictions:     { yield_kg_per_acre: 3000, confidence: 0.85, roi: 2.8, payback_period: 18 },
+        predictions: { yield_kg_per_acre: 3000, confidence: 0.85, roi: 2.8, payback_period: 18 },
         recommendations: { best_crop: 'Maize', planting_time: 'June-July', irrigation_needs: 'Moderate' },
-        weather_data:    { avg_temperature_c: 28, avg_humidity: 65, avg_rainfall_mm: 980, solar_radiation: 5.5 },
-        costs:           { seeds_and_saplings: 8000, fertilizers: 12000, labor: 15000 },
+        weather_data: { avg_temperature_c: 28, avg_humidity: 65, avg_rainfall_mm: 980, solar_radiation: 5.5 },
+        costs: { seeds_and_saplings: 8000, fertilizers: 12000, labor: 15000 },
       });
       setCurrentPredictionId(mockId);
     }
@@ -720,9 +719,9 @@ const Dashboard = () => {
     try {
       const mapData = {
         center_lat: center.lat, center_lon: center.lng, land_area_acres: 2.5, location: 'Farmer Location',
-        soil_data:    { ph: 6.8, organic_carbon: 1.2, nitrogen: 150, phosphorus: 30, potassium: 150, texture: 'Loam', drainage: 'Moderate' },
+        soil_data: { ph: 6.8, organic_carbon: 1.2, nitrogen: 150, phosphorus: 30, potassium: 150, texture: 'Loam', drainage: 'Moderate' },
         weather_data: { rainfall_mm: weather?.rainfall_mm || 980, temperature_c: weather?.temp || 28, humidity: weather?.humidity || 65, solar_radiation: 5.5 },
-        economic_data:{ budget_inr: 50000, labor_availability: 'Medium', input_cost_type: 'Organic' },
+        economic_data: { budget_inr: 50000, labor_availability: 'Medium', input_cost_type: 'Organic' },
       };
       const response = await generateMapUtil(mapData);
       if (response.success) {
@@ -742,17 +741,16 @@ const Dashboard = () => {
 
   /* sidebar link */
   const NavLink = ({ item }) => {
-    const Icon    = item.icon;
+    const Icon = item.icon;
     const isActive = activeTab === item.id;
     return (
       <motion.button
         whileTap={{ scale: 0.97 }}
         onClick={() => { setActiveTab(item.id); setSidebarOpen(false); }}
-        className={`flex items-center gap-3 w-full px-4 py-3 rounded-xl text-sm font-medium transition-all ${
-          isActive
-            ? 'bg-green-600 text-white shadow-md shadow-green-200'
-            : 'text-gray-600 hover:bg-green-50 hover:text-green-700'
-        }`}
+        className={`flex items-center gap-3 w-full px-4 py-3 rounded-xl text-sm font-medium transition-all ${isActive
+          ? 'bg-green-600 text-white shadow-md shadow-green-200'
+          : 'text-gray-600 hover:bg-green-50 hover:text-green-700'
+          }`}
       >
         <Icon size={18} className={isActive ? 'text-white' : 'text-gray-400'} />
         <span>{item.label}</span>
@@ -849,11 +847,10 @@ const Dashboard = () => {
                 key={code}
                 onClick={() => i18n.changeLanguage(code)}
                 title={code.toUpperCase()}
-                className={`px-2 py-0.5 text-xs rounded-lg font-semibold transition ${
-                  i18n.language === code
-                    ? 'bg-green-600 text-white shadow-sm'
-                    : 'text-gray-500 hover:bg-green-50 hover:text-green-700'
-                }`}
+                className={`px-2 py-0.5 text-xs rounded-lg font-semibold transition ${i18n.language === code
+                  ? 'bg-green-600 text-white shadow-sm'
+                  : 'text-gray-500 hover:bg-green-50 hover:text-green-700'
+                  }`}
               >
                 {label}
               </button>
