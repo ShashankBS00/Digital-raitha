@@ -25,10 +25,10 @@ const defaultCenter = { lat: 20.5937, lng: 78.9629 };
 
 // Example farm polygon (replace with dynamic farmer input later)
 const farmPolygon = [
-  { lat: 20.60, lng: 78.95 },
-  { lat: 20.61, lng: 78.95 },
-  { lat: 20.61, lng: 78.97 },
-  { lat: 20.60, lng: 78.97 }
+  { lat: 12.60, lng: 77.95 },
+  { lat: 12.61, lng: 77.95 },
+  { lat: 12.61, lng: 77.97 },
+  { lat: 12.60, lng: 77.97 }
 ];
 
 const Dashboard = () => {
@@ -39,7 +39,7 @@ const Dashboard = () => {
   const [investmentCapacity, setInvestmentCapacity] = useState(null);
   const [aiRecommendations, setAiRecommendations] = useState(null);
   const [realTimePredictions, setRealTimePredictions] = useState(null);
-  const [activeTab, setActiveTab] = useState('overview');
+  const [activeTab, setActiveTab] = useState('aiplanner');
   const [showFeedbackForm, setShowFeedbackForm] = useState(false);
   const [currentPredictionId, setCurrentPredictionId] = useState(null);
   const [mapId, setMapId] = useState(null);
@@ -83,11 +83,11 @@ const Dashboard = () => {
         },
         budget_inr: 50000 // Default value, would be dynamic in real app
       };
-      
+
       // Fetch real-time predictions from our ML models
       const predictions = await agroIntelService.fetchRealTimePredictions(farmerData);
       setRealTimePredictions(predictions);
-      
+
       // Store the prediction ID for feedback
       if (predictions && predictions.prediction_id) {
         setCurrentPredictionId(predictions.prediction_id);
@@ -214,10 +214,10 @@ const Dashboard = () => {
 
       // Call the map API to generate the layout using the new utility
       const response = await generateLandLayoutMap(mapData);
-      
+
       if (response.success) {
         console.log('Land layout map generated successfully');
-        
+
         // Store map data in Firebase
         try {
           const mapStorageData = {
@@ -232,7 +232,7 @@ const Dashboard = () => {
             created_at: new Date(),
             user_id: auth.currentUser ? auth.currentUser.uid : null
           };
-        
+
           // Store in Firebase
           const storedMap = await mapStorageService.storeMap(mapStorageData, response.map_file_path);
           setMapId(storedMap.id);
@@ -240,7 +240,7 @@ const Dashboard = () => {
         } catch (storageError) {
           console.error('Error storing map in Firebase:', storageError);
         }
-        
+
         // Refresh the iframe to show the new map
         const iframe = document.querySelector('iframe[title="AI Land Layout Map"]');
         if (iframe) {
@@ -276,17 +276,16 @@ const Dashboard = () => {
                 <button
                   key={lang.code}
                   onClick={() => changeLanguage(lang.code)}
-                  className={`px-2 py-1 text-xs rounded ${
-                    i18n.language === lang.code
+                  className={`px-2 py-1 text-xs rounded ${i18n.language === lang.code
                       ? 'bg-green-600 text-white'
                       : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
-                  }`}
+                    }`}
                 >
                   {lang.label}
                 </button>
               ))}
             </div>
-            <button 
+            <button
               onClick={handleLogout}
               className="bg-green-600 hover:bg-green-700 text-white font-medium py-2 px-4 rounded-lg transition duration-300"
             >
@@ -295,47 +294,42 @@ const Dashboard = () => {
           </div>
         </div>
       </header>
-      
+
       {/* Tab Navigation */}
       <div className="w-full max-w-6xl mx-auto mb-6">
         <div className="flex flex-wrap gap-2 bg-white rounded-xl shadow-md p-2">
-          <button 
-            onClick={() => setActiveTab('overview')}
-            className={`px-4 py-2 rounded-lg transition duration-300 ${activeTab === 'overview' ? 'bg-green-600 text-white' : 'text-gray-600 hover:bg-green-100'}`}
-          >
-            {t('overview')}
-          </button>
-          <button 
+
+          <button
             onClick={() => setActiveTab('aiplanner')}
             className={`px-4 py-2 rounded-lg transition duration-300 ${activeTab === 'aiplanner' ? 'bg-green-600 text-white' : 'text-gray-600 hover:bg-green-100'}`}
           >
             {t('aiPlanner')}
           </button>
-          <button 
+          <button
             onClick={() => setActiveTab('agroforestry')}
             className={`px-4 py-2 rounded-lg transition duration-300 ${activeTab === 'agroforestry' ? 'bg-green-600 text-white' : 'text-gray-600 hover:bg-green-100'}`}
           >
             {t('agroforestry')}
           </button>
-          <button 
+          <button
             onClick={() => setActiveTab('soil')}
             className={`px-4 py-2 rounded-lg transition duration-300 ${activeTab === 'soil' ? 'bg-green-600 text-white' : 'text-gray-600 hover:bg-green-100'}`}
           >
             {t('soilAnalysis')}
           </button>
-          <button 
+          <button
             onClick={() => setActiveTab('weather')}
             className={`px-4 py-2 rounded-lg transition duration-300 ${activeTab === 'weather' ? 'bg-green-600 text-white' : 'text-gray-600 hover:bg-green-100'}`}
           >
             {t('weatherRainfall')}
           </button>
-          <button 
+          <button
             onClick={() => setActiveTab('map')}
             className={`px-4 py-2 rounded-lg transition duration-300 ${activeTab === 'map' ? 'bg-green-600 text-white' : 'text-gray-600 hover:bg-green-100'}`}
           >
             {t('farmMap')}
           </button>
-          <button 
+          <button
             onClick={() => setActiveTab('predictions')}
             className={`px-4 py-2 rounded-lg transition duration-300 ${activeTab === 'predictions' ? 'bg-green-600 text-white' : 'text-gray-600 hover:bg-green-100'}`}
           >
@@ -343,142 +337,20 @@ const Dashboard = () => {
           </button>
         </div>
       </div>
-      
+
       <main className="w-full max-w-6xl mx-auto">
-        {/* Overview Tab */}
-        {activeTab === 'overview' && (
-          <div className="space-y-6">
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-              <div className="bg-white rounded-xl shadow-md p-6">
-                <div className="flex items-center">
-                  <div className="p-3 bg-green-100 rounded-lg mr-4">
-                    <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6 text-green-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3.055 11H5a2 2 0 012 2v1a2 2 0 002 2 2 2 0 012 2v2.945M8 3.935V5.5A2.5 2.5 0 0010.5 8h.5a2 2 0 012 2 2 2 0 104 0 2 2 0 012-2h1.064M15 20.488V18a2 2 0 012-2h3.064M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-                    </svg>
-                  </div>
-                  <div>
-                    <p className="text-gray-500 text-sm">{t('farmArea')}</p>
-                    <p className="text-xl font-semibold">2.5 acres</p>
-                  </div>
-                </div>
-              </div>
-              
-              <div className="bg-white rounded-xl shadow-md p-6">
-                <div className="flex items-center">
-                  <div className="p-3 bg-blue-100 rounded-lg mr-4">
-                    <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6 text-blue-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 15a4 4 0 004 4h9a5 5 0 10-.1-9.999 5.002 5.002 0 10-9.78 2.096A4 4 0 003 15z" />
-                    </svg>
-                  </div>
-                  <div>
-                    <p className="text-gray-500 text-sm">{t('currentWeather')}</p>
-                    <p className="text-xl font-semibold">
-                      {weather?.temp !== null && weather?.temp !== undefined
-                        ? `${Math.round(weather.temp)}°C`
-                        : 'Loading...'}
-                    </p>
-                    <p className="text-sm text-gray-500">
-                      {weather?.location || `${center.lat.toFixed(4)}, ${center.lng.toFixed(4)}`}
-                    </p>
-                  </div>
-                </div>
-              </div>
-              
-              <div className="bg-white rounded-xl shadow-md p-6">
-                <div className="flex items-center">
-                  <div className="p-3 bg-yellow-100 rounded-lg mr-4">
-                    <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6 text-yellow-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
-                    </svg>
-                  </div>
-                  <div>
-                    <p className="text-gray-500 text-sm">{t('investmentCapacity')}</p>
-                    <p className="text-xl font-semibold">
-                      {investmentCapacity ? investmentCapacity.category : 'Loading...'}
-                    </p>
-                  </div>
-                </div>
-              </div>
-              
-              <div className="bg-white rounded-xl shadow-md p-6">
-                <div className="flex items-center">
-                  <div className="p-3 bg-purple-100 rounded-lg mr-4">
-                    <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6 text-purple-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
-                    </svg>
-                  </div>
-                  <div>
-                    <p className="text-gray-500 text-sm">{t('expectedProfit')}</p>
-                    <p className="text-xl font-semibold">
-                      {aiRecommendations ? '₹45,000/ha' : 'Loading...'}
-                    </p>
-                  </div>
-                </div>
-              </div>
-            </div>
-            
-            <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-              <div className="lg:col-span-2 bg-white rounded-xl shadow-md p-6">
-                <h2 className="text-xl font-semibold text-gray-800 mb-4">{t('aiCropRecommendations')}</h2>
-                {aiRecommendations ? (
-                  <div className="space-y-4">
-                    {aiRecommendations.cropRotation.map((recommendation, index) => (
-                      <div key={index} className="flex items-start border-b border-gray-100 pb-4 last:border-0 last:pb-0">
-                        <div className="bg-green-100 text-green-800 rounded-full w-8 h-8 flex items-center justify-center mr-3 mt-1 flex-shrink-0">
-                          {index + 1}
-                        </div>
-                        <div>
-                          <h3 className="font-medium text-gray-800">{recommendation.season}: {recommendation.crop}</h3>
-                          <p className="text-gray-600 text-sm">{recommendation.reason}</p>
-                        </div>
-                      </div>
-                    ))}
-                  </div>
-                ) : (
-                  <p className="text-gray-500">{t('loadingRecommendations')}</p>
-                )}
-              </div>
-              
-              <div className="bg-white rounded-xl shadow-md p-6">
-                <h2 className="text-xl font-semibold text-gray-800 mb-4">{t('quickActions')}</h2>
-                <div className="space-y-3">
-                  <button 
-                    onClick={() => setActiveTab('aiplanner')}
-                    className="w-full text-left p-3 rounded-lg bg-green-50 hover:bg-green-100 transition duration-300"
-                  >
-                    <div className="font-medium text-green-800">{t('generateAIPlan')}</div>
-                    <div className="text-gray-600 text-sm">{t('createLandUsePlan')}</div>
-                  </button>
-                  <button 
-                    onClick={() => setActiveTab('agroforestry')}
-                    className="w-full text-left p-3 rounded-lg bg-blue-50 hover:bg-blue-100 transition duration-300"
-                  >
-                    <div className="font-medium text-blue-800">{t('exploreAgroforestry')}</div>
-                    <div className="text-gray-600 text-sm">{t('multiCroppingSystems')}</div>
-                  </button>
-                  <button 
-                    onClick={() => setActiveTab('predictions')}
-                    className="w-full text-left p-3 rounded-lg bg-purple-50 hover:bg-purple-100 transition duration-300"
-                  >
-                    <div className="font-medium text-purple-800">{t('viewPredictions')}</div>
-                    <div className="text-gray-600 text-sm">{t('realTimeCropPredictions')}</div>
-                  </button>
-                </div>
-              </div>
-            </div>
-          </div>
-        )}
-        
+
+
         {/* AI Planner Tab - kept mounted to preserve generated plan data */}
         <div style={{ display: activeTab === 'aiplanner' ? 'block' : 'none' }}>
           <AIPlanner onLocationChange={handleLocationChangeFromPlanner} />
         </div>
-        
+
         {/* Agroforestry Tab - kept mounted to preserve data */}
         <div style={{ display: activeTab === 'agroforestry' ? 'block' : 'none' }}>
           <AgroforestryPlanner />
         </div>
-        
+
         {/* Soil Analysis Tab */}
         {activeTab === 'soil' && (
           <SoilAnalysisComponent
@@ -487,12 +359,12 @@ const Dashboard = () => {
             aiRecommendations={aiRecommendations}
           />
         )}
-        
+
         {/* Weather & Rainfall Tab */}
         {activeTab === 'weather' && (
           <div className="space-y-6">
-            <WeatherComponent 
-              initialLat={selectedLocation.lat} 
+            <WeatherComponent
+              initialLat={selectedLocation.lat}
               initialLon={selectedLocation.lng}
               onWeatherFetch={setWeather}
             />
@@ -503,7 +375,7 @@ const Dashboard = () => {
             />
           </div>
         )}
-        
+
         {/* Farm Map Tab */}
         {activeTab === 'map' && (
           <div className="bg-white rounded-xl shadow-md p-6">
@@ -522,7 +394,7 @@ const Dashboard = () => {
                 <Marker position={center} />
               </GoogleMap>
             </LoadScript>
-            
+
             <div className="mt-6 grid grid-cols-1 md:grid-cols-3 gap-4">
               <div className="bg-green-50 rounded-lg p-4">
                 <h3 className="font-medium text-green-800 mb-2">{t('farmArea')}</h3>
@@ -537,19 +409,19 @@ const Dashboard = () => {
                 <p className="text-lg font-bold text-green-600">{t('verified')}</p>
               </div>
             </div>
-            
+
             {/* AI-Generated Land Layout Map */}
             <div className="mt-8">
               <h3 className="text-xl font-semibold text-gray-800 mb-4">{t('aiGeneratedLandLayout')}</h3>
               <div className="bg-gray-100 rounded-lg p-4">
-                <iframe 
-                  src="/api/latest-map" 
-                  title="AI Land Layout Map" 
+                <iframe
+                  src="/api/latest-map"
+                  title="AI Land Layout Map"
                   className="w-full h-96 rounded-lg border-0"
                   sandbox="allow-scripts allow-same-origin"
                 ></iframe>
                 <div className="mt-4 flex justify-center">
-                  <button 
+                  <button
                     onClick={generateLandLayoutMap}
                     className="bg-green-600 hover:bg-green-700 text-white font-medium py-2 px-6 rounded-lg transition duration-300 flex items-center"
                   >
@@ -559,7 +431,7 @@ const Dashboard = () => {
                     {t('refreshLandLayout')}
                   </button>
                 </div>
-                
+
                 {/* Legend for land use types */}
                 <div className="mt-6 bg-gray-50 rounded-lg p-4 inline-block">
                   <h4 className="font-medium text-gray-800 mb-2">{t('landUseLegend')}</h4>
@@ -578,7 +450,7 @@ const Dashboard = () => {
                     </div>
                   </div>
                 </div>
-                
+
                 {mapId && (
                   <div className="mt-4 text-center text-sm text-green-600">
                     {t('mapStoredInFirebase')} ID: {mapId}
@@ -588,13 +460,13 @@ const Dashboard = () => {
             </div>
           </div>
         )}
-        
+
         {/* Predictions Tab */}
         {activeTab === 'predictions' && (
           <div className="space-y-6">
             <div className="bg-white rounded-xl shadow-md p-6">
               <h2 className="text-2xl font-semibold text-gray-800 mb-6">🌾 {t('realTimePredictions')}</h2>
-              
+
               {realTimePredictions ? (
                 <div className="space-y-6">
                   {/* Recommended Crops */}
@@ -617,7 +489,7 @@ const Dashboard = () => {
                       </div>
                     </div>
                   </div>
-                  
+
                   {/* Predicted Yield */}
                   <div className="border border-gray-200 rounded-lg p-4">
                     <h3 className="text-lg font-medium text-gray-800 mb-3">📊 {t('predictedYield')}</h3>
@@ -638,15 +510,15 @@ const Dashboard = () => {
                       </div>
                       <div className="bg-yellow-50 rounded-lg p-4 text-center">
                         <div className="text-3xl font-bold text-yellow-800">
-                          {realTimePredictions.predictions?.yield_kg_per_acre > 3000 ? t('high') : 
-                           realTimePredictions.predictions?.yield_kg_per_acre > 2000 ? t('medium') : t('low') || t('medium')}
+                          {realTimePredictions.predictions?.yield_kg_per_acre > 3000 ? t('high') :
+                            realTimePredictions.predictions?.yield_kg_per_acre > 2000 ? t('medium') : t('low') || t('medium')}
                         </div>
                         <div className="text-gray-600">{t('yieldPotential')}</div>
                         <div className="mt-2 text-sm text-gray-500">{t('basedOnEnvironmentalConditions')}</div>
                       </div>
                     </div>
                   </div>
-                  
+
                   {/* ROI and Cost-Benefit */}
                   <div className="border border-gray-200 rounded-lg p-4">
                     <h3 className="text-lg font-medium text-gray-800 mb-3">💰 {t('roiAndCostBenefit')}</h3>
@@ -670,7 +542,7 @@ const Dashboard = () => {
                         <div className="text-gray-600">{t('paybackPeriod')}</div>
                       </div>
                     </div>
-                    
+
                     {/* Cost-Benefit Analysis */}
                     <div className="mt-4 pt-4 border-t border-gray-200">
                       <h4 className="font-medium text-gray-800 mb-2">{t('costBreakdown')}</h4>
@@ -690,7 +562,7 @@ const Dashboard = () => {
                       </div>
                     </div>
                   </div>
-                  
+
                   {/* Weather Conditions */}
                   <div className="border border-gray-200 rounded-lg p-4">
                     <h3 className="text-lg font-medium text-gray-800 mb-3">🌤️ {t('currentWeatherConditions')}</h3>
@@ -721,7 +593,7 @@ const Dashboard = () => {
                       </div>
                     </div>
                   </div>
-                  
+
                   {/* Recommendations */}
                   <div className="border border-gray-200 rounded-lg p-4">
                     <h3 className="text-lg font-medium text-gray-800 mb-3">✅ {t('recommendations')}</h3>
@@ -772,20 +644,20 @@ const Dashboard = () => {
             </div>
           </div>
         )}
-        
+
         {/* Feedback Form Modal */}
         {showFeedbackForm && currentPredictionId && (
-          <div 
+          <div
             className="fixed inset-0 flex items-center justify-center p-4 z-50"
             style={{ backgroundColor: 'rgba(0, 0, 0, 0.6)', backdropFilter: 'blur(4px)' }}
           >
-            <div 
+            <div
               className="bg-white rounded-2xl shadow-2xl w-full max-h-[90vh] overflow-y-auto"
               style={{ maxWidth: '480px' }}
             >
-              <div 
+              <div
                 className="sticky top-0 p-5 flex justify-between items-center rounded-t-2xl z-10"
-                style={{ 
+                style={{
                   background: 'linear-gradient(135deg, #166534 0%, #16a34a 100%)',
                   color: '#ffffff',
                 }}
@@ -830,9 +702,9 @@ const Dashboard = () => {
                 </button>
               </div>
               <div className="p-6">
-                <FeedbackForm 
-                  predictionId={currentPredictionId} 
-                  onClose={() => setShowFeedbackForm(false)} 
+                <FeedbackForm
+                  predictionId={currentPredictionId}
+                  onClose={() => setShowFeedbackForm(false)}
                 />
               </div>
             </div>
