@@ -30,6 +30,15 @@ import {
   Shield,
   Calendar,
   RefreshCw,
+  LayoutDashboard,
+  Zap,
+  Sprout,
+  Thermometer,
+  Droplets,
+  Wind,
+  Sun,
+  TrendingUp,
+  ArrowRight,
 } from 'lucide-react';
 import AgroforestryPlanner from './AgroforestryPlanner';
 import AIPlanner from './AIPlanner';
@@ -52,6 +61,7 @@ const farmPolygon = [
 ];
 
 const NAV_ITEMS = [
+  { id: 'overview',     label: 'Overview',         icon: LayoutDashboard },
   { id: 'aiplanner',    label: 'AI Planner',       icon: Bot        },
   { id: 'agroforestry', label: 'Agroforestry',     icon: Trees      },
   { id: 'soil',         label: 'Soil Analysis',    icon: FlaskConical },
@@ -433,6 +443,196 @@ const FarmMapTab = ({ center, mapId, onGenerateMap, t }) => (
   </motion.div>
 );
 
+/* ─── OverviewPage ───────────────────────────────────────────── */
+const OverviewPage = ({ user, weather, onNavigate }) => {
+  const firstName = (user?.displayName || 'Farmer').split(' ')[0];
+
+  const hour = new Date().getHours();
+  const greeting =
+    hour < 12 ? 'Good Morning' :
+    hour < 17 ? 'Good Afternoon' : 'Good Evening';
+
+  const greetEmoji =
+    hour < 12 ? '🌅' : hour < 17 ? '☀️' : '🌙';
+
+  /* weather display helpers */
+  const temp         = weather?.temp != null ? `${Math.round(weather.temp)}°C` : '—';
+  const humidity     = weather?.humidity != null ? `${weather.humidity}%` : '—';
+  const windSpeed    = weather?.wind != null ? `${weather.wind} km/h` : '—';
+  const rainChance   = weather?.rain_chance != null ? `${weather.rain_chance}%` : weather ? '20%' : '—';
+  const weatherDesc  = weather?.description || 'Partly Cloudy';
+  const locationName = weather?.location || 'Your Farm';
+
+  const quickActions = [
+    {
+      id: 'aiplanner',
+      icon: Bot,
+      emoji: '🤖',
+      title: 'Get Crop Recommendation',
+      desc: 'AI-powered plan based on your soil & weather',
+      gradient: 'from-green-500 to-emerald-600',
+      badge: 'AI Powered',
+    },
+    {
+      id: 'agroforestry',
+      icon: Trees,
+      emoji: '🌳',
+      title: 'Explore Agroforestry',
+      desc: 'Multi-cropping & shade tree strategies',
+      gradient: 'from-teal-500 to-cyan-600',
+      badge: 'Popular',
+    },
+    {
+      id: 'soil',
+      icon: FlaskConical,
+      emoji: '🧪',
+      title: 'Soil Health Check',
+      desc: 'Live SoilGrids analysis for your location',
+      gradient: 'from-amber-500 to-orange-500',
+      badge: 'Live Data',
+    },
+    {
+      id: 'predictions',
+      icon: TrendingUp,
+      emoji: '📈',
+      title: 'Yield Predictions',
+      desc: 'ROI, expected harvest & cost breakdown',
+      gradient: 'from-purple-500 to-violet-600',
+      badge: 'ML Model',
+    },
+  ];
+
+  return (
+    <motion.div
+      variants={fadeUp}
+      initial="hidden"
+      animate="visible"
+      className="space-y-6"
+    >
+      {/* ── Welcome hero ── */}
+      <div
+        className="relative rounded-3xl overflow-hidden"
+        style={{
+          background: 'linear-gradient(135deg, #14532d 0%, #166534 50%, #15803d 100%)',
+          minHeight: 180,
+        }}
+      >
+        {/* decorative circles */}
+        <div className="absolute -top-10 -right-10 w-48 h-48 rounded-full bg-white/5" />
+        <div className="absolute top-8 right-16 w-24 h-24 rounded-full bg-white/5" />
+        <div className="absolute -bottom-8 left-1/3 w-36 h-36 rounded-full bg-white/5" />
+
+        <div className="relative z-10 p-7">
+          <p className="text-green-300 text-sm font-semibold mb-1 tracking-wide">
+            {greetEmoji} {greeting}
+          </p>
+          <h1 className="text-3xl sm:text-4xl font-extrabold text-white tracking-tight">
+            Hello, {firstName}! 👋
+          </h1>
+          <p className="text-green-200 mt-2 text-sm sm:text-base max-w-lg">
+            Here's your farm dashboard. Let AI guide your farming decisions today.
+          </p>
+
+          {/* weather mini badge inside hero */}
+          {weather && (
+            <div className="mt-5 inline-flex items-center gap-3 bg-white/10 border border-white/20 backdrop-blur-sm rounded-2xl px-4 py-2.5">
+              <Thermometer size={16} className="text-amber-300" />
+              <span className="text-white font-bold text-sm">{temp}</span>
+              <span className="text-green-200 text-xs">·</span>
+              <Droplets size={14} className="text-blue-300" />
+              <span className="text-white text-sm">{humidity}</span>
+              <span className="text-green-200 text-xs">·</span>
+              <span className="text-green-200 text-xs truncate max-w-[120px]">{locationName}</span>
+            </div>
+          )}
+        </div>
+      </div>
+
+      {/* ── Weather widget ── */}
+      <div>
+        <h2 className="text-sm font-semibold text-gray-500 uppercase tracking-widest mb-3 flex items-center gap-2">
+          <CloudRain size={14} /> Current Weather
+        </h2>
+        <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
+          {[
+            { icon: Thermometer, label: 'Temperature',  value: temp,        color: 'text-orange-600', bg: 'bg-orange-50 border-orange-100' },
+            { icon: Droplets,    label: 'Humidity',     value: humidity,    color: 'text-blue-600',   bg: 'bg-blue-50 border-blue-100'     },
+            { icon: Wind,        label: 'Wind Speed',   value: windSpeed,   color: 'text-teal-600',   bg: 'bg-teal-50 border-teal-100'     },
+            { icon: CloudRain,   label: 'Rain Chance',  value: rainChance,  color: 'text-indigo-600', bg: 'bg-indigo-50 border-indigo-100' },
+          ].map(({ icon: Icon, label, value, color, bg }) => (
+            <motion.div
+              key={label}
+              whileHover={{ scale: 1.03 }}
+              className={`rounded-2xl border p-4 ${bg}`}
+            >
+              <div className={`mb-2 ${color}`}><Icon size={20} /></div>
+              <p className={`text-xl font-bold ${color}`}>{value}</p>
+              <p className="text-xs text-gray-500 mt-0.5">{label}</p>
+            </motion.div>
+          ))}
+        </div>
+        {weather?.description && (
+          <p className="mt-2 text-xs text-gray-400 flex items-center gap-1">
+            <Sun size={11} /> {weatherDesc} · {locationName}
+          </p>
+        )}
+      </div>
+
+      {/* ── Quick actions ── */}
+      <div>
+        <h2 className="text-sm font-semibold text-gray-500 uppercase tracking-widest mb-3 flex items-center gap-2">
+          <Zap size={14} /> Quick Actions
+        </h2>
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+          {quickActions.map((action) => (
+            <motion.button
+              key={action.id}
+              whileHover={{ scale: 1.02, y: -2 }}
+              whileTap={{ scale: 0.98 }}
+              onClick={() => onNavigate(action.id)}
+              className="text-left w-full"
+            >
+              <div className="bg-white border border-gray-100 rounded-2xl p-5 shadow-sm hover:shadow-md transition-shadow flex items-start gap-4">
+                <div className={`w-12 h-12 rounded-xl bg-gradient-to-br ${action.gradient} flex items-center justify-center text-2xl flex-shrink-0 shadow-sm`}>
+                  {action.emoji}
+                </div>
+                <div className="flex-1 min-w-0">
+                  <div className="flex items-center gap-2 mb-1">
+                    <p className="font-bold text-gray-800 text-sm">{action.title}</p>
+                    <span className="text-[10px] font-semibold px-2 py-0.5 bg-green-100 text-green-700 rounded-full flex-shrink-0">
+                      {action.badge}
+                    </span>
+                  </div>
+                  <p className="text-xs text-gray-500 leading-relaxed">{action.desc}</p>
+                </div>
+                <ArrowRight size={16} className="text-gray-300 flex-shrink-0 mt-1" />
+              </div>
+            </motion.button>
+          ))}
+        </div>
+      </div>
+
+      {/* ── Seasonal tip banner ── */}
+      <div className="rounded-2xl border border-green-200 bg-green-50 p-5 flex items-start gap-4">
+        <div className="text-2xl flex-shrink-0">🌱</div>
+        <div>
+          <p className="font-bold text-green-800 text-sm mb-1">Seasonal Tip</p>
+          <p className="text-green-700 text-xs leading-relaxed">
+            It's a great time to prepare your soil for the upcoming Kharif season.
+            Apply organic compost now and check for optimal moisture levels before sowing.
+          </p>
+        </div>
+        <button
+          onClick={() => onNavigate('soil')}
+          className="flex-shrink-0 text-xs font-semibold text-green-700 px-3 py-1.5 bg-green-200 hover:bg-green-300 rounded-xl transition"
+        >
+          Check Soil
+        </button>
+      </div>
+    </motion.div>
+  );
+};
+
 /* ─── Dashboard ──────────────────────────────────────────────── */
 const Dashboard = () => {
   const { t, i18n } = useTranslation();
@@ -443,7 +643,7 @@ const Dashboard = () => {
   const [weather, setWeather]                   = useState(null);
   const [aiRecommendations, setAiRecommendations] = useState(null);
   const [realTimePredictions, setRealTimePredictions] = useState(null);
-  const [activeTab, setActiveTab]               = useState('aiplanner');
+  const [activeTab, setActiveTab]               = useState('overview');
   const [showFeedbackForm, setShowFeedbackForm] = useState(false);
   const [currentPredictionId, setCurrentPredictionId] = useState(null);
   const [mapId, setMapId]                       = useState(null);
@@ -677,6 +877,15 @@ const Dashboard = () => {
         {/* Tab content */}
         <main className="flex-1 overflow-y-auto p-4 sm:p-6">
           <div className="max-w-5xl mx-auto">
+
+            {/* Overview Tab */}
+            {activeTab === 'overview' && (
+              <OverviewPage
+                user={user}
+                weather={weather}
+                onNavigate={(tab) => setActiveTab(tab)}
+              />
+            )}
 
             {/* AI Planner — kept mounted */}
             <div style={{ display: activeTab === 'aiplanner' ? 'block' : 'none' }}>
