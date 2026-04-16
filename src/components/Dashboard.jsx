@@ -4,15 +4,9 @@ import { useTranslation } from 'react-i18next';
 import { auth } from '../firebase';
 import { signOut } from 'firebase/auth';
 import {
-  GoogleMap,
-  LoadScript,
-  Marker,
-  Polygon,
-} from '@react-google-maps/api';
-import {
-  Leaf, Bot, Trees, FlaskConical, CloudRain, Map, BarChart3, User,
+  Leaf, Bot, Trees, FlaskConical, CloudRain, BarChart3, User,
   LogOut, Menu, X, Globe, ChevronRight, Mail, Phone, MapPin, Camera,
-  Shield, Calendar, RefreshCw, LayoutDashboard, Zap, Sprout,
+  Shield, Calendar, LayoutDashboard, Zap, Sprout,
   Thermometer, Droplets, Wind, Sun, TrendingUp, ArrowRight,
   CheckCircle2, AlertCircle, Star, Activity, Wallet,
 } from 'lucide-react';
@@ -20,21 +14,12 @@ import AgroforestryPlanner from './AgroforestryPlanner';
 import AIPlanner from './AIPlanner';
 import agroIntelService from '../services/agroIntelService';
 import FeedbackForm from './FeedbackForm';
-import mapStorageService from '../services/mapStorageService';
-import { generateLandLayoutMap as generateMapUtil } from '../utils/api';
 import WeatherComponent from './WeatherComponent';
 import RainfallComponent from './RainfallComponent';
 import SoilAnalysisComponent from './SoilAnalysisComponent';
 
 /* ─── constants ──────────────────────────────────────────────── */
-const mapContainerStyle = { width: '100%', height: '400px' };
 const defaultCenter = { lat: 12.9629, lng: 77.5775 };
-const farmPolygon = [
-  { lat: 12.9629, lng: 77.5775 },
-  { lat: 12.9629, lng: 77.5775 },
-  { lat: 12.9629, lng: 77.5775 },
-  { lat: 12.9629, lng: 77.5775 },
-];
 
 const NAV_ITEMS = [
   { id: 'overview',     label: 'Overview',     icon: LayoutDashboard },
@@ -42,7 +27,6 @@ const NAV_ITEMS = [
   { id: 'agroforestry',label: 'Agroforestry', icon: Trees },
   { id: 'soil',        label: 'Soil Analysis',icon: FlaskConical },
   { id: 'weather',     label: 'Weather & Rain',icon: CloudRain },
-  { id: 'map',         label: 'Farm Map',     icon: Map },
   { id: 'predictions', label: 'Predictions',  icon: BarChart3 },
   { id: 'profile',     label: 'Profile',      icon: User },
 ];
@@ -387,65 +371,6 @@ const PredictionsTab = ({ realTimePredictions, t }) => {
 };
 
 /* ═══════════════════════════════════════════════════════════════
-   FARM MAP TAB
-═══════════════════════════════════════════════════════════════ */
-const FarmMapTab = ({ center, mapId, onGenerateMap, t }) => (
-  <motion.div variants={stagger} initial="hidden" animate="visible" className="space-y-5">
-    <motion.div variants={fadeUp} custom={0}>
-      <GlassCard className="p-5">
-        <h2 className="font-bold flex items-center gap-2 mb-4" style={{ color: C.heading, fontSize: 18 }}>
-          <Map size={18} style={{ color: '#16a34a' }} /> {t('farmMap')}
-        </h2>
-        <LoadScript googleMapsApiKey={import.meta.env.VITE_GOOGLE_MAPS_API_KEY}>
-          <GoogleMap mapContainerStyle={mapContainerStyle} center={center} zoom={16}>
-            <Polygon paths={farmPolygon}
-              options={{ fillColor: '#34D399', fillOpacity: 0.3, strokeColor: '#059669', strokeWeight: 2 }} />
-            <Marker position={center} />
-          </GoogleMap>
-        </LoadScript>
-      </GlassCard>
-    </motion.div>
-
-    <motion.div variants={stagger} className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-      <StatCard icon={Leaf}   label={t('farmArea')}       value="2.5 acres" color="text-green-600" bg="rgba(240,253,244,0.85)" i={0} />
-      <StatCard icon={MapPin} label={t('gpsCoordinates')} value={`${center.lat.toFixed(4)}, ${center.lng.toFixed(4)}`} color="text-sky-600" bg="rgba(240,249,255,0.85)" i={1} />
-      <StatCard icon={Shield} label={t('boundaryStatus')} value={t('verified')} color="text-purple-600" bg="rgba(245,243,255,0.85)" i={2} />
-    </motion.div>
-
-    <motion.div custom={3} variants={fadeUp}>
-      <GlassCard className="p-5">
-        <h3 className="font-bold flex items-center gap-2 mb-4" style={{ color: C.heading }}>
-          <Map size={16} style={{ color: '#16a34a' }} /> {t('aiGeneratedLandLayout')}
-        </h3>
-        <div className="bg-gray-50/80 rounded-xl overflow-hidden border border-gray-100">
-          <iframe src="/api/latest-map" title="AI Land Layout Map"
-            className="w-full h-80 border-0" sandbox="allow-scripts allow-same-origin" />
-        </div>
-        <div className="mt-4 flex flex-wrap items-center justify-between gap-3">
-          <button onClick={onGenerateMap}
-            className="flex items-center gap-2 px-5 py-2 text-white rounded-xl font-medium text-sm transition hover:opacity-90"
-            style={{ background: 'linear-gradient(135deg, #15803d, #16a34a)', boxShadow: '0 4px 14px rgba(22,163,74,0.4)' }}>
-            <RefreshCw size={15} /> {t('refreshLandLayout')}
-          </button>
-          <div className="flex items-center gap-4 text-xs" style={{ color: C.light }}>
-            {[
-              { color: 'bg-green-500', label: `${t('mainCropArea')} 60%` },
-              { color: 'bg-yellow-400', label: `${t('intercropArea')} 25%` },
-              { color: 'bg-emerald-900', label: `${t('treesArea')} 15%` },
-            ].map(({ color, label }) => (
-              <span key={label} className="flex items-center gap-1">
-                <span className={`w-3 h-3 rounded-sm ${color}`} /> {label}
-              </span>
-            ))}
-          </div>
-        </div>
-        {mapId && <p className="mt-3 text-xs" style={{ color: '#16a34a' }}>{t('mapStoredInFirebase')} ID: {mapId}</p>}
-      </GlassCard>
-    </motion.div>
-  </motion.div>
-);
-
-/* ═══════════════════════════════════════════════════════════════
    OVERVIEW PAGE
 ═══════════════════════════════════════════════════════════════ */
 const OverviewPage = ({ user, weather, onNavigate }) => {
@@ -689,7 +614,6 @@ const Dashboard = () => {
   const [activeTab, setActiveTab]               = useState('overview');
   const [showFeedbackForm, setShowFeedbackForm] = useState(false);
   const [currentPredictionId, setCurrentPredictionId] = useState(null);
-  const [mapId, setMapId]                       = useState(null);
   const [sidebarOpen, setSidebarOpen]           = useState(false);
 
   /* geolocation */
@@ -757,27 +681,6 @@ const Dashboard = () => {
 
   const handleLogout = async () => {
     try { await signOut(auth); } catch (e) { console.error(e); }
-  };
-
-  const handleGenerateMap = async () => {
-    try {
-      const mapData = {
-        center_lat: center.lat, center_lon: center.lng, land_area_acres: 2.5, location: 'Farmer Location',
-        soil_data: { ph: 6.8, organic_carbon: 1.2, nitrogen: 150, phosphorus: 30, potassium: 150, texture: 'Loam', drainage: 'Moderate' },
-        weather_data: { rainfall_mm: weather?.rainfall_mm || 980, temperature_c: weather?.temp || 28, humidity: weather?.humidity || 65, solar_radiation: 5.5 },
-        economic_data: { budget_inr: 50000, labor_availability: 'Medium', input_cost_type: 'Organic' },
-      };
-      const response = await generateMapUtil(mapData);
-      if (response.success) {
-        const stored = await mapStorageService.storeMap(
-          { ...mapData, recommendation: response.recommendation, created_at: new Date(), user_id: auth.currentUser?.uid },
-          response.map_file_path,
-        );
-        setMapId(stored.id);
-        const iframe = document.querySelector('iframe[title="AI Land Layout Map"]');
-        if (iframe) iframe.src = response.map_url || `/api/get-map/${encodeURIComponent(response.map_file_path.split('/').pop())}`;
-      }
-    } catch (e) { console.error(e); }
   };
 
   const activeItem = NAV_ITEMS.find(n => n.id === activeTab);
@@ -966,9 +869,6 @@ const Dashboard = () => {
                   <WeatherComponent initialLat={selectedLocation.lat} initialLon={selectedLocation.lng} onWeatherFetch={setWeather} />
                   <RainfallComponent lat={selectedLocation.lat} lon={selectedLocation.lng} aiRecommendations={aiRecommendations} />
                 </motion.div>
-              )}
-              {activeTab === 'map' && (
-                <FarmMapTab key="map" center={center} mapId={mapId} onGenerateMap={handleGenerateMap} t={t} />
               )}
               {activeTab === 'predictions' && (
                 <PredictionsTab key="predictions" realTimePredictions={realTimePredictions} t={t} />
