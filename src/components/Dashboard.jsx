@@ -85,9 +85,15 @@ const fadeUp = {
   visible: { opacity: 1, y: 0, transition: { duration: 0.4 } },
 };
 
-const Card = ({ children, className = '' }) => (
+const Card = ({ children, className = '', primary = false }) => (
   <div
-    className={`bg-white rounded-2xl shadow-sm border border-green-100 ${className}`}
+    className={`
+      ${primary
+        ? 'bg-gradient-to-br from-white to-green-50/60 border-green-200/60 shadow-[0_8px_30px_rgba(22,163,74,0.10)]'
+        : 'bg-white/80 backdrop-blur-xl border-white/40 shadow-[0_8px_30px_rgba(0,0,0,0.07)]'
+      }
+      rounded-2xl border ${className}
+    `}
   >
     {children}
   </div>
@@ -514,13 +520,16 @@ const OverviewPage = ({ user, weather, onNavigate }) => {
         style={{
           background: 'linear-gradient(135deg, #16a34a 0%, #059669 50%, #064e3b 100%)',
           minHeight: 180,
-          boxShadow: 'inset 0 2px 10px rgba(255,255,255,0.1)',
+          boxShadow: '0 12px 40px rgba(22,163,74,0.25), inset 0 2px 10px rgba(255,255,255,0.1)',
         }}
       >
         {/* decorative light beams & glowing orbs */}
         <div className="absolute -top-32 -right-32 w-96 h-96 rounded-full bg-emerald-300/30 blur-[80px] pointer-events-none" />
         <div className="absolute -bottom-32 -left-16 w-80 h-80 rounded-full bg-green-300/20 blur-[80px] pointer-events-none" />
         <div className="absolute top-1/2 left-1/3 w-64 h-64 rounded-full bg-yellow-200/10 blur-[60px] pointer-events-none" />
+        {/* floating hero glow — SaaS / AI product feel */}
+        <div className="absolute -top-10 right-0 w-72 h-72 rounded-full pointer-events-none"
+          style={{ background: 'radial-gradient(circle at top right, rgba(34,197,94,0.35), transparent 70%)' }} />
 
         <div className="relative z-10 p-7">
           <p className="text-green-300 text-sm font-semibold mb-1 tracking-wide">
@@ -613,9 +622,12 @@ const OverviewPage = ({ user, weather, onNavigate }) => {
       </div>
 
       {/* ── Seasonal tip banner ── */}
-      <div className="rounded-2xl border border-green-200 bg-green-50 p-5 flex items-start gap-4">
-        <div className="text-2xl flex-shrink-0">🌱</div>
-        <div>
+      <div className="rounded-2xl border border-green-200/60 bg-gradient-to-r from-green-50 to-emerald-50 p-5 flex items-start gap-4"
+        style={{ boxShadow: '0 4px 20px rgba(22,163,74,0.08)' }}>
+        <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-green-500 to-emerald-600 flex items-center justify-center flex-shrink-0 shadow-md">
+          <Sprout size={18} className="text-white" />
+        </div>
+        <div className="flex-1">
           <p className="font-bold text-green-800 text-sm mb-1">Seasonal Tip</p>
           <p className="text-green-700 text-xs leading-relaxed">
             It's a great time to prepare your soil for the upcoming Kharif season.
@@ -748,10 +760,19 @@ const Dashboard = () => {
       <motion.button
         whileTap={{ scale: 0.97 }}
         onClick={() => { setActiveTab(item.id); setSidebarOpen(false); }}
-        className={`flex items-center gap-3 w-full px-4 py-3 rounded-xl text-sm font-medium transition-all ${isActive
-          ? 'bg-green-600 text-white shadow-md shadow-green-200'
-          : 'text-gray-600 hover:bg-green-50 hover:text-green-700'
-          }`}
+        className={`flex items-center gap-3 w-full px-4 py-3 rounded-xl text-sm font-medium transition-all ${
+          isActive
+            ? 'text-white'
+            : 'text-gray-600 hover:text-green-700'
+        }`}
+        style={isActive ? {
+          background: 'linear-gradient(135deg, #15803d, #16a34a)',
+          boxShadow: '0 4px 16px rgba(21,128,61,0.30), inset 0 1px 0 rgba(255,255,255,0.15)',
+        } : {
+          background: 'transparent',
+        }}
+        onMouseEnter={e => { if (!isActive) e.currentTarget.style.background = 'rgba(22,163,74,0.08)'; }}
+        onMouseLeave={e => { if (!isActive) e.currentTarget.style.background = 'transparent'; }}
       >
         <Icon size={18} className={isActive ? 'text-white' : 'text-gray-400'} />
         <span>{item.label}</span>
@@ -761,7 +782,10 @@ const Dashboard = () => {
   };
 
   return (
-    <div className="min-h-screen bg-[#f4f7f2] flex" style={{ fontFamily: "'Inter', 'Segoe UI', sans-serif" }}>
+    <div className="min-h-screen flex" style={{
+      fontFamily: "'Inter', 'Segoe UI', sans-serif",
+      background: 'linear-gradient(135deg, #f0fdf4 0%, #ffffff 45%, #ecfdf5 100%)',
+    }}>
       {/* ── Mobile overlay */}
       {sidebarOpen && (
         <div
@@ -773,12 +797,18 @@ const Dashboard = () => {
       {/* ── Sidebar — CSS-only slide on mobile, always visible on lg+ */}
       <aside
         className={`
-          fixed inset-y-0 left-0 z-40 w-64 bg-white border-r border-green-100 flex flex-col
+          fixed inset-y-0 left-0 z-40 w-64 flex flex-col
           transition-transform duration-300 ease-in-out
           ${sidebarOpen ? 'translate-x-0' : '-translate-x-full'}
           lg:static lg:translate-x-0 lg:flex lg:shrink-0
         `}
-        style={{ boxShadow: '4px 0 24px rgba(0,0,0,0.06)' }}
+        style={{
+          background: 'rgba(255,255,255,0.75)',
+          backdropFilter: 'blur(20px)',
+          WebkitBackdropFilter: 'blur(20px)',
+          borderRight: '1px solid rgba(255,255,255,0.35)',
+          boxShadow: '4px 0 30px rgba(0,0,0,0.08)',
+        }}
       >
         {/* Brand */}
         <div className="flex items-center gap-3 px-5 py-5 border-b border-green-100">
@@ -822,8 +852,14 @@ const Dashboard = () => {
       <div className="flex-1 flex flex-col min-w-0">
 
         {/* Top bar */}
-        <header className="bg-white border-b border-green-100 px-4 sm:px-6 py-3 flex items-center gap-3 sticky top-0 z-20"
-          style={{ boxShadow: '0 2px 12px rgba(0,0,0,0.05)' }}
+        <header className="px-4 sm:px-6 py-3 flex items-center gap-3 sticky top-0 z-20"
+          style={{
+            background: 'rgba(255,255,255,0.80)',
+            backdropFilter: 'blur(20px)',
+            WebkitBackdropFilter: 'blur(20px)',
+            borderBottom: '1px solid rgba(255,255,255,0.4)',
+            boxShadow: '0 2px 20px rgba(0,0,0,0.06)',
+          }}
         >
           <button
             onClick={() => setSidebarOpen(true)}
@@ -873,7 +909,7 @@ const Dashboard = () => {
         </header>
 
         {/* Tab content */}
-        <main className="flex-1 overflow-y-auto p-4 sm:p-6">
+        <main className="flex-1 overflow-y-auto p-4 sm:p-6 pb-24 lg:pb-6">
           <div className="max-w-5xl mx-auto">
 
             {/* Overview Tab */}
@@ -955,6 +991,43 @@ const Dashboard = () => {
           </motion.div>
         )}
       </AnimatePresence>
+
+      {/* ── Bottom navigation (mobile only) */}
+      <nav className="lg:hidden fixed bottom-0 left-0 right-0 z-40 flex items-center justify-around py-2 px-1"
+        style={{
+          background: 'rgba(255,255,255,0.90)',
+          backdropFilter: 'blur(24px)',
+          WebkitBackdropFilter: 'blur(24px)',
+          borderTop: '1px solid rgba(255,255,255,0.4)',
+          boxShadow: '0 -4px 20px rgba(0,0,0,0.08)',
+        }}
+      >
+        {NAV_ITEMS.slice(0, 5).map((item) => {
+          const Icon = item.icon;
+          const isActive = activeTab === item.id;
+          return (
+            <button
+              key={item.id}
+              onClick={() => setActiveTab(item.id)}
+              className="flex flex-col items-center gap-1 min-w-0 flex-1 py-1 px-1"
+              style={{ minHeight: '52px' }}
+            >
+              <div
+                className="w-10 h-10 rounded-xl flex items-center justify-center transition-all"
+                style={isActive ? {
+                  background: 'linear-gradient(135deg, #15803d, #16a34a)',
+                  boxShadow: '0 4px 12px rgba(21,128,61,0.35)',
+                } : {}}
+              >
+                <Icon size={20} className={isActive ? 'text-white' : 'text-gray-400'} />
+              </div>
+              <span className={`text-[10px] font-semibold truncate w-full text-center ${
+                isActive ? 'text-green-700' : 'text-gray-400'
+              }`}>{item.label}</span>
+            </button>
+          );
+        })}
+      </nav>
 
       {/* Google font */}
       <style>{`@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');`}</style>
