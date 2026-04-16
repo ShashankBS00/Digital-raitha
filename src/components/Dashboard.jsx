@@ -10,35 +10,11 @@ import {
   Polygon,
 } from '@react-google-maps/api';
 import {
-  Leaf,
-  Bot,
-  Trees,
-  FlaskConical,
-  CloudRain,
-  Map,
-  BarChart3,
-  User,
-  LogOut,
-  Menu,
-  X,
-  Globe,
-  ChevronRight,
-  Mail,
-  Phone,
-  MapPin,
-  Camera,
-  Shield,
-  Calendar,
-  RefreshCw,
-  LayoutDashboard,
-  Zap,
-  Sprout,
-  Thermometer,
-  Droplets,
-  Wind,
-  Sun,
-  TrendingUp,
-  ArrowRight,
+  Leaf, Bot, Trees, FlaskConical, CloudRain, Map, BarChart3, User,
+  LogOut, Menu, X, Globe, ChevronRight, Mail, Phone, MapPin, Camera,
+  Shield, Calendar, RefreshCw, LayoutDashboard, Zap, Sprout,
+  Thermometer, Droplets, Wind, Sun, TrendingUp, ArrowRight,
+  CheckCircle2, AlertCircle, Star, Activity, Wallet,
 } from 'lucide-react';
 import AgroforestryPlanner from './AgroforestryPlanner';
 import AIPlanner from './AIPlanner';
@@ -50,7 +26,7 @@ import WeatherComponent from './WeatherComponent';
 import RainfallComponent from './RainfallComponent';
 import SoilAnalysisComponent from './SoilAnalysisComponent';
 
-/* ─── constants ─────────────────────────────────────────────── */
+/* ─── constants ──────────────────────────────────────────────── */
 const mapContainerStyle = { width: '100%', height: '400px' };
 const defaultCenter = { lat: 12.9629, lng: 77.5775 };
 const farmPolygon = [
@@ -61,14 +37,14 @@ const farmPolygon = [
 ];
 
 const NAV_ITEMS = [
-  { id: 'overview', label: 'Overview', icon: LayoutDashboard },
-  { id: 'aiplanner', label: 'AI Planner', icon: Bot },
-  { id: 'agroforestry', label: 'Agroforestry', icon: Trees },
-  { id: 'soil', label: 'Soil Analysis', icon: FlaskConical },
-  { id: 'weather', label: 'Weather & Rain', icon: CloudRain },
-  { id: 'map', label: 'Farm Map', icon: Map },
-  { id: 'predictions', label: 'Predictions', icon: BarChart3 },
-  { id: 'profile', label: 'Profile', icon: User },
+  { id: 'overview',     label: 'Overview',     icon: LayoutDashboard },
+  { id: 'aiplanner',   label: 'AI Planner',   icon: Bot },
+  { id: 'agroforestry',label: 'Agroforestry', icon: Trees },
+  { id: 'soil',        label: 'Soil Analysis',icon: FlaskConical },
+  { id: 'weather',     label: 'Weather & Rain',icon: CloudRain },
+  { id: 'map',         label: 'Farm Map',     icon: Map },
+  { id: 'predictions', label: 'Predictions',  icon: BarChart3 },
+  { id: 'profile',     label: 'Profile',      icon: User },
 ];
 
 const LANGUAGES = [
@@ -79,166 +55,216 @@ const LANGUAGES = [
   { code: 'kn', label: 'ಕ' },
 ];
 
-/* ─── small reusable atoms ───────────────────────────────────── */
-const fadeUp = {
-  hidden: { opacity: 0, y: 18 },
-  visible: { opacity: 1, y: 0, transition: { duration: 0.4 } },
+/* ─── Design tokens ──────────────────────────────────────────── */
+const C = {
+  heading: '#111827',
+  text:    '#4b5563',
+  light:   '#9ca3af',
+  glass:   'rgba(255,255,255,0.80)',
+  glassBorder: 'rgba(255,255,255,0.40)',
 };
 
-const Card = ({ children, className = '', primary = false }) => (
+/* ─── Motion variants ────────────────────────────────────────── */
+const fadeUp = {
+  hidden:  { opacity: 0, y: 20 },
+  visible: (i = 0) => ({
+    opacity: 1, y: 0,
+    transition: { duration: 0.45, delay: i * 0.07, ease: 'easeOut' },
+  }),
+};
+
+const stagger = {
+  hidden:  {},
+  visible: { transition: { staggerChildren: 0.08 } },
+};
+
+const scaleIn = {
+  hidden:  { opacity: 0, scale: 0.92 },
+  visible: { opacity: 1, scale: 1, transition: { duration: 0.4 } },
+};
+
+/* ─── Reusable atoms ─────────────────────────────────────────── */
+
+/** Glass card */
+const GlassCard = ({ children, className = '', style = {} }) => (
   <div
-    className={`
-      ${primary
-        ? 'bg-gradient-to-br from-white to-green-50/60 border-green-200/60 shadow-[0_8px_30px_rgba(22,163,74,0.10)]'
-        : 'bg-white/80 backdrop-blur-xl border-white/40 shadow-[0_8px_30px_rgba(0,0,0,0.07)]'
-      }
-      rounded-2xl border ${className}
-    `}
+    className={`rounded-2xl border ${className}`}
+    style={{
+      background: C.glass,
+      backdropFilter: 'blur(20px)',
+      WebkitBackdropFilter: 'blur(20px)',
+      borderColor: C.glassBorder,
+      boxShadow: '0 8px 32px rgba(0,0,0,0.07)',
+      ...style,
+    }}
   >
     {children}
   </div>
 );
 
-const StatBadge = ({ icon: Icon, label, value, color = 'green' }) => {
-  const colors = {
-    green: { bg: 'bg-green-100', text: 'text-green-700', icon: 'text-green-600' },
-    amber: { bg: 'bg-amber-100', text: 'text-amber-700', icon: 'text-amber-600' },
-    sky: { bg: 'bg-sky-100', text: 'text-sky-700', icon: 'text-sky-600' },
-    purple: { bg: 'bg-purple-100', text: 'text-purple-700', icon: 'text-purple-600' },
-  };
-  const c = colors[color] || colors.green;
-  return (
-    <motion.div
-      whileHover={{ scale: 1.03 }}
-      className={`flex items-center gap-3 p-4 rounded-xl ${c.bg}`}
-    >
-      <div className={`p-2 bg-white rounded-lg shadow-sm ${c.icon}`}>
-        <Icon size={20} />
-      </div>
-      <div>
-        <p className="text-xs text-gray-500 font-medium">{label}</p>
-        <p className={`text-lg font-bold ${c.text}`}>{value}</p>
-      </div>
-    </motion.div>
-  );
-};
+/** Stat card with hover lift */
+const StatCard = ({ icon: Icon, label, value, color, bg, i = 0 }) => (
+  <motion.div
+    custom={i}
+    variants={fadeUp}
+    whileHover={{ y: -3, boxShadow: '0 12px 32px rgba(0,0,0,0.12)' }}
+    className="rounded-2xl p-4 border flex items-center gap-3"
+    style={{ background: bg, borderColor: C.glassBorder, backdropFilter: 'blur(12px)' }}
+  >
+    <div className={`w-10 h-10 rounded-xl flex items-center justify-center flex-shrink-0 ${color}`}
+      style={{ background: 'rgba(255,255,255,0.6)' }}>
+      <Icon size={20} />
+    </div>
+    <div>
+      <p className="text-xs font-semibold uppercase tracking-wider" style={{ color: C.light }}>{label}</p>
+      <p className="text-lg font-bold mt-0.5" style={{ color: C.heading }}>{value}</p>
+    </div>
+  </motion.div>
+);
 
-/* ─── ProfilePage ────────────────────────────────────────────── */
+/* ─── Section label ──────────────────────────────────────────── */
+const SectionLabel = ({ icon: Icon, children }) => (
+  <div className="flex items-center gap-2 mb-3">
+    <Icon size={13} style={{ color: C.light }} />
+    <span className="text-xs font-bold uppercase tracking-widest" style={{ color: C.light }}>
+      {children}
+    </span>
+  </div>
+);
+
+/* ═══════════════════════════════════════════════════════════════
+   PROFILE PAGE
+═══════════════════════════════════════════════════════════════ */
 const ProfilePage = ({ user, onLogout, t }) => {
   const displayName = user?.displayName || 'Farmer';
-  const email = user?.email || 'Not linked';
-  const phone = user?.phoneNumber || 'Not linked';
-  const joined = user?.metadata?.creationTime
+  const email       = user?.email       || 'Not linked';
+  const phone       = user?.phoneNumber || 'Not linked';
+  const joined      = user?.metadata?.creationTime
     ? new Date(user.metadata.creationTime).toLocaleDateString('en-IN', {
-      day: '2-digit', month: 'long', year: 'numeric',
-    })
+        day: '2-digit', month: 'long', year: 'numeric',
+      })
     : '—';
-  const initials = displayName
-    .split(' ')
-    .map((w) => w[0])
-    .join('')
-    .toUpperCase()
-    .slice(0, 2);
+  const initials = displayName.split(' ').map(w => w[0]).join('').toUpperCase().slice(0, 2);
+
+  const infoItems = [
+    { icon: Mail,     label: 'Email',        value: email  },
+    { icon: Phone,    label: 'Phone',        value: phone  },
+    { icon: MapPin,   label: 'Location',     value: 'India' },
+    { icon: Calendar, label: 'Member Since', value: joined },
+  ];
 
   return (
-    <motion.div
-      variants={fadeUp}
-      initial="hidden"
-      animate="visible"
-      className="space-y-6"
-    >
-      {/* Avatar + name hero */}
-      <Card className="overflow-hidden">
-        <div className="h-28 bg-gradient-to-r from-green-700 via-green-600 to-emerald-500 relative">
-          <div className="absolute inset-0 opacity-20"
-            style={{
-              backgroundImage:
-                'repeating-linear-gradient(45deg,transparent,transparent 10px,rgba(255,255,255,.05) 10px,rgba(255,255,255,.05) 20px)',
-            }}
-          />
-        </div>
-        <div className="px-6 pb-6 -mt-12 flex flex-col sm:flex-row sm:items-end gap-4">
-          <div className="relative">
-            <div className="w-24 h-24 rounded-2xl bg-gradient-to-br from-green-600 to-emerald-500 flex items-center justify-center text-white text-3xl font-bold shadow-lg border-4 border-white">
-              {initials}
-            </div>
-            <button
-              title="Change photo"
-              className="absolute -bottom-1 -right-1 bg-white border border-green-200 rounded-full p-1.5 shadow text-green-600 hover:bg-green-50 transition"
-            >
-              <Camera size={13} />
+    <motion.div variants={stagger} initial="hidden" animate="visible" className="space-y-5">
+
+      {/* ── Hero banner ── */}
+      <motion.div variants={scaleIn}>
+        <GlassCard className="overflow-hidden">
+          {/* Gradient banner */}
+          <div className="relative h-32 overflow-hidden"
+            style={{ background: 'linear-gradient(135deg, #14532d 0%, #16a34a 60%, #22c55e 100%)' }}>
+            {/* mesh */}
+            <div className="absolute inset-0 opacity-20"
+              style={{ backgroundImage: 'repeating-linear-gradient(45deg,transparent,transparent 12px,rgba(255,255,255,.06) 12px,rgba(255,255,255,.06) 24px)' }} />
+            {/* floating orb */}
+            <div className="absolute -top-10 -right-10 w-48 h-48 rounded-full"
+              style={{ background: 'radial-gradient(circle, rgba(134,239,172,0.35), transparent 70%)' }} />
+            {/* logout top-right */}
+            <button onClick={onLogout}
+              className="absolute top-4 right-4 flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-semibold text-white/80 hover:text-white border border-white/20 hover:bg-white/10 transition">
+              <LogOut size={13} /> Logout
             </button>
           </div>
-          <div className="flex-1 pb-1">
-            <h2 className="text-xl font-bold text-gray-800">{displayName}</h2>
-            <p className="text-sm text-green-600 font-medium flex items-center gap-1">
-              <Leaf size={13} /> Organic Farmer · Digital Raitha
-            </p>
+
+          {/* Avatar row */}
+          <div className="px-6 pb-6 -mt-12 flex flex-col sm:flex-row sm:items-end gap-4">
+            <div className="relative">
+              <div className="w-24 h-24 rounded-2xl flex items-center justify-center text-white text-3xl font-bold shadow-xl border-4 border-white"
+                style={{ background: 'linear-gradient(135deg, #16a34a, #22c55e)' }}>
+                {initials}
+              </div>
+              <button title="Change photo"
+                className="absolute -bottom-1 -right-1 bg-white border border-green-200 rounded-full p-1.5 shadow-md text-green-600 hover:bg-green-50 transition">
+                <Camera size={13} />
+              </button>
+            </div>
+            <div className="flex-1 pb-1">
+              <h2 className="text-xl font-bold" style={{ color: C.heading }}>{displayName}</h2>
+              <p className="text-sm font-medium flex items-center gap-1.5 mt-0.5" style={{ color: '#16a34a' }}>
+                <Leaf size={13} /> Organic Farmer · Digital Raitha
+              </p>
+              <div className="flex items-center gap-2 mt-2">
+                <span className="inline-flex items-center gap-1 text-[11px] font-semibold px-2 py-0.5 rounded-full bg-green-100 text-green-700">
+                  <Star size={10} /> Verified Farmer
+                </span>
+                <span className="inline-flex items-center gap-1 text-[11px] font-semibold px-2 py-0.5 rounded-full bg-blue-100 text-blue-700">
+                  <Activity size={10} /> Active
+                </span>
+              </div>
+            </div>
           </div>
-          <button
-            onClick={onLogout}
-            className="flex items-center gap-2 px-4 py-2 bg-red-50 text-red-600 border border-red-200 rounded-xl hover:bg-red-100 transition font-medium text-sm"
-          >
-            <LogOut size={15} /> Logout
-          </button>
-        </div>
-      </Card>
+        </GlassCard>
+      </motion.div>
 
-      {/* Info grid */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-        {[
-          { icon: Mail, label: 'Email', value: email, },
-          { icon: Phone, label: 'Phone', value: phone, },
-          { icon: MapPin, label: 'Location', value: 'India' },
-          { icon: Calendar, label: 'Member Since', value: joined },
-        ].map(({ icon: Icon, label, value }) => (
-          <Card key={label} className="p-5 flex items-center gap-4">
-            <div className="p-3 bg-green-50 rounded-xl text-green-600">
-              <Icon size={20} />
-            </div>
-            <div>
-              <p className="text-xs text-gray-400 font-medium">{label}</p>
-              <p className="text-sm font-semibold text-gray-700 break-all">{value}</p>
-            </div>
-          </Card>
+      {/* ── Info grid ── */}
+      <motion.div variants={stagger} className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+        {infoItems.map(({ icon: Icon, label, value }, i) => (
+          <motion.div key={label} custom={i} variants={fadeUp}>
+            <GlassCard className="p-4 flex items-center gap-4">
+              <div className="w-10 h-10 rounded-xl flex items-center justify-center flex-shrink-0"
+                style={{ background: 'linear-gradient(135deg, rgba(22,163,74,0.15), rgba(34,197,94,0.1))' }}>
+                <Icon size={18} style={{ color: '#16a34a' }} />
+              </div>
+              <div className="min-w-0">
+                <p className="text-xs font-semibold uppercase tracking-wider" style={{ color: C.light }}>{label}</p>
+                <p className="text-sm font-semibold break-all mt-0.5" style={{ color: C.heading }}>{value}</p>
+              </div>
+            </GlassCard>
+          </motion.div>
         ))}
-      </div>
+      </motion.div>
 
-      {/* Account security */}
-      <Card className="p-6">
-        <h3 className="font-semibold text-gray-700 flex items-center gap-2 mb-4">
-          <Shield size={16} className="text-green-600" /> Account Security
-        </h3>
-        <div className="space-y-3">
-          {[
-            { label: 'Email verified', ok: user?.emailVerified },
-            { label: 'Two-factor auth', ok: false },
-          ].map(({ label, ok }) => (
-            <div key={label} className="flex items-center justify-between py-2 border-b border-gray-100 last:border-0">
-              <span className="text-sm text-gray-600">{label}</span>
-              <span
-                className={`text-xs font-semibold px-2 py-0.5 rounded-full ${ok
-                  ? 'bg-green-100 text-green-700'
-                  : 'bg-amber-100 text-amber-700'
-                  }`}
-              >
-                {ok ? 'Active' : 'Not set'}
-              </span>
-            </div>
-          ))}
-        </div>
-      </Card>
+      {/* ── Account security ── */}
+      <motion.div custom={4} variants={fadeUp}>
+        <GlassCard className="p-5">
+          <h3 className="font-semibold flex items-center gap-2 mb-4" style={{ color: C.heading }}>
+            <Shield size={16} style={{ color: '#16a34a' }} /> Account Security
+          </h3>
+          <div className="space-y-2">
+            {[
+              { label: 'Email verified', ok: user?.emailVerified },
+              { label: 'Two-factor auth', ok: false },
+            ].map(({ label, ok }) => (
+              <div key={label} className="flex items-center justify-between py-3 border-b border-gray-100/80 last:border-0">
+                <div className="flex items-center gap-2.5">
+                  {ok
+                    ? <CheckCircle2 size={16} className="text-green-500 flex-shrink-0" />
+                    : <AlertCircle  size={16} className="text-amber-400 flex-shrink-0" />
+                  }
+                  <span className="text-sm" style={{ color: C.text }}>{label}</span>
+                </div>
+                <span className={`text-xs font-semibold px-2.5 py-0.5 rounded-full ${
+                  ok ? 'bg-green-100 text-green-700' : 'bg-amber-100 text-amber-700'
+                }`}>
+                  {ok ? 'Active' : 'Not set'}
+                </span>
+              </div>
+            ))}
+          </div>
+        </GlassCard>
+      </motion.div>
     </motion.div>
   );
 };
 
-/* ─── PredictionsTab ─────────────────────────────────────────── */
+/* ═══════════════════════════════════════════════════════════════
+   PREDICTIONS TAB
+═══════════════════════════════════════════════════════════════ */
 const PredictionsTab = ({ realTimePredictions, t }) => {
   if (!realTimePredictions) {
     return (
-      <div className="flex flex-col items-center justify-center py-20 gap-4">
+      <div className="flex flex-col items-center justify-center py-24 gap-4">
         <div className="w-12 h-12 border-4 border-green-200 border-t-green-600 rounded-full animate-spin" />
-        <p className="text-gray-500 text-sm">{t('loadingPredictions')}</p>
+        <p className="text-sm" style={{ color: C.light }}>{t('loadingPredictions')}</p>
       </div>
     );
   }
@@ -246,420 +272,425 @@ const PredictionsTab = ({ realTimePredictions, t }) => {
   const { predictions, recommendations, weather_data, costs } = realTimePredictions;
   const yieldVal = predictions?.yield_kg_per_acre || 3000;
   const potential = yieldVal > 3000 ? 'High' : yieldVal > 2000 ? 'Medium' : 'Low';
-  const potentialColor =
-    potential === 'High'
-      ? 'text-green-700 bg-green-100'
-      : potential === 'Medium'
-        ? 'text-amber-700 bg-amber-100'
-        : 'text-red-700 bg-red-100';
+  const potentialColor = potential === 'High' ? '#16a34a' : potential === 'Medium' ? '#d97706' : '#dc2626';
+  const potentialBg   = potential === 'High' ? '#f0fdf4'  : potential === 'Medium' ? '#fffbeb'  : '#fef2f2';
 
   return (
-    <motion.div variants={fadeUp} initial="hidden" animate="visible" className="space-y-5">
-      {/* Crop cards */}
-      <Card className="p-5">
-        <h3 className="font-semibold text-gray-700 flex items-center gap-2 mb-4">
-          <Leaf size={16} className="text-green-600" /> {t('recommendedCrops')}
-        </h3>
-        <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
-          {[
-            { crop: recommendations?.best_crop || 'Maize', note: t('bestCropForConditions'), color: 'bg-green-50 border-green-200 text-green-800' },
-            { crop: t('cowpea') || 'Cowpea', note: t('nitrogenFixingCrop'), color: 'bg-sky-50 border-sky-200 text-sky-800' },
-            { crop: t('turmeric') || 'Turmeric', note: t('highValueCrop'), color: 'bg-amber-50 border-amber-200 text-amber-800' },
-          ].map(({ crop, note, color }) => (
-            <div key={crop} className={`rounded-xl border p-4 text-center ${color}`}>
-              <p className="text-xl font-bold">{crop}</p>
-              <p className="text-xs mt-1 opacity-70">{note}</p>
-            </div>
-          ))}
-        </div>
-      </Card>
+    <motion.div variants={stagger} initial="hidden" animate="visible" className="space-y-5">
 
-      {/* Yield stats */}
-      <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-        <StatBadge icon={BarChart3} label={t('estimatedYieldPerAcre')} value={`${yieldVal.toLocaleString()} kg`} color="sky" />
-        <StatBadge icon={Leaf} label={t('estimatedRevenue')} value="₹1,20,000" color="green" />
-        <div className={`flex items-center gap-3 p-4 rounded-xl ${potentialColor} border`}>
-          <span className="text-2xl font-extrabold">{potential}</span>
-          <div>
-            <p className="text-xs font-medium opacity-70">{t('yieldPotential')}</p>
-            <p className="text-xs opacity-60">{t('confidence')}: {predictions?.confidence ? (predictions.confidence * 100).toFixed(0) : 85}%</p>
-          </div>
-        </div>
-      </div>
-
-      {/* ROI */}
-      <Card className="p-5">
-        <h3 className="font-semibold text-gray-700 flex items-center gap-2 mb-4">
-          💰 {t('roiAndCostBenefit')}
-        </h3>
-        <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
-          {[
-            { label: t('returnOnInvestment'), value: `${predictions?.roi?.toFixed(1) || '2.8'}x`, color: 'bg-green-50 text-green-800' },
-            { label: t('estimatedInvestment'), value: '₹50,000', color: 'bg-sky-50 text-sky-800' },
-            { label: t('estimatedIncome'), value: '₹1,20,000', color: 'bg-purple-50 text-purple-800' },
-            { label: t('paybackPeriod'), value: `${predictions?.payback_period || 18} mo`, color: 'bg-amber-50 text-amber-800' },
-          ].map(({ label, value, color }) => (
-            <div key={label} className={`rounded-xl p-4 text-center ${color}`}>
-              <p className="text-xl font-bold">{value}</p>
-              <p className="text-xs mt-1 opacity-70">{label}</p>
-            </div>
-          ))}
-        </div>
-
-        {/* cost breakdown */}
-        <div className="mt-4 pt-4 border-t border-gray-100">
-          <p className="text-sm font-semibold text-gray-600 mb-3">{t('costBreakdown')}</p>
-          <div className="grid grid-cols-3 gap-3">
+      {/* Crop recommendation cards */}
+      <motion.div variants={fadeUp} custom={0}>
+        <GlassCard className="p-5">
+          <h3 className="font-bold flex items-center gap-2 mb-4" style={{ color: C.heading }}>
+            <Leaf size={16} style={{ color: '#16a34a' }} /> {t('recommendedCrops')}
+          </h3>
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
             {[
-              { label: t('seedsAndSaplings'), val: costs?.seeds_and_saplings || 8000 },
-              { label: t('fertilizers'), val: costs?.fertilizers || 12000 },
-              { label: t('labor'), val: costs?.labor || 15000 },
-            ].map(({ label, val }) => (
-              <div key={label} className="bg-gray-50 rounded-xl p-3 text-center border border-gray-100">
-                <p className="text-sm font-bold text-green-700">₹{val.toLocaleString()}</p>
-                <p className="text-xs text-gray-500 mt-0.5">{label}</p>
+              { crop: recommendations?.best_crop || 'Maize', note: t('bestCropForConditions'), gradient: 'from-green-500 to-emerald-600', badge: 'Best Match' },
+              { crop: t('cowpea') || 'Cowpea',   note: t('nitrogenFixingCrop'), gradient: 'from-sky-500 to-cyan-600',    badge: 'N-Fixer' },
+              { crop: t('turmeric') || 'Turmeric', note: t('highValueCrop'),   gradient: 'from-amber-500 to-orange-500', badge: 'High ROI' },
+            ].map(({ crop, note, gradient, badge }, i) => (
+              <motion.div key={crop} custom={i} variants={fadeUp} whileHover={{ y: -2 }}
+                className={`rounded-2xl p-4 text-center bg-gradient-to-br ${gradient} shadow-lg`}>
+                <span className="text-[10px] font-bold text-white/70 uppercase tracking-wider">{badge}</span>
+                <p className="text-xl font-extrabold text-white mt-1">{crop}</p>
+                <p className="text-xs text-white/70 mt-1">{note}</p>
+              </motion.div>
+            ))}
+          </div>
+        </GlassCard>
+      </motion.div>
+
+      {/* Yield stats row */}
+      <motion.div variants={stagger} className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+        <StatCard icon={BarChart3} label={t('estimatedYieldPerAcre')} value={`${yieldVal.toLocaleString()} kg`}
+          color="text-sky-600" bg="rgba(240,249,255,0.85)" i={0} />
+        <StatCard icon={Wallet} label={t('estimatedRevenue')} value="₹1,20,000"
+          color="text-green-600" bg="rgba(240,253,244,0.85)" i={1} />
+        <motion.div custom={2} variants={fadeUp}
+          className="rounded-2xl p-4 border flex items-center gap-3"
+          style={{ background: potentialBg, borderColor: C.glassBorder }}>
+          <div className="w-10 h-10 rounded-xl flex items-center justify-center flex-shrink-0"
+            style={{ background: `${potentialColor}22` }}>
+            <TrendingUp size={20} style={{ color: potentialColor }} />
+          </div>
+          <div>
+            <p className="text-xs font-semibold uppercase tracking-wider" style={{ color: C.light }}>Yield Potential</p>
+            <p className="text-lg font-bold" style={{ color: potentialColor }}>{potential}</p>
+            <p className="text-xs" style={{ color: C.light }}>
+              {t('confidence')}: {predictions?.confidence ? (predictions.confidence * 100).toFixed(0) : 85}%
+            </p>
+          </div>
+        </motion.div>
+      </motion.div>
+
+      {/* ROI breakdown */}
+      <motion.div custom={3} variants={fadeUp}>
+        <GlassCard className="p-5">
+          <h3 className="font-bold flex items-center gap-2 mb-4" style={{ color: C.heading }}>
+            <Wallet size={16} style={{ color: '#16a34a' }} /> {t('roiAndCostBenefit')}
+          </h3>
+          <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 mb-4">
+            {[
+              { label: t('returnOnInvestment'), value: `${predictions?.roi?.toFixed(1) || '2.8'}x`, color: '#16a34a', bg: 'rgba(240,253,244,0.9)' },
+              { label: t('estimatedInvestment'), value: '₹50,000', color: '#0284c7', bg: 'rgba(240,249,255,0.9)' },
+              { label: t('estimatedIncome'),     value: '₹1,20,000', color: '#7c3aed', bg: 'rgba(245,243,255,0.9)' },
+              { label: t('paybackPeriod'),        value: `${predictions?.payback_period || 18} mo`, color: '#d97706', bg: 'rgba(255,251,235,0.9)' },
+            ].map(({ label, value, color, bg }) => (
+              <div key={label} className="rounded-xl p-4 text-center border" style={{ background: bg, borderColor: C.glassBorder }}>
+                <p className="text-xl font-extrabold" style={{ color }}>{value}</p>
+                <p className="text-[11px] mt-1" style={{ color: C.light }}>{label}</p>
               </div>
             ))}
           </div>
-        </div>
-      </Card>
-
-      {/* Weather conditions */}
-      <Card className="p-5">
-        <h3 className="font-semibold text-gray-700 flex items-center gap-2 mb-4">
-          🌤️ {t('currentWeatherConditions')}
-        </h3>
-        <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
-          {[
-            { label: t('temperature'), value: `${weather_data?.avg_temperature_c || 28}°C`, color: 'bg-sky-50 text-sky-800' },
-            { label: t('humidity'), value: `${weather_data?.avg_humidity || 65}%`, color: 'bg-green-50 text-green-800' },
-            { label: t('annualRainfall'), value: `${weather_data?.avg_rainfall_mm || 980} mm`, color: 'bg-amber-50 text-amber-800' },
-            { label: t('solarRadiation'), value: `${weather_data?.solar_radiation || 5.5} kWh/m²`, color: 'bg-purple-50 text-purple-800' },
-          ].map(({ label, value, color }) => (
-            <div key={label} className={`rounded-xl p-4 text-center ${color}`}>
-              <p className="text-lg font-bold">{value}</p>
-              <p className="text-xs mt-1 opacity-70">{label}</p>
+          <div className="pt-4 border-t border-gray-100/80">
+            <p className="text-xs font-bold uppercase tracking-wider mb-3" style={{ color: C.light }}>{t('costBreakdown')}</p>
+            <div className="grid grid-cols-3 gap-3">
+              {[
+                { label: t('seedsAndSaplings'), val: costs?.seeds_and_saplings || 8000 },
+                { label: t('fertilizers'),      val: costs?.fertilizers || 12000 },
+                { label: t('labor'),             val: costs?.labor || 15000 },
+              ].map(({ label, val }) => (
+                <div key={label} className="rounded-xl p-3 text-center border border-gray-100/80 bg-gray-50/80">
+                  <p className="text-sm font-bold" style={{ color: '#16a34a' }}>₹{val.toLocaleString()}</p>
+                  <p className="text-[11px] mt-0.5" style={{ color: C.light }}>{label}</p>
+                </div>
+              ))}
             </div>
-          ))}
-        </div>
-      </Card>
+          </div>
+        </GlassCard>
+      </motion.div>
 
-      {/* Recommendations checklist */}
-      <Card className="p-5">
-        <h3 className="font-semibold text-gray-700 flex items-center gap-2 mb-4">
-          ✅ {t('recommendations')}
-        </h3>
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
-          <div>
-            <p className="text-sm font-semibold text-gray-600 mb-2">{t('plantingRecommendations')}</p>
-            <ul className="space-y-2">
-              {[
-                `${t('plantingTime')}: ${recommendations?.planting_time || 'June-July'}`,
-                `${t('irrigationNeeds')}: ${recommendations?.irrigation_needs || 'Moderate'}`,
-                `${t('soilPreparation')}: ${t('addOrganicCompost')}`,
-              ].map((item) => (
-                <li key={item} className="flex items-start gap-2 text-sm text-gray-700">
-                  <span className="mt-0.5 text-green-500 font-bold">✓</span> {item}
-                </li>
-              ))}
-            </ul>
+      {/* Weather snapshot */}
+      <motion.div custom={4} variants={fadeUp}>
+        <GlassCard className="p-5">
+          <h3 className="font-bold flex items-center gap-2 mb-4" style={{ color: C.heading }}>
+            <CloudRain size={16} style={{ color: '#16a34a' }} /> {t('currentWeatherConditions')}
+          </h3>
+          <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
+            {[
+              { label: t('temperature'),   value: `${weather_data?.avg_temperature_c || 28}°C`, color: '#ea580c', bg: 'rgba(255,247,237,0.9)' },
+              { label: t('humidity'),      value: `${weather_data?.avg_humidity || 65}%`,       color: '#0284c7', bg: 'rgba(240,249,255,0.9)' },
+              { label: t('annualRainfall'),value: `${weather_data?.avg_rainfall_mm || 980} mm`, color: '#0d9488', bg: 'rgba(240,253,250,0.9)' },
+              { label: t('solarRadiation'),value: `${weather_data?.solar_radiation || 5.5} kWh/m²`, color: '#7c3aed', bg: 'rgba(245,243,255,0.9)' },
+            ].map(({ label, value, color, bg }) => (
+              <div key={label} className="rounded-xl p-4 text-center border" style={{ background: bg, borderColor: C.glassBorder }}>
+                <p className="text-lg font-bold" style={{ color }}>{value}</p>
+                <p className="text-[11px] mt-1" style={{ color: C.light }}>{label}</p>
+              </div>
+            ))}
           </div>
-          <div>
-            <p className="text-sm font-semibold text-gray-600 mb-2">{t('harvestingTips')}</p>
-            <ul className="space-y-2">
-              {[
-                `${t('monitorCropHealth')}: ${t('checkPestsDiseases')}`,
-                `${t('optimalHarvestTime')}: ${t('harvestWhenMature')}`,
-                `${t('postHarvestHandling')}: ${t('dryGrainsProperly')}`,
-              ].map((item) => (
-                <li key={item} className="flex items-start gap-2 text-sm text-gray-700">
-                  <span className="mt-0.5 text-green-500 font-bold">✓</span> {item}
-                </li>
-              ))}
-            </ul>
-          </div>
-        </div>
-      </Card>
+        </GlassCard>
+      </motion.div>
     </motion.div>
   );
 };
 
-/* ─── FarmMapTab ─────────────────────────────────────────────── */
+/* ═══════════════════════════════════════════════════════════════
+   FARM MAP TAB
+═══════════════════════════════════════════════════════════════ */
 const FarmMapTab = ({ center, mapId, onGenerateMap, t }) => (
-  <motion.div variants={fadeUp} initial="hidden" animate="visible" className="space-y-5">
-    <Card className="p-5">
-      <h2 className="text-lg font-semibold text-gray-700 flex items-center gap-2 mb-4">
-        <Map size={18} className="text-green-600" /> {t('farmMap')}
-      </h2>
-      <LoadScript googleMapsApiKey={import.meta.env.VITE_GOOGLE_MAPS_API_KEY}>
-        <GoogleMap mapContainerStyle={mapContainerStyle} center={center} zoom={16}>
-          <Polygon
-            paths={farmPolygon}
-            options={{ fillColor: '#34D399', fillOpacity: 0.3, strokeColor: '#059669', strokeWeight: 2 }}
-          />
-          <Marker position={center} />
-        </GoogleMap>
-      </LoadScript>
-    </Card>
+  <motion.div variants={stagger} initial="hidden" animate="visible" className="space-y-5">
+    <motion.div variants={fadeUp} custom={0}>
+      <GlassCard className="p-5">
+        <h2 className="font-bold flex items-center gap-2 mb-4" style={{ color: C.heading, fontSize: 18 }}>
+          <Map size={18} style={{ color: '#16a34a' }} /> {t('farmMap')}
+        </h2>
+        <LoadScript googleMapsApiKey={import.meta.env.VITE_GOOGLE_MAPS_API_KEY}>
+          <GoogleMap mapContainerStyle={mapContainerStyle} center={center} zoom={16}>
+            <Polygon paths={farmPolygon}
+              options={{ fillColor: '#34D399', fillOpacity: 0.3, strokeColor: '#059669', strokeWeight: 2 }} />
+            <Marker position={center} />
+          </GoogleMap>
+        </LoadScript>
+      </GlassCard>
+    </motion.div>
 
-    <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-      <StatBadge icon={Leaf} label={t('farmArea')} value="2.5 acres" color="green" />
-      <StatBadge icon={MapPin} label={t('gpsCoordinates')} value={`${center.lat.toFixed(4)}, ${center.lng.toFixed(4)}`} color="sky" />
-      <StatBadge icon={Shield} label={t('boundaryStatus')} value={t('verified')} color="purple" />
-    </div>
+    <motion.div variants={stagger} className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+      <StatCard icon={Leaf}   label={t('farmArea')}       value="2.5 acres" color="text-green-600" bg="rgba(240,253,244,0.85)" i={0} />
+      <StatCard icon={MapPin} label={t('gpsCoordinates')} value={`${center.lat.toFixed(4)}, ${center.lng.toFixed(4)}`} color="text-sky-600" bg="rgba(240,249,255,0.85)" i={1} />
+      <StatCard icon={Shield} label={t('boundaryStatus')} value={t('verified')} color="text-purple-600" bg="rgba(245,243,255,0.85)" i={2} />
+    </motion.div>
 
-    <Card className="p-5">
-      <h3 className="font-semibold text-gray-700 flex items-center gap-2 mb-4">
-        🗺️ {t('aiGeneratedLandLayout')}
-      </h3>
-      <div className="bg-gray-50 rounded-xl overflow-hidden border border-gray-200">
-        <iframe
-          src="/api/latest-map"
-          title="AI Land Layout Map"
-          className="w-full h-80 border-0"
-          sandbox="allow-scripts allow-same-origin"
-        />
-      </div>
-      <div className="mt-4 flex flex-wrap items-center justify-between gap-3">
-        <button
-          onClick={onGenerateMap}
-          className="flex items-center gap-2 px-5 py-2 bg-green-600 hover:bg-green-700 text-white rounded-xl font-medium text-sm transition"
-        >
-          <RefreshCw size={15} /> {t('refreshLandLayout')}
-        </button>
-        <div className="flex items-center gap-4 text-xs text-gray-500">
-          {[
-            { color: 'bg-green-500', label: `${t('mainCropArea')} 60%` },
-            { color: 'bg-yellow-500', label: `${t('intercropArea')} 25%` },
-            { color: 'bg-green-900', label: `${t('treesArea')} 15%` },
-          ].map(({ color, label }) => (
-            <span key={label} className="flex items-center gap-1">
-              <span className={`w-3 h-3 rounded-sm ${color}`} /> {label}
-            </span>
-          ))}
+    <motion.div custom={3} variants={fadeUp}>
+      <GlassCard className="p-5">
+        <h3 className="font-bold flex items-center gap-2 mb-4" style={{ color: C.heading }}>
+          <Map size={16} style={{ color: '#16a34a' }} /> {t('aiGeneratedLandLayout')}
+        </h3>
+        <div className="bg-gray-50/80 rounded-xl overflow-hidden border border-gray-100">
+          <iframe src="/api/latest-map" title="AI Land Layout Map"
+            className="w-full h-80 border-0" sandbox="allow-scripts allow-same-origin" />
         </div>
-      </div>
-      {mapId && (
-        <p className="mt-3 text-xs text-green-600">
-          {t('mapStoredInFirebase')} ID: {mapId}
-        </p>
-      )}
-    </Card>
+        <div className="mt-4 flex flex-wrap items-center justify-between gap-3">
+          <button onClick={onGenerateMap}
+            className="flex items-center gap-2 px-5 py-2 text-white rounded-xl font-medium text-sm transition hover:opacity-90"
+            style={{ background: 'linear-gradient(135deg, #15803d, #16a34a)', boxShadow: '0 4px 14px rgba(22,163,74,0.4)' }}>
+            <RefreshCw size={15} /> {t('refreshLandLayout')}
+          </button>
+          <div className="flex items-center gap-4 text-xs" style={{ color: C.light }}>
+            {[
+              { color: 'bg-green-500', label: `${t('mainCropArea')} 60%` },
+              { color: 'bg-yellow-400', label: `${t('intercropArea')} 25%` },
+              { color: 'bg-emerald-900', label: `${t('treesArea')} 15%` },
+            ].map(({ color, label }) => (
+              <span key={label} className="flex items-center gap-1">
+                <span className={`w-3 h-3 rounded-sm ${color}`} /> {label}
+              </span>
+            ))}
+          </div>
+        </div>
+        {mapId && <p className="mt-3 text-xs" style={{ color: '#16a34a' }}>{t('mapStoredInFirebase')} ID: {mapId}</p>}
+      </GlassCard>
+    </motion.div>
   </motion.div>
 );
 
-/* ─── OverviewPage ───────────────────────────────────────────── */
+/* ═══════════════════════════════════════════════════════════════
+   OVERVIEW PAGE
+═══════════════════════════════════════════════════════════════ */
 const OverviewPage = ({ user, weather, onNavigate }) => {
   const firstName = (user?.displayName || 'Farmer').split(' ')[0];
-
   const hour = new Date().getHours();
-  const greeting =
-    hour < 12 ? 'Good Morning' :
-      hour < 17 ? 'Good Afternoon' : 'Good Evening';
+  const greeting    = hour < 12 ? 'Good Morning' : hour < 17 ? 'Good Afternoon' : 'Good Evening';
+  const greetIcon   = hour < 12 ? Sun : hour < 17 ? Sun : Sun;
 
-  const greetEmoji =
-    hour < 12 ? '🌅' : hour < 17 ? '☀️' : '🌙';
-
-  /* weather display helpers */
-  const temp = weather?.temp != null ? `${Math.round(weather.temp)}°C` : '—';
-  const humidity = weather?.humidity != null ? `${weather.humidity}%` : '—';
-  const windSpeed = weather?.wind != null ? `${weather.wind} km/h` : '—';
+  const temp       = weather?.temp      != null ? `${Math.round(weather.temp)}°C` : '—';
+  const humidity   = weather?.humidity  != null ? `${weather.humidity}%` : '—';
+  const windSpeed  = weather?.wind      != null ? `${weather.wind} km/h` : '—';
   const rainChance = weather?.rain_chance != null ? `${weather.rain_chance}%` : weather ? '20%' : '—';
-  const weatherDesc = weather?.description || 'Partly Cloudy';
   const locationName = weather?.location || 'Your Farm';
+  const weatherDesc  = weather?.description || 'Partly Cloudy';
 
   const quickActions = [
     {
       id: 'aiplanner',
       icon: Bot,
-      emoji: '🤖',
-      title: 'Get Crop Recommendation',
-      desc: 'AI-powered plan based on your soil & weather',
-      gradient: 'from-green-500 to-emerald-600',
-      badge: 'AI Powered',
+      title: 'AI Crop Planner',
+      desc: 'Smart recommendations based on soil & weather',
+      gradient: 'linear-gradient(135deg, #16a34a, #22c55e)',
+      glow: 'rgba(22,163,74,0.35)',
+      badge: 'AI',
+      badgeColor: '#bbf7d0',
+      badgeText: '#14532d',
     },
     {
       id: 'agroforestry',
       icon: Trees,
-      emoji: '🌳',
-      title: 'Explore Agroforestry',
+      title: 'Agroforestry',
       desc: 'Multi-cropping & shade tree strategies',
-      gradient: 'from-teal-500 to-cyan-600',
+      gradient: 'linear-gradient(135deg, #0d9488, #06b6d4)',
+      glow: 'rgba(13,148,136,0.30)',
       badge: 'Popular',
+      badgeColor: '#ccfbf1',
+      badgeText: '#134e4a',
     },
     {
       id: 'soil',
       icon: FlaskConical,
-      emoji: '🧪',
       title: 'Soil Health Check',
-      desc: 'Live SoilGrids analysis for your location',
-      gradient: 'from-amber-500 to-orange-500',
-      badge: 'Live Data',
+      desc: 'Live SoilGrids analysis for your coordinates',
+      gradient: 'linear-gradient(135deg, #d97706, #f59e0b)',
+      glow: 'rgba(217,119,6,0.28)',
+      badge: 'Live',
+      badgeColor: '#fef3c7',
+      badgeText: '#78350f',
     },
     {
       id: 'predictions',
       icon: TrendingUp,
-      emoji: '📈',
       title: 'Yield Predictions',
-      desc: 'ROI, expected harvest & cost breakdown',
-      gradient: 'from-purple-500 to-violet-600',
-      badge: 'ML Model',
+      desc: 'ROI forecast, harvest & cost breakdown',
+      gradient: 'linear-gradient(135deg, #7c3aed, #8b5cf6)',
+      glow: 'rgba(124,58,237,0.28)',
+      badge: 'ML',
+      badgeColor: '#ede9fe',
+      badgeText: '#4c1d95',
     },
   ];
 
   return (
-    <motion.div
-      variants={fadeUp}
-      initial="hidden"
-      animate="visible"
-      className="space-y-6"
-    >
-      {/* ── Welcome hero ── */}
-      <div
-        className="relative rounded-3xl overflow-hidden"
-        style={{
-          background: 'linear-gradient(135deg, #16a34a 0%, #059669 50%, #064e3b 100%)',
-          minHeight: 180,
-          boxShadow: '0 12px 40px rgba(22,163,74,0.25), inset 0 2px 10px rgba(255,255,255,0.1)',
-        }}
-      >
-        {/* decorative light beams & glowing orbs */}
-        <div className="absolute -top-32 -right-32 w-96 h-96 rounded-full bg-emerald-300/30 blur-[80px] pointer-events-none" />
-        <div className="absolute -bottom-32 -left-16 w-80 h-80 rounded-full bg-green-300/20 blur-[80px] pointer-events-none" />
-        <div className="absolute top-1/2 left-1/3 w-64 h-64 rounded-full bg-yellow-200/10 blur-[60px] pointer-events-none" />
-        {/* floating hero glow — SaaS / AI product feel */}
-        <div className="absolute -top-10 right-0 w-72 h-72 rounded-full pointer-events-none"
-          style={{ background: 'radial-gradient(circle at top right, rgba(34,197,94,0.35), transparent 70%)' }} />
+    <motion.div variants={stagger} initial="hidden" animate="visible" className="space-y-6">
 
-        <div className="relative z-10 p-7">
-          <p className="text-green-300 text-sm font-semibold mb-1 tracking-wide">
-            {greetEmoji} {greeting}
-          </p>
-          <h1 className="text-3xl sm:text-4xl font-extrabold text-white tracking-tight">
-            Hello, {firstName}! 👋
-          </h1>
-          <p className="text-green-200 mt-2 text-sm sm:text-base max-w-lg">
-            Here's your farm dashboard. Let AI guide your farming decisions today.
-          </p>
+      {/* ── Hero ── */}
+      <motion.div variants={scaleIn}>
+        <div className="relative rounded-3xl overflow-hidden" style={{
+          background: 'linear-gradient(135deg, #14532d 0%, #16a34a 55%, #22c55e 100%)',
+          minHeight: 200,
+          boxShadow: '0 16px 48px rgba(22,163,74,0.3)',
+        }}>
+          {/* Mesh overlay */}
+          <div className="absolute inset-0 opacity-10" style={{
+            backgroundImage: 'repeating-linear-gradient(45deg,transparent,transparent 14px,rgba(255,255,255,.08) 14px,rgba(255,255,255,.08) 28px)',
+          }} />
+          {/* Orbs */}
+          <div className="absolute -top-20 -right-20 w-72 h-72 rounded-full pointer-events-none"
+            style={{ background: 'radial-gradient(circle, rgba(134,239,172,0.4), transparent 70%)' }} />
+          <div className="absolute bottom-0 left-0 w-60 h-60 rounded-full pointer-events-none"
+            style={{ background: 'radial-gradient(circle, rgba(20,83,45,0.6), transparent 70%)' }} />
 
-          {/* weather mini badge inside hero */}
-          {weather && (
-            <div className="mt-5 inline-flex items-center gap-3 bg-white/10 border border-white/20 backdrop-blur-sm rounded-2xl px-4 py-2.5">
-              <Thermometer size={16} className="text-amber-300" />
-              <span className="text-white font-bold text-sm">{temp}</span>
-              <span className="text-green-200 text-xs">·</span>
-              <Droplets size={14} className="text-blue-300" />
-              <span className="text-white text-sm">{humidity}</span>
-              <span className="text-green-200 text-xs">·</span>
-              <span className="text-green-200 text-xs truncate max-w-[120px]">{locationName}</span>
-            </div>
-          )}
+          <div className="relative z-10 p-7 sm:p-8">
+            <p className="text-sm font-semibold mb-2" style={{ color: 'rgba(187,247,208,0.9)' }}>
+              ☀️ {greeting}
+            </p>
+            <h1 className="text-3xl sm:text-4xl font-extrabold text-white tracking-tight">
+              Hello, {firstName}! 👋
+            </h1>
+            <p className="mt-2 text-sm max-w-md" style={{ color: 'rgba(187,247,208,0.8)' }}>
+              Here's your farm dashboard. Let AI guide your farming decisions today.
+            </p>
+
+            {/* Weather pill */}
+            {weather && (
+              <div className="mt-5 inline-flex items-center gap-3 px-4 py-2.5 rounded-2xl border"
+                style={{ background: 'rgba(255,255,255,0.12)', borderColor: 'rgba(255,255,255,0.2)', backdropFilter: 'blur(12px)' }}>
+                <Thermometer size={16} style={{ color: '#fcd34d' }} />
+                <span className="text-white font-bold text-sm">{temp}</span>
+                <span style={{ color: 'rgba(187,247,208,0.6)' }}>·</span>
+                <Droplets size={14} style={{ color: '#93c5fd' }} />
+                <span className="text-white text-sm">{humidity}</span>
+                <span style={{ color: 'rgba(187,247,208,0.6)' }}>·</span>
+                <span className="text-xs" style={{ color: 'rgba(187,247,208,0.8)' }}>{locationName}</span>
+              </div>
+            )}
+          </div>
         </div>
-      </div>
+      </motion.div>
 
-      {/* ── Weather widget ── */}
-      <div>
-        <h2 className="text-sm font-semibold text-gray-500 uppercase tracking-widest mb-3 flex items-center gap-2">
-          <CloudRain size={14} /> Current Weather
-        </h2>
+      {/* ── Live weather mini-stats ── */}
+      <motion.div variants={fadeUp} custom={1}>
+        <SectionLabel icon={CloudRain}>Current Weather</SectionLabel>
         <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
           {[
-            { icon: Thermometer, label: 'Temperature', value: temp, color: 'text-orange-600', bg: 'bg-orange-50 border-orange-100' },
-            { icon: Droplets, label: 'Humidity', value: humidity, color: 'text-blue-600', bg: 'bg-blue-50 border-blue-100' },
-            { icon: Wind, label: 'Wind Speed', value: windSpeed, color: 'text-teal-600', bg: 'bg-teal-50 border-teal-100' },
-            { icon: CloudRain, label: 'Rain Chance', value: rainChance, color: 'text-indigo-600', bg: 'bg-indigo-50 border-indigo-100' },
-          ].map(({ icon: Icon, label, value, color, bg }) => (
-            <motion.div
-              key={label}
-              whileHover={{ scale: 1.03 }}
-              className={`rounded-2xl border p-4 ${bg}`}
-            >
-              <div className={`mb-2 ${color}`}><Icon size={20} /></div>
-              <p className={`text-xl font-bold ${color}`}>{value}</p>
-              <p className="text-xs text-gray-500 mt-0.5">{label}</p>
+            { icon: Thermometer, label: 'Temperature', value: temp,       color: '#ea580c', bg: 'rgba(255,247,237,0.9)',  border: 'rgba(251,191,36,0.2)' },
+            { icon: Droplets,   label: 'Humidity',    value: humidity,   color: '#0284c7', bg: 'rgba(240,249,255,0.9)',  border: 'rgba(125,211,252,0.2)' },
+            { icon: Wind,       label: 'Wind Speed',  value: windSpeed,  color: '#0d9488', bg: 'rgba(240,253,250,0.9)',  border: 'rgba(94,234,212,0.2)' },
+            { icon: CloudRain,  label: 'Rain Chance', value: rainChance, color: '#6366f1', bg: 'rgba(238,242,255,0.9)', border: 'rgba(165,180,252,0.2)' },
+          ].map(({ icon: Icon, label, value, color, bg, border }, i) => (
+            <motion.div key={label} custom={i} variants={fadeUp} whileHover={{ y: -3 }}
+              className="rounded-2xl p-4 border"
+              style={{ background: bg, borderColor: border, boxShadow: '0 4px 16px rgba(0,0,0,0.05)' }}>
+              <div className="mb-2" style={{ color }}><Icon size={20} /></div>
+              <p className="text-xl font-bold" style={{ color }}>{value}</p>
+              <p className="text-xs mt-0.5" style={{ color: C.light }}>{label}</p>
             </motion.div>
           ))}
         </div>
         {weather?.description && (
-          <p className="mt-2 text-xs text-gray-400 flex items-center gap-1">
+          <p className="mt-2 text-xs flex items-center gap-1" style={{ color: C.light }}>
             <Sun size={11} /> {weatherDesc} · {locationName}
           </p>
         )}
-      </div>
+      </motion.div>
 
-      {/* ── Quick actions ── */}
-      <div>
-        <h2 className="text-sm font-semibold text-gray-500 uppercase tracking-widest mb-3 flex items-center gap-2">
-          <Zap size={14} /> Quick Actions
-        </h2>
+      {/* ── Quick actions (floating glass cards) ── */}
+      <motion.div variants={fadeUp} custom={2}>
+        <SectionLabel icon={Zap}>Quick Actions</SectionLabel>
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-          {quickActions.map((action) => (
-            <motion.button
-              key={action.id}
-              whileHover={{ scale: 1.02, y: -2 }}
-              whileTap={{ scale: 0.98 }}
-              onClick={() => onNavigate(action.id)}
-              className="text-left w-full"
-            >
-              <div className="bg-white border border-gray-100 rounded-2xl p-5 shadow-sm hover:shadow-md transition-shadow flex items-start gap-4">
-                <div className={`w-12 h-12 rounded-xl bg-gradient-to-br ${action.gradient} flex items-center justify-center text-2xl flex-shrink-0 shadow-sm`}>
-                  {action.emoji}
-                </div>
-                <div className="flex-1 min-w-0">
-                  <div className="flex items-center gap-2 mb-1">
-                    <p className="font-bold text-gray-800 text-sm">{action.title}</p>
-                    <span className="text-[10px] font-semibold px-2 py-0.5 bg-green-100 text-green-700 rounded-full flex-shrink-0">
-                      {action.badge}
-                    </span>
+          {quickActions.map((action, i) => {
+            const Icon = action.icon;
+            return (
+              <motion.button
+                key={action.id}
+                custom={i}
+                variants={fadeUp}
+                whileHover={{ y: -4, boxShadow: `0 20px 48px ${action.glow}` }}
+                whileTap={{ scale: 0.98 }}
+                onClick={() => onNavigate(action.id)}
+                className="text-left w-full"
+              >
+                <GlassCard className="p-5 flex items-start gap-4 transition-all duration-200">
+                  {/* Icon box with gradient */}
+                  <div className="w-12 h-12 rounded-2xl flex items-center justify-center flex-shrink-0 shadow-lg"
+                    style={{ background: action.gradient, boxShadow: `0 6px 20px ${action.glow}` }}>
+                    <Icon size={22} className="text-white" />
                   </div>
-                  <p className="text-xs text-gray-500 leading-relaxed">{action.desc}</p>
-                </div>
-                <ArrowRight size={16} className="text-gray-300 flex-shrink-0 mt-1" />
+                  <div className="flex-1 min-w-0">
+                    <div className="flex items-center gap-2 mb-1">
+                      <p className="font-bold text-sm" style={{ color: C.heading }}>{action.title}</p>
+                      <span className="text-[10px] font-bold px-2 py-0.5 rounded-full flex-shrink-0"
+                        style={{ background: action.badgeColor, color: action.badgeText }}>
+                        {action.badge}
+                      </span>
+                    </div>
+                    <p className="text-xs leading-relaxed" style={{ color: C.light }}>{action.desc}</p>
+                  </div>
+                  <ArrowRight size={16} style={{ color: C.light, flexShrink: 0, marginTop: 2 }} />
+                </GlassCard>
+              </motion.button>
+            );
+          })}
+        </div>
+      </motion.div>
+
+      {/* ── Crop rotation strip ── */}
+      <motion.div custom={6} variants={fadeUp}>
+        <SectionLabel icon={Leaf}>Seasonal Crop Rotation</SectionLabel>
+        <div className="grid grid-cols-3 gap-3">
+          {[
+            { season: 'Kharif', crop: 'Rice',     icon: Sprout,   color: '#16a34a', bg: 'rgba(240,253,244,0.9)',  border: 'rgba(74,222,128,0.2)' },
+            { season: 'Rabi',   crop: 'Wheat',    icon: Sprout,   color: '#d97706', bg: 'rgba(255,251,235,0.9)',  border: 'rgba(252,211,77,0.2)' },
+            { season: 'Summer', crop: 'Moong Dal',icon: Sprout, color: '#0284c7', bg: 'rgba(240,249,255,0.9)',  border: 'rgba(125,211,252,0.2)' },
+          ].map(({ season, crop, icon: Icon, color, bg, border }) => (
+            <div key={season} className="rounded-2xl p-4 border text-center"
+              style={{ background: bg, borderColor: border }}>
+              <div className="w-8 h-8 rounded-xl flex items-center justify-center mx-auto mb-2"
+                style={{ background: `${color}22` }}>
+                <Icon size={16} style={{ color }} />
               </div>
-            </motion.button>
+              <p className="text-[11px] font-semibold uppercase tracking-wider" style={{ color: C.light }}>{season}</p>
+              <p className="text-sm font-bold mt-0.5" style={{ color: C.heading }}>{crop}</p>
+            </div>
           ))}
         </div>
-      </div>
+      </motion.div>
 
       {/* ── Seasonal tip banner ── */}
-      <div className="rounded-2xl border border-green-200/60 bg-gradient-to-r from-green-50 to-emerald-50 p-5 flex items-start gap-4"
-        style={{ boxShadow: '0 4px 20px rgba(22,163,74,0.08)' }}>
-        <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-green-500 to-emerald-600 flex items-center justify-center flex-shrink-0 shadow-md">
-          <Sprout size={18} className="text-white" />
+      <motion.div custom={7} variants={fadeUp}>
+        <div className="rounded-2xl p-5 flex items-start gap-4 border"
+          style={{
+            background: 'linear-gradient(135deg, rgba(240,253,244,0.95), rgba(236,253,245,0.95))',
+            borderColor: 'rgba(74,222,128,0.25)',
+            boxShadow: '0 4px 20px rgba(22,163,74,0.08)',
+          }}>
+          <div className="w-11 h-11 rounded-xl flex items-center justify-center flex-shrink-0 shadow-md"
+            style={{ background: 'linear-gradient(135deg, #16a34a, #22c55e)' }}>
+            <Sprout size={20} className="text-white" />
+          </div>
+          <div className="flex-1">
+            <p className="font-bold text-sm mb-1" style={{ color: '#14532d' }}>🌱 Seasonal Tip</p>
+            <p className="text-xs leading-relaxed" style={{ color: '#166534' }}>
+              It's a great time to prepare your soil for the upcoming Kharif season.
+              Apply organic compost now and check optimal moisture levels before sowing.
+            </p>
+          </div>
+          <button onClick={() => onNavigate('soil')}
+            className="flex-shrink-0 text-xs font-bold px-3 py-1.5 rounded-xl transition hover:opacity-90"
+            style={{ background: 'linear-gradient(135deg, #16a34a, #22c55e)', color: 'white', boxShadow: '0 4px 12px rgba(22,163,74,0.35)' }}>
+            Check Soil
+          </button>
         </div>
-        <div className="flex-1">
-          <p className="font-bold text-green-800 text-sm mb-1">Seasonal Tip</p>
-          <p className="text-green-700 text-xs leading-relaxed">
-            It's a great time to prepare your soil for the upcoming Kharif season.
-            Apply organic compost now and check for optimal moisture levels before sowing.
-          </p>
-        </div>
-        <button
-          onClick={() => onNavigate('soil')}
-          className="flex-shrink-0 text-xs font-semibold text-green-700 px-3 py-1.5 bg-green-200 hover:bg-green-300 rounded-xl transition"
-        >
-          Check Soil
-        </button>
-      </div>
+      </motion.div>
     </motion.div>
   );
 };
 
-/* ─── Dashboard ──────────────────────────────────────────────── */
+/* ═══════════════════════════════════════════════════════════════
+   DASHBOARD (root)
+═══════════════════════════════════════════════════════════════ */
 const Dashboard = () => {
   const { t, i18n } = useTranslation();
   const user = auth.currentUser;
 
-  const [center, setCenter] = useState(defaultCenter);
+  const [center, setCenter]                     = useState(defaultCenter);
   const [selectedLocation, setSelectedLocation] = useState(defaultCenter);
-  const [weather, setWeather] = useState(null);
+  const [weather, setWeather]                   = useState(null);
   const [aiRecommendations, setAiRecommendations] = useState(null);
   const [realTimePredictions, setRealTimePredictions] = useState(null);
-  const [activeTab, setActiveTab] = useState('overview');
+  const [activeTab, setActiveTab]               = useState('overview');
   const [showFeedbackForm, setShowFeedbackForm] = useState(false);
   const [currentPredictionId, setCurrentPredictionId] = useState(null);
-  const [mapId, setMapId] = useState(null);
-  const [sidebarOpen, setSidebarOpen] = useState(false);
+  const [mapId, setMapId]                       = useState(null);
+  const [sidebarOpen, setSidebarOpen]           = useState(false);
 
   /* geolocation */
   useEffect(() => {
@@ -681,9 +712,9 @@ const Dashboard = () => {
   useEffect(() => {
     setAiRecommendations({
       cropRotation: [
-        { season: 'Kharif', crop: 'Rice', reason: 'High rainfall season' },
-        { season: 'Rabi', crop: 'Wheat', reason: 'Cooler temperatures' },
-        { season: 'Summer', crop: 'Moong Dal', reason: 'Drought-resistant legume' },
+        { season: 'Kharif', crop: 'Rice',     reason: 'High rainfall season' },
+        { season: 'Rabi',   crop: 'Wheat',    reason: 'Cooler temperatures' },
+        { season: 'Summer', crop: 'Moong Dal',reason: 'Drought-resistant legume' },
       ],
       soilManagement: [
         'Add organic compost to improve soil fertility',
@@ -749,10 +780,9 @@ const Dashboard = () => {
     } catch (e) { console.error(e); }
   };
 
-  /* active tab label */
-  const activeItem = NAV_ITEMS.find((n) => n.id === activeTab);
+  const activeItem = NAV_ITEMS.find(n => n.id === activeTab);
 
-  /* sidebar link */
+  /* ── Sidebar NavLink ── */
   const NavLink = ({ item }) => {
     const Icon = item.icon;
     const isActive = activeTab === item.id;
@@ -760,42 +790,45 @@ const Dashboard = () => {
       <motion.button
         whileTap={{ scale: 0.97 }}
         onClick={() => { setActiveTab(item.id); setSidebarOpen(false); }}
-        className={`flex items-center gap-3 w-full px-4 py-3 rounded-xl text-sm font-medium transition-all ${
-          isActive
-            ? 'text-white'
-            : 'text-gray-600 hover:text-green-700'
-        }`}
+        className="flex items-center gap-3 w-full px-4 py-3 rounded-xl text-sm font-medium transition-all"
         style={isActive ? {
           background: 'linear-gradient(135deg, #15803d, #16a34a)',
-          boxShadow: '0 4px 16px rgba(21,128,61,0.30), inset 0 1px 0 rgba(255,255,255,0.15)',
-        } : {
-          background: 'transparent',
-        }}
+          color: '#fff',
+          boxShadow: '0 4px 18px rgba(21,128,61,0.32), inset 0 1px 0 rgba(255,255,255,0.15)',
+        } : { color: C.text }}
         onMouseEnter={e => { if (!isActive) e.currentTarget.style.background = 'rgba(22,163,74,0.08)'; }}
         onMouseLeave={e => { if (!isActive) e.currentTarget.style.background = 'transparent'; }}
       >
-        <Icon size={18} className={isActive ? 'text-white' : 'text-gray-400'} />
+        <Icon size={18} style={{ color: isActive ? '#fff' : C.light }} />
         <span>{item.label}</span>
-        {isActive && <ChevronRight size={14} className="ml-auto opacity-70" />}
+        {isActive && <ChevronRight size={14} className="ml-auto opacity-60" />}
       </motion.button>
     );
   };
 
+  /* ── Bottom nav items (5 most used) ── */
+  const BOTTOM_NAV = NAV_ITEMS.slice(0, 5);
+
   return (
     <div className="min-h-screen flex" style={{
       fontFamily: "'Inter', 'Segoe UI', sans-serif",
-      background: 'linear-gradient(135deg, #f0fdf4 0%, #ffffff 45%, #ecfdf5 100%)',
+      background: 'linear-gradient(150deg, #f0fdf4 0%, #ffffff 40%, #ecfdf5 80%, #f0fdf4 100%)',
     }}>
-      {/* ── Mobile overlay */}
-      {sidebarOpen && (
-        <div
-          onClick={() => setSidebarOpen(false)}
-          className="fixed inset-0 bg-black/40 z-30 lg:hidden"
-        />
-      )}
+      {/* Mobile overlay */}
+      <AnimatePresence>
+        {sidebarOpen && (
+          <motion.div
+            initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
+            onClick={() => setSidebarOpen(false)}
+            className="fixed inset-0 bg-black/30 z-30 lg:hidden backdrop-blur-sm"
+          />
+        )}
+      </AnimatePresence>
 
-      {/* ── Sidebar — CSS-only slide on mobile, always visible on lg+ */}
-      <aside
+      {/* ── SIDEBAR ── */}
+      <motion.aside
+        initial={false}
+        animate={{ x: sidebarOpen ? 0 : undefined }}
         className={`
           fixed inset-y-0 left-0 z-40 w-64 flex flex-col
           transition-transform duration-300 ease-in-out
@@ -803,184 +836,165 @@ const Dashboard = () => {
           lg:static lg:translate-x-0 lg:flex lg:shrink-0
         `}
         style={{
-          background: 'rgba(255,255,255,0.75)',
-          backdropFilter: 'blur(20px)',
-          WebkitBackdropFilter: 'blur(20px)',
-          borderRight: '1px solid rgba(255,255,255,0.35)',
-          boxShadow: '4px 0 30px rgba(0,0,0,0.08)',
+          background: 'rgba(255,255,255,0.78)',
+          backdropFilter: 'blur(24px)',
+          WebkitBackdropFilter: 'blur(24px)',
+          borderRight: '1px solid rgba(255,255,255,0.38)',
+          boxShadow: '4px 0 32px rgba(0,0,0,0.07)',
         }}
       >
         {/* Brand */}
-        <div className="flex items-center gap-3 px-5 py-5 border-b border-green-100">
-          <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-green-600 to-emerald-500 flex items-center justify-center shadow-md">
+        <div className="flex items-center gap-3 px-5 py-5 border-b" style={{ borderColor: 'rgba(22,163,74,0.12)' }}>
+          <div className="w-9 h-9 rounded-xl flex items-center justify-center shadow-lg"
+            style={{ background: 'linear-gradient(135deg, #15803d, #22c55e)' }}>
             <Leaf size={18} className="text-white" />
           </div>
           <div>
-            <p className="font-bold text-gray-800 text-sm leading-tight">Digital Raitha</p>
-            <p className="text-xs text-green-600">AI Farm Assistant</p>
+            <p className="font-bold text-sm leading-tight" style={{ color: C.heading }}>Digital Raitha</p>
+            <p className="text-xs" style={{ color: '#16a34a' }}>AI Farm Assistant</p>
           </div>
-          <button
-            onClick={() => setSidebarOpen(false)}
-            className="ml-auto text-gray-400 hover:text-gray-600 lg:hidden"
-          >
+          <button onClick={() => setSidebarOpen(false)}
+            className="ml-auto text-gray-400 hover:text-gray-600 lg:hidden p-1">
             <X size={18} />
           </button>
         </div>
 
         {/* Nav links */}
-        <nav className="flex-1 overflow-y-auto px-3 py-4 space-y-1">
-          {NAV_ITEMS.map((item) => <NavLink key={item.id} item={item} />)}
+        <nav className="flex-1 overflow-y-auto px-3 py-4 space-y-0.5">
+          {NAV_ITEMS.map(item => <NavLink key={item.id} item={item} />)}
         </nav>
 
-        {/* User footer */}
-        <div
-          className="m-3 p-3 bg-green-50 rounded-xl flex items-center gap-3 cursor-pointer hover:bg-green-100 transition"
+        {/* User footer card */}
+        <motion.div
+          whileHover={{ backgroundColor: 'rgba(22,163,74,0.10)' }}
+          className="m-3 p-3 rounded-xl flex items-center gap-3 cursor-pointer transition-colors"
+          style={{ background: 'rgba(22,163,74,0.06)', border: '1px solid rgba(22,163,74,0.1)' }}
           onClick={() => { setActiveTab('profile'); setSidebarOpen(false); }}
         >
-          <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-green-600 to-emerald-500 flex items-center justify-center text-white text-sm font-bold flex-shrink-0">
+          <div className="w-9 h-9 rounded-xl flex items-center justify-center text-white text-sm font-bold flex-shrink-0 shadow-md"
+            style={{ background: 'linear-gradient(135deg, #16a34a, #22c55e)' }}>
             {(user?.displayName || 'F').slice(0, 1).toUpperCase()}
           </div>
           <div className="flex-1 min-w-0">
-            <p className="text-sm font-semibold text-gray-700 truncate">{user?.displayName || 'Farmer'}</p>
-            <p className="text-xs text-gray-400 truncate">{user?.email || user?.phoneNumber || 'View Profile'}</p>
+            <p className="text-sm font-semibold truncate" style={{ color: C.heading }}>{user?.displayName || 'Farmer'}</p>
+            <p className="text-xs truncate" style={{ color: C.light }}>{user?.email || user?.phoneNumber || 'View Profile'}</p>
           </div>
-          <ChevronRight size={14} className="text-gray-400 flex-shrink-0" />
-        </div>
-      </aside>
+          <ChevronRight size={14} style={{ color: C.light, flexShrink: 0 }} />
+        </motion.div>
+      </motion.aside>
 
-      {/* ── Main area */}
+      {/* ── MAIN CONTENT ── */}
       <div className="flex-1 flex flex-col min-w-0">
 
         {/* Top bar */}
-        <header className="px-4 sm:px-6 py-3 flex items-center gap-3 sticky top-0 z-20"
-          style={{
-            background: 'rgba(255,255,255,0.80)',
-            backdropFilter: 'blur(20px)',
-            WebkitBackdropFilter: 'blur(20px)',
-            borderBottom: '1px solid rgba(255,255,255,0.4)',
-            boxShadow: '0 2px 20px rgba(0,0,0,0.06)',
-          }}
-        >
-          <button
-            onClick={() => setSidebarOpen(true)}
-            className="lg:hidden text-gray-500 hover:text-green-700 p-1.5 rounded-lg hover:bg-green-50"
-          >
+        <header className="px-4 sm:px-6 py-3 flex items-center gap-3 sticky top-0 z-20" style={{
+          background: 'rgba(255,255,255,0.82)',
+          backdropFilter: 'blur(24px)',
+          WebkitBackdropFilter: 'blur(24px)',
+          borderBottom: '1px solid rgba(255,255,255,0.42)',
+          boxShadow: '0 2px 24px rgba(0,0,0,0.06)',
+        }}>
+          <button onClick={() => setSidebarOpen(true)}
+            className="lg:hidden p-2 rounded-xl hover:bg-green-50 transition"
+            style={{ color: C.text }}>
             <Menu size={22} />
           </button>
 
           <div className="flex-1 min-w-0">
-            <h1 className="text-base sm:text-lg font-bold text-gray-800 flex items-center gap-2">
-              {activeItem && <activeItem.icon size={18} className="text-green-600 flex-shrink-0" />}
+            <h1 className="text-base sm:text-lg font-bold flex items-center gap-2" style={{ color: C.heading }}>
+              {activeItem && <activeItem.icon size={18} style={{ color: '#16a34a', flexShrink: 0 }} />}
               <span className="truncate">{activeItem?.label}</span>
             </h1>
-            <p className="text-xs text-gray-400 hidden sm:block">Digital Raitha · AI-Powered Natural Farming</p>
+            <p className="text-xs hidden sm:block" style={{ color: C.light }}>Digital Raitha · AI-Powered Natural Farming</p>
           </div>
 
-          {/* ── Language switcher (top-right) */}
-          <div className="flex items-center gap-1 bg-gray-50 border border-gray-200 rounded-xl px-2 py-1.5">
-            <Globe size={13} className="text-gray-400 mr-1 flex-shrink-0" />
+          {/* Language switcher */}
+          <div className="flex items-center gap-1 rounded-xl px-2 py-1.5 border"
+            style={{ background: 'rgba(249,250,251,0.8)', borderColor: 'rgba(229,231,235,0.8)' }}>
+            <Globe size={12} style={{ color: C.light, marginRight: 2 }} />
             {LANGUAGES.map(({ code, label }) => (
-              <button
-                key={code}
-                onClick={() => i18n.changeLanguage(code)}
-                title={code.toUpperCase()}
-                className={`px-2 py-0.5 text-xs rounded-lg font-semibold transition ${i18n.language === code
-                  ? 'bg-green-600 text-white shadow-sm'
-                  : 'text-gray-500 hover:bg-green-50 hover:text-green-700'
-                  }`}
-              >
+              <button key={code} onClick={() => i18n.changeLanguage(code)}
+                className="px-2 py-0.5 text-xs rounded-lg font-semibold transition"
+                style={i18n.language === code
+                  ? { background: 'linear-gradient(135deg, #15803d, #16a34a)', color: '#fff' }
+                  : { color: C.light }}>
                 {label}
               </button>
             ))}
           </div>
 
-          {/* quick profile pill */}
-          <button
-            onClick={() => setActiveTab('profile')}
-            className="flex items-center gap-2 px-3 py-1.5 bg-green-50 rounded-xl hover:bg-green-100 transition"
-          >
-            <div className="w-7 h-7 rounded-lg bg-gradient-to-br from-green-600 to-emerald-500 flex items-center justify-center text-white text-xs font-bold">
+          {/* Profile pill */}
+          <button onClick={() => setActiveTab('profile')}
+            className="flex items-center gap-2 px-3 py-1.5 rounded-xl transition"
+            style={{ background: 'rgba(22,163,74,0.08)', border: '1px solid rgba(22,163,74,0.12)' }}>
+            <div className="w-7 h-7 rounded-lg flex items-center justify-center text-white text-xs font-bold"
+              style={{ background: 'linear-gradient(135deg, #16a34a, #22c55e)' }}>
               {(user?.displayName || 'F').slice(0, 1).toUpperCase()}
             </div>
-            <span className="text-sm font-medium text-gray-700 hidden sm:inline">
+            <span className="text-sm font-medium hidden sm:inline" style={{ color: C.heading }}>
               {user?.displayName || 'Farmer'}
             </span>
           </button>
         </header>
 
-        {/* Tab content */}
-        <main className="flex-1 overflow-y-auto p-4 sm:p-6 pb-24 lg:pb-6">
+        {/* Page content */}
+        <main className="flex-1 overflow-y-auto p-4 sm:p-6 pb-24 lg:pb-8">
           <div className="max-w-5xl mx-auto">
 
-            {/* Overview Tab */}
-            {activeTab === 'overview' && (
-              <OverviewPage
-                user={user}
-                weather={weather}
-                onNavigate={(tab) => setActiveTab(tab)}
-              />
-            )}
+            <AnimatePresence mode="wait">
+              {activeTab === 'overview' && (
+                <OverviewPage key="overview" user={user} weather={weather} onNavigate={setActiveTab} />
+              )}
+            </AnimatePresence>
 
-            {/* AI Planner — kept mounted */}
+            {/* Always-mounted panels */}
             <div style={{ display: activeTab === 'aiplanner' ? 'block' : 'none' }}>
-              <AIPlanner onLocationChange={(loc) => setSelectedLocation(loc)} />
+              <AIPlanner onLocationChange={loc => setSelectedLocation(loc)} />
             </div>
-
-            {/* Agroforestry — kept mounted */}
             <div style={{ display: activeTab === 'agroforestry' ? 'block' : 'none' }}>
               <AgroforestryPlanner />
             </div>
 
-            {activeTab === 'soil' && (
-              <motion.div variants={fadeUp} initial="hidden" animate="visible">
-                <SoilAnalysisComponent lat={selectedLocation.lat} lon={selectedLocation.lng} aiRecommendations={aiRecommendations} />
-              </motion.div>
-            )}
-
-            {activeTab === 'weather' && (
-              <motion.div variants={fadeUp} initial="hidden" animate="visible" className="space-y-5">
-                <WeatherComponent initialLat={selectedLocation.lat} initialLon={selectedLocation.lng} onWeatherFetch={setWeather} />
-                <RainfallComponent lat={selectedLocation.lat} lon={selectedLocation.lng} aiRecommendations={aiRecommendations} />
-              </motion.div>
-            )}
-
-            {activeTab === 'map' && (
-              <FarmMapTab center={center} mapId={mapId} onGenerateMap={handleGenerateMap} t={t} />
-            )}
-
-            {activeTab === 'predictions' && (
-              <PredictionsTab realTimePredictions={realTimePredictions} t={t} />
-            )}
-
-            {activeTab === 'profile' && (
-              <ProfilePage user={user} onLogout={handleLogout} t={t} />
-            )}
-
+            <AnimatePresence mode="wait">
+              {activeTab === 'soil' && (
+                <motion.div key="soil" variants={fadeUp} initial="hidden" animate="visible">
+                  <SoilAnalysisComponent lat={selectedLocation.lat} lon={selectedLocation.lng} aiRecommendations={aiRecommendations} />
+                </motion.div>
+              )}
+              {activeTab === 'weather' && (
+                <motion.div key="weather" variants={stagger} initial="hidden" animate="visible" className="space-y-5">
+                  <WeatherComponent initialLat={selectedLocation.lat} initialLon={selectedLocation.lng} onWeatherFetch={setWeather} />
+                  <RainfallComponent lat={selectedLocation.lat} lon={selectedLocation.lng} aiRecommendations={aiRecommendations} />
+                </motion.div>
+              )}
+              {activeTab === 'map' && (
+                <FarmMapTab key="map" center={center} mapId={mapId} onGenerateMap={handleGenerateMap} t={t} />
+              )}
+              {activeTab === 'predictions' && (
+                <PredictionsTab key="predictions" realTimePredictions={realTimePredictions} t={t} />
+              )}
+              {activeTab === 'profile' && (
+                <ProfilePage key="profile" user={user} onLogout={handleLogout} t={t} />
+              )}
+            </AnimatePresence>
           </div>
         </main>
       </div>
 
-      {/* Feedback modal */}
+      {/* ── Feedback modal ── */}
       <AnimatePresence>
         {showFeedbackForm && currentPredictionId && (
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            className="fixed inset-0 flex items-center justify-center p-4 z-50 bg-black/50 backdrop-blur-sm"
-          >
-            <motion.div
-              initial={{ scale: 0.9, opacity: 0 }}
-              animate={{ scale: 1, opacity: 1 }}
-              exit={{ scale: 0.9, opacity: 0 }}
-              className="bg-white rounded-2xl shadow-2xl w-full max-w-md max-h-[90vh] overflow-y-auto"
-            >
-              <div className="flex items-center justify-between p-5 bg-gradient-to-r from-green-700 to-emerald-600 rounded-t-2xl">
-                <h3 className="text-white font-bold flex items-center gap-2">📝 {t('provideFeedback')}</h3>
-                <button
-                  onClick={() => setShowFeedbackForm(false)}
-                  className="text-white/80 hover:text-white p-1"
-                >
+          <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
+            className="fixed inset-0 flex items-center justify-center p-4 z-50 backdrop-blur-sm"
+            style={{ background: 'rgba(0,0,0,0.45)' }}>
+            <motion.div initial={{ scale: 0.9, opacity: 0 }} animate={{ scale: 1, opacity: 1 }} exit={{ scale: 0.9, opacity: 0 }}
+              className="bg-white rounded-2xl shadow-2xl w-full max-w-md max-h-[90vh] overflow-y-auto">
+              <div className="flex items-center justify-between p-5 rounded-t-2xl"
+                style={{ background: 'linear-gradient(135deg, #15803d, #16a34a)' }}>
+                <h3 className="text-white font-bold flex items-center gap-2">
+                  <CheckCircle2 size={18} /> {t('provideFeedback')}
+                </h3>
+                <button onClick={() => setShowFeedbackForm(false)} className="text-white/70 hover:text-white p-1">
                   <X size={20} />
                 </button>
               </div>
@@ -992,45 +1006,46 @@ const Dashboard = () => {
         )}
       </AnimatePresence>
 
-      {/* ── Bottom navigation (mobile only) */}
-      <nav className="lg:hidden fixed bottom-0 left-0 right-0 z-40 flex items-center justify-around py-2 px-1"
+      {/* ── BOTTOM NAV (mobile) ── */}
+      <nav className="lg:hidden fixed bottom-0 left-0 right-0 z-40 flex items-center"
         style={{
-          background: 'rgba(255,255,255,0.90)',
-          backdropFilter: 'blur(24px)',
-          WebkitBackdropFilter: 'blur(24px)',
-          borderTop: '1px solid rgba(255,255,255,0.4)',
-          boxShadow: '0 -4px 20px rgba(0,0,0,0.08)',
+          background: 'rgba(255,255,255,0.92)',
+          backdropFilter: 'blur(28px)',
+          WebkitBackdropFilter: 'blur(28px)',
+          borderTop: '1px solid rgba(255,255,255,0.45)',
+          boxShadow: '0 -6px 24px rgba(0,0,0,0.08)',
+          paddingBottom: 'env(safe-area-inset-bottom, 0px)',
         }}
       >
-        {NAV_ITEMS.slice(0, 5).map((item) => {
+        {BOTTOM_NAV.map(item => {
           const Icon = item.icon;
           const isActive = activeTab === item.id;
           return (
-            <button
-              key={item.id}
-              onClick={() => setActiveTab(item.id)}
-              className="flex flex-col items-center gap-1 min-w-0 flex-1 py-1 px-1"
-              style={{ minHeight: '52px' }}
-            >
-              <div
+            <button key={item.id} onClick={() => setActiveTab(item.id)}
+              className="flex flex-col items-center gap-1 min-w-0 flex-1 py-2 px-1 transition-all">
+              <motion.div
+                whileTap={{ scale: 0.88 }}
                 className="w-10 h-10 rounded-xl flex items-center justify-center transition-all"
                 style={isActive ? {
                   background: 'linear-gradient(135deg, #15803d, #16a34a)',
-                  boxShadow: '0 4px 12px rgba(21,128,61,0.35)',
-                } : {}}
+                  boxShadow: '0 4px 14px rgba(21,128,61,0.38)',
+                } : { background: 'transparent' }}
               >
-                <Icon size={20} className={isActive ? 'text-white' : 'text-gray-400'} />
-              </div>
-              <span className={`text-[10px] font-semibold truncate w-full text-center ${
-                isActive ? 'text-green-700' : 'text-gray-400'
-              }`}>{item.label}</span>
+                <Icon size={20} style={{ color: isActive ? '#fff' : C.light }} />
+              </motion.div>
+              <span className="text-[10px] font-semibold w-full text-center truncate"
+                style={{ color: isActive ? '#16a34a' : C.light }}>
+                {item.label}
+              </span>
             </button>
           );
         })}
       </nav>
 
-      {/* Google font */}
-      <style>{`@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');`}</style>
+      {/* Font import */}
+      <style>{`
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
+      `}</style>
     </div>
   );
 };
