@@ -8,6 +8,23 @@ import {
   useTransform,
   animate,
 } from 'framer-motion';
+import {
+  LayoutDashboard,
+  Trees,
+  Coins,
+  Leaf,
+  ListChecks,
+  MapPin,
+  Globe,
+  Sun,
+  Sprout,
+  Printer,
+  PlusCircle,
+  Loader2,
+  TriangleAlert,
+  CheckCircle,
+  CloudUpload,
+} from 'lucide-react';
 import { auth } from '../firebase';
 import planStorageService from '../services/planStorageService';
 import FarmerInputForm from './FarmerInputForm';
@@ -243,11 +260,11 @@ const Spinner = () => (
 /* ─── Main Component ─────────────────────────────────────────────── */
 
 const SECTIONS = [
-  { id: 'overview',      label: 'Overview',      icon: '📊' },
-  { id: 'crops',         label: 'Crops & Trees',  icon: '🌳' },
-  { id: 'economics',     label: 'Economics',      icon: '💰' },
-  { id: 'sustainability',label: 'Sustainability', icon: '♻️' },
-  { id: 'nextsteps',     label: 'Next Steps',     icon: '✅' },
+  { id: 'overview',       label: 'Overview',       Icon: LayoutDashboard, accent: '#4ade80', activeText: '#14532d' },
+  { id: 'crops',          label: 'Crops & Trees',  Icon: Trees,           accent: '#86efac', activeText: '#14532d' },
+  { id: 'economics',      label: 'Economics',      Icon: Coins,           accent: '#fbbf24', activeText: '#78350f' },
+  { id: 'sustainability', label: 'Sustainability',  Icon: Leaf,            accent: '#34d399', activeText: '#065f46' },
+  { id: 'nextsteps',      label: 'Next Steps',     Icon: ListChecks,      accent: '#a3e635', activeText: '#365314' },
 ];
 
 const AIPlanner = ({ onLocationChange }) => {
@@ -493,15 +510,15 @@ const AIPlanner = ({ onLocationChange }) => {
                 border:'1px solid currentColor',
               }}
             >
-              {saveStatus==='saving' && <Spinner />}
+              {saveStatus==='saving' && <Loader2 size={14} style={{ animation:'spin 1s linear infinite' }} />}
               {saveStatus==='saving' && (t('savingPlan') || 'Saving plan to cloud…')}
-              {saveStatus==='saved'  && '✓ ' + (t('planSaved') || 'Plan saved!')}
-              {saveStatus==='error'  && '⚠ ' + (t('planSaveError') || 'Could not save — plan available locally.')}
+              {saveStatus==='saved'  && <><CheckCircle size={14} /> {t('planSaved') || 'Plan saved!'}</>}
+              {saveStatus==='error'  && <><TriangleAlert size={14} /> {t('planSaveError') || 'Could not save — plan available locally.'}</>}
             </motion.div>
           )}
         </AnimatePresence>
 
-        {/* ── Sidebar / Tabs (animated) ── */}
+        {/* ── Tabs Navigation ── */}
         <AnimatePresence>
           {agroPlan && (
             <motion.div
@@ -509,42 +526,101 @@ const AIPlanner = ({ onLocationChange }) => {
               animate={{ opacity:1, y:0 }}
               exit={{ opacity:0, y:8 }}
               transition={{ delay:0.1 }}
-              style={{ position:'relative',zIndex:1,display:'flex',gap:'6px',marginTop:'22px',overflowX:'auto',paddingBottom:'2px' }}
+              style={{ position:'relative', zIndex:1, marginTop:'22px' }}
             >
-              {SECTIONS.map((s, idx) => {
-                const isActive = activeSection === s.id;
-                return (
-                  <motion.button
-                    key={s.id}
-                    onClick={() => setActiveSection(s.id)}
-                    initial={{ opacity:0, y:10 }}
-                    animate={{ opacity:1, y:0 }}
-                    transition={{ delay: 0.12 + idx * 0.06 }}
-                    whileHover={{ scale:1.06, backgroundColor:'rgba(255,255,255,0.22)' }}
-                    whileTap={{ scale:0.95 }}
-                    style={{
-                      padding:'9px 16px',borderRadius:'12px',border:'none',cursor:'pointer',
-                      whiteSpace:'nowrap',
-                      background: isActive ? 'rgba(255,255,255,0.22)' : 'rgba(255,255,255,0.07)',
-                      color: isActive ? '#fff' : 'rgba(255,255,255,0.55)',
-                      fontSize:'12px',fontWeight: isActive ? '700' : '500',
-                      backdropFilter:'blur(6px)',outline:'none',
-                      display:'flex',alignItems:'center',gap:'6px',
-                      fontFamily:'inherit',
-                      position:'relative',
-                    }}
-                  >
-                    {s.icon} {s.label}
-                    {isActive && (
-                      <motion.div
-                        layoutId="activeTab"
-                        style={{ position:'absolute',bottom:'6px',left:'50%',transform:'translateX(-50%)',width:'20px',height:'3px',background:'#4ade80',borderRadius:'3px' }}
-                        transition={{ type:'spring', stiffness:380, damping:26 }}
-                      />
-                    )}
-                  </motion.button>
-                );
-              })}
+              {/* Glass pill container */}
+              <div style={{
+                display:'inline-flex',
+                gap:'4px',
+                padding:'6px',
+                borderRadius:'18px',
+                background:'rgba(0,0,0,0.18)',
+                backdropFilter:'blur(16px)',
+                WebkitBackdropFilter:'blur(16px)',
+                border:'1px solid rgba(255,255,255,0.14)',
+                boxShadow:'0 4px 24px rgba(0,0,0,0.25), inset 0 1px 0 rgba(255,255,255,0.1)',
+                overflowX:'auto',
+                maxWidth:'100%',
+              }}>
+                {SECTIONS.map((s, idx) => {
+                  const isActive = activeSection === s.id;
+                  const { Icon, accent } = s;
+                  return (
+                    <motion.button
+                      key={s.id}
+                      onClick={() => setActiveSection(s.id)}
+                      initial={{ opacity:0, y:8 }}
+                      animate={{ opacity:1, y:0 }}
+                      transition={{ delay: 0.1 + idx * 0.05, type:'spring', stiffness:300, damping:24 }}
+                      whileHover={!isActive ? { backgroundColor:'rgba(255,255,255,0.1)', scale:1.03 } : {}}
+                      whileTap={{ scale:0.94 }}
+                      style={{
+                        position:'relative',
+                        padding:'9px 16px',
+                        borderRadius:'13px',
+                        border:'none',
+                        cursor:'pointer',
+                        whiteSpace:'nowrap',
+                        background: isActive
+                          ? `linear-gradient(135deg, rgba(255,255,255,0.96), rgba(240,255,244,0.92))`
+                          : 'transparent',
+                        color: isActive ? s.activeText : 'rgba(255,255,255,0.58)',
+                        fontSize:'12.5px',
+                        fontWeight: isActive ? '700' : '500',
+                        letterSpacing: isActive ? '-0.01em' : '0',
+                        backdropFilter: isActive ? 'blur(8px)' : 'none',
+                        outline:'none',
+                        display:'flex',
+                        alignItems:'center',
+                        gap:'7px',
+                        fontFamily:'inherit',
+                        boxShadow: isActive
+                          ? `0 2px 12px rgba(0,0,0,0.18), 0 1px 3px rgba(0,0,0,0.12), inset 0 1px 0 rgba(255,255,255,0.8)`
+                          : 'none',
+                        transition:'color 0.2s, box-shadow 0.2s',
+                        minWidth: 0,
+                      }}
+                    >
+                      {/* Icon with accent color when active */}
+                      <motion.span
+                        animate={{ color: isActive ? accent : 'rgba(255,255,255,0.45)' }}
+                        transition={{ duration:0.2 }}
+                        style={{ display:'flex', alignItems:'center', flexShrink:0 }}
+                      >
+                        <Icon size={15} strokeWidth={isActive ? 2.5 : 1.8} color={isActive ? accent : 'rgba(255,255,255,0.45)'} />
+                      </motion.span>
+
+                      {/* Label */}
+                      <span>{s.label}</span>
+
+                      {/* Active bottom indicator dot */}
+                      <AnimatePresence>
+                        {isActive && (
+                          <motion.span
+                            layoutId="tabDot"
+                            initial={{ opacity:0, scale:0 }}
+                            animate={{ opacity:1, scale:1 }}
+                            exit={{ opacity:0, scale:0 }}
+                            style={{
+                              position:'absolute',
+                              bottom:'5px',
+                              left:'50%',
+                              transform:'translateX(-50%)',
+                              display:'block',
+                              width:'22px',
+                              height:'3px',
+                              borderRadius:'3px',
+                              background: `linear-gradient(90deg, ${accent}, ${accent}99)`,
+                              boxShadow: `0 0 8px ${accent}88`,
+                            }}
+                            transition={{ type:'spring', stiffness:420, damping:28 }}
+                          />
+                        )}
+                      </AnimatePresence>
+                    </motion.button>
+                  );
+                })}
+              </div>
             </motion.div>
           )}
         </AnimatePresence>
@@ -613,7 +689,7 @@ const AIPlanner = ({ onLocationChange }) => {
 
                       {/* Location + Soil */}
                       <div style={{ display:'grid', gridTemplateColumns:'1fr 1fr', gap:'16px' }}>
-                        <SectionCard icon="📍" title={t('farmLocation') || 'Farm Location'} accent="#2563eb" delay={0}>
+                        <SectionCard icon={<MapPin size={18} color="#fff" />} title={t('farmLocation') || 'Farm Location'} accent="#2563eb" delay={0}>
                           <motion.div variants={staggerContainer} initial="initial" animate="animate">
                             <MetricRow label="Location"  value={locationLoading ? 'Resolving…' : (locationName || `${displayedLatitude}, ${displayedLongitude}`)} accent="#1d4ed8" />
                             <MetricRow label="Latitude"  value={displayedLatitude} />
@@ -623,7 +699,7 @@ const AIPlanner = ({ onLocationChange }) => {
                           {locationError && <p style={{ fontSize:'12px',color:'#b45309',marginTop:'10px' }}>⚠ {locationError}</p>}
                         </SectionCard>
 
-                        <SectionCard icon="🌍" title={t('soilSummary') || 'Soil Summary'} accent="#92400e" delay={0.06}>
+                        <SectionCard icon={<Globe size={18} color="#fff" />} title={t('soilSummary') || 'Soil Summary'} accent="#92400e" delay={0.06}>
                           <motion.div variants={staggerContainer} initial="initial" animate="animate">
                             <MetricRow label="pH Level"       value={agroPlan?.soil_summary?.ph}             accent="#92400e" />
                             <MetricRow label="Organic Carbon" value={agroPlan?.soil_summary?.organic_carbon} />
@@ -642,10 +718,10 @@ const AIPlanner = ({ onLocationChange }) => {
 
                       {/* Climate + Tips */}
                       <div style={{ display:'grid', gridTemplateColumns:'1fr 1fr', gap:'16px' }}>
-                        <SectionCard icon="☀️" title={t('climateSummary') || 'Climate Summary'} accent="#d97706" delay={0.12}>
+                        <SectionCard icon={<Sun size={18} color="#fff" />} title={t('climateSummary') || 'Climate Summary'} accent="#d97706" delay={0.12}>
                           {climateLoading && (
                             <div style={{ display:'flex',alignItems:'center',gap:'8px',marginBottom:'12px',fontSize:'13px',color:'#6b7280' }}>
-                              <Spinner /> Fetching live climate data…
+                              <Loader2 size={14} style={{ animation:'spin 0.9s linear infinite' }} /> Fetching live climate data…
                             </div>
                           )}
                           <motion.div variants={staggerContainer} initial="initial" animate="animate">
@@ -662,7 +738,7 @@ const AIPlanner = ({ onLocationChange }) => {
                           {climateError && <p style={{ fontSize:'12px',color:'#b45309',marginTop:'10px' }}>⚠ {climateError}</p>}
                         </SectionCard>
 
-                        <SectionCard icon="🌱" title={t('soilImprovementTips') || 'Soil Improvement Tips'} accent="#15803d" delay={0.18}>
+                        <SectionCard icon={<Sprout size={18} color="#fff" />} title={t('soilImprovementTips') || 'Soil Improvement Tips'} accent="#15803d" delay={0.18}>
                           <motion.ul
                             variants={staggerContainer}
                             initial="initial"
@@ -712,7 +788,7 @@ const AIPlanner = ({ onLocationChange }) => {
                         </motion.div>
                       )}
 
-                      <SectionCard icon="🌳" title={t('trees') || 'Trees'} subtitle="Recommended tree species" accent="#15803d">
+                      <SectionCard icon={<Trees size={18} color="#fff" />} title={t('trees') || 'Trees'} subtitle="Recommended tree species" accent="#15803d">
                         <motion.div variants={staggerContainer} initial="initial" animate="animate"
                           style={{ display:'flex',flexDirection:'column',gap:'10px' }}>
                           {(agroPlan?.recommended_agroforestry_system?.trees || []).map((tree, i) => (
@@ -734,7 +810,7 @@ const AIPlanner = ({ onLocationChange }) => {
                         </motion.div>
                       </SectionCard>
 
-                      <SectionCard icon="🌾" title={t('mainCrops') || 'Main Crops'} subtitle="Primary crops recommended" accent="#1d4ed8">
+                      <SectionCard icon={<Sprout size={18} color="#fff" />} title={t('mainCrops') || 'Main Crops'} subtitle="Primary crops recommended" accent="#1d4ed8">
                         <motion.div variants={staggerContainer} initial="initial" animate="animate"
                           style={{ display:'flex',flexDirection:'column',gap:'8px' }}>
                           {(agroPlan?.recommended_agroforestry_system?.main_crops || []).map((crop, i) => (
@@ -753,7 +829,7 @@ const AIPlanner = ({ onLocationChange }) => {
                       </SectionCard>
 
                       <div style={{ display:'grid',gridTemplateColumns:'1fr 1fr',gap:'16px' }}>
-                        <SectionCard icon="🌿" title={t('intercrops') || 'Intercrops'} accent="#7c3aed">
+                        <SectionCard icon={<Leaf size={18} color="#fff" />} title={t('intercrops') || 'Intercrops'} accent="#7c3aed">
                           <motion.div variants={staggerContainer} initial="initial" animate="animate"
                             style={{ display:'flex',flexDirection:'column',gap:'8px' }}>
                             {(agroPlan?.recommended_agroforestry_system?.intercrops || []).map((crop, i) => (
@@ -768,7 +844,7 @@ const AIPlanner = ({ onLocationChange }) => {
                           </motion.div>
                         </SectionCard>
 
-                        <SectionCard icon="🌺" title={t('herbs') || 'Herbs'} accent="#c2410c">
+                        <SectionCard icon={<Sprout size={18} color="#fff" />} title={t('herbs') || 'Herbs'} accent="#c2410c">
                           <motion.div variants={staggerContainer} initial="initial" animate="animate"
                             style={{ display:'flex',flexDirection:'column',gap:'8px' }}>
                             {(agroPlan?.recommended_agroforestry_system?.herbs || []).map((herb, i) => (
@@ -801,7 +877,7 @@ const AIPlanner = ({ onLocationChange }) => {
                       </motion.div>
 
                       <div style={{ display:'grid',gridTemplateColumns:'1fr 1fr',gap:'16px' }}>
-                        <SectionCard icon="🌾" title={t('cropIncome') || 'Crop Income'} accent="#15803d">
+                        <SectionCard icon={<Coins size={18} color="#fff" />} title={t('cropIncome') || 'Crop Income'} accent="#15803d">
                           <motion.ul variants={staggerContainer} initial="initial" animate="animate"
                             style={{ margin:0,padding:0,listStyle:'none',display:'flex',flexDirection:'column',gap:'0' }}>
                             {agroPlan?.economic_projection?.crop_income
@@ -812,7 +888,7 @@ const AIPlanner = ({ onLocationChange }) => {
                           </motion.ul>
                         </SectionCard>
 
-                        <SectionCard icon="🌳" title={t('treeIncome') || 'Tree Income'} accent="#0369a1">
+                        <SectionCard icon={<Trees size={18} color="#fff" />} title={t('treeIncome') || 'Tree Income'} accent="#0369a1">
                           <motion.ul variants={staggerContainer} initial="initial" animate="animate"
                             style={{ margin:0,padding:0,listStyle:'none',display:'flex',flexDirection:'column',gap:'0' }}>
                             {agroPlan?.economic_projection?.tree_income
@@ -830,7 +906,7 @@ const AIPlanner = ({ onLocationChange }) => {
                 {/* ════════════ SUSTAINABILITY ════════════ */}
                 {activeSection === 'sustainability' && (
                   <motion.div key="sustainability" variants={tabSlide} initial="initial" animate="animate" exit="exit">
-                    <SectionCard icon="♻️" title={t('sustainabilityMetrics') || 'Sustainability Metrics'}
+                    <SectionCard icon={<Leaf size={18} color="#fff" />} title={t('sustainabilityMetrics') || 'Sustainability Metrics'}
                       subtitle="Environmental impact of your agroforestry plan" accent="#059669">
                       <motion.div variants={staggerContainer} initial="initial" animate="animate"
                         style={{ display:'grid',gridTemplateColumns:'1fr 1fr',gap:'14px' }}>
@@ -859,7 +935,7 @@ const AIPlanner = ({ onLocationChange }) => {
                 {/* ════════════ NEXT STEPS ════════════ */}
                 {activeSection === 'nextsteps' && (
                   <motion.div key="nextsteps" variants={tabSlide} initial="initial" animate="animate" exit="exit">
-                    <SectionCard icon="✅" title={t('nextSteps') || 'Next Steps'} subtitle="Follow these steps to implement your plan" accent="#15803d">
+                    <SectionCard icon={<ListChecks size={18} color="#fff" />} title={t('nextSteps') || 'Next Steps'} subtitle="Follow these steps to implement your plan" accent="#15803d">
                       <motion.ol variants={staggerContainer} initial="initial" animate="animate"
                         style={{ margin:0,padding:0,listStyle:'none',display:'flex',flexDirection:'column',gap:'12px' }}>
                         {(agroPlan?.next_steps || []).map((step, i) => (
@@ -894,10 +970,10 @@ const AIPlanner = ({ onLocationChange }) => {
                 style={{ display:'flex', gap:'12px', flexWrap:'wrap', paddingTop:'4px' }}
               >
                 <AnimatedButton onClick={resetForm} variant="primary">
-                  ＋ {t('generateNewPlan') || 'Generate New Plan'}
+                  <PlusCircle size={16} /> {t('generateNewPlan') || 'Generate New Plan'}
                 </AnimatedButton>
                 <AnimatedButton onClick={() => window.print()} variant="ghost">
-                  🖨 {t('printPlan') || 'Print Plan'}
+                  <Printer size={16} /> {t('printPlan') || 'Print Plan'}
                 </AnimatedButton>
               </motion.div>
 
